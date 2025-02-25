@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Estadística</title>
+    <link rel="stylesheet" href="styleform.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.3.2/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+    <style>
+        textarea {
+            font-size: 18px;
+        }
+        #resultado {
+            font-size: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="img-fondo">
+        <div class="velo-negro">
+            <header class="header"></header>
+            <nav>
+                <a href="index.html">Inicio</a>
+                <a href="contactanos.html">Contacto</a>
+                <a href="datos.html">Estadística Descriptiva</a>
+                <a href="radiacion.html">Radiación</a>
+            </nav>
+            
+            <main class="contenedor">
+                <h1 class="titulo">Calculadora Estadística</h1>
+                
+                <div class="calculadora">
+                    <label for="datos">Ingresa los datos separados por comas:</label>
+                    <textarea id="datos" placeholder="Ejemplo: 1,2,3,4,5,6,7,9" rows="6" cols="50"></textarea>
+                    <button onclick="calcularEstadisticas()">Calcular</button>
+                    <button onclick="seleccionarDatos('clima')">Datos de Clima</button>
+                    <button onclick="seleccionarDatos('radiacion')">Datos de Radiación</button>
+                    <br><br>
+                    <input type="file" id="archivoExcel" accept=".xlsx" onchange="procesarArchivo(event)">
+                    <div id="resultado"></div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <footer class="footer">
+      
+    </footer>
+
+    <script>
+        function calcularEstadisticas(datos = null) {
+            let inputDatos = datos || document.getElementById("datos").value;
+            let valores = inputDatos.split(',').map(Number).filter(n => !isNaN(n));
+            
+            if (valores.length === 0) {
+                document.getElementById("resultado").innerHTML = "Por favor, ingresa datos válidos.";
+                return;
+            }
+            
+            let media = math.mean(valores);
+            let mediana = math.median(valores);
+            let desviacion = math.std(valores);
+            let moda = math.mode(valores);
+            let varianza = math.variance(valores);
+            let cuartiles = [math.quantileSeq(valores, 0.25), math.quantileSeq(valores, 0.5), math.quantileSeq(valores, 0.75)];
+            
+            document.getElementById("resultado").innerHTML = `
+                <p>Media: ${media.toFixed(2)}</p>
+                <p>Mediana: ${mediana}</p>
+                <p>Desviación estándar: ${desviacion.toFixed(2)}</p>
+                <p>Varianza: ${varianza.toFixed(2)}</p>
+                <p>Moda: ${moda}</p>
+                <p>Cuartiles: ${cuartiles.map(q => q.toFixed(2)).join(', ')}</p>
+            `;
+        }
+
+        function seleccionarDatos(tipo) {
+            let datosEjemplo = {
+                clima: "15,18,22,20,21,19,24,25,23,22,26,27,30,31,28,29,35,34,33,32",
+                radiacion: "200,220,210,230,250,240,235,220,210,215,280,290,300,310,320,330,340,350,360,370"
+            };
+            document.getElementById("datos").value = datosEjemplo[tipo];
+            calcularEstadisticas(datosEjemplo[tipo]);
+        }
+
+        function procesarArchivo(event) {
+            let archivo = event.target.files[0];
+            if (!archivo) return;
+
+            let lector = new FileReader();
+            lector.onload = function (e) {
+                let datos = new Uint8Array(e.target.result);
+                let libro = XLSX.read(datos, { type: 'array' });
+                let hoja = libro.Sheets[libro.SheetNames[0]];
+                let datosConvertidos = XLSX.utils.sheet_to_json(hoja, { header: 1 });
+                let valores = datosConvertidos.flat().filter(n => !isNaN(n)).join(',');
+                document.getElementById("datos").value = valores;
+                calcularEstadisticas(valores);
+            };
+            lector.readAsArrayBuffer(archivo);
+        }
+    </script>
+</body>
+
+</html>
