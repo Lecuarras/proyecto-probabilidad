@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Comparación de Paneles Solares</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-
-        
         body {
             font-family: Arial, sans-serif;
             text-align: center;
@@ -30,17 +29,23 @@
             max-width: 100%;
             height: auto;
         }
+        #boxplot-chart, #line-chart {
+            width: 80%;
+            height: 400px;
+            margin: 20px auto;
+        }
     </style>
 </head>
 <body>
     
     <nav>
         <a href="index.html">inicio</a>
-       <a href="datos.html">Estadistica descriptiva</a>
-       <a href="contactanos.html">Radiacion</a>
+        <a href="datos.html">Estadistica descriptiva</a>
+        <a href="contactanos.html">Radiacion</a>
     </nav>
 
     <h1>Comparación de Paneles Solares</h1>
+
     <div class="datos-radiacion">
         <h2>Datos de Radiación Solar</h2>
         <p id="ghi">GHI: Cargando...</p>
@@ -49,7 +54,13 @@
     </div>
     
     <div class="contenedor" id="paneles"></div>
-    
+
+    <!-- Gráfico Boxplot -->
+    <div id="boxplot-chart"></div>
+
+    <!-- Gráfico de Líneas -->
+    <div id="line-chart"></div>
+
     <script>
         function obtenerParametrosURL() {
             const params = new URLSearchParams(window.location.search);
@@ -65,17 +76,28 @@
             document.getElementById('ghi').textContent = `GHI: ${datos.ghi} W/m²`;
             document.getElementById('dni').textContent = `DNI: ${datos.dni} W/m²`;
             document.getElementById('dhi').textContent = `DHI: ${datos.dhi} W/m²`;
-            calcularGeneracion(datos.ghi);
+            calcularGeneracion(datos.ghi, datos.dni, datos.dhi);
+            mostrarGraficaBoxplot(datos.ghi, datos.dni, datos.dhi);
+            mostrarGraficaLinea(datos.ghi, datos.dni, datos.dhi);
         }
 
-        function calcularGeneracion(GHI) {
+        function calcularGeneracion(ghi, dni, dhi) {
             const paneles = [
-                { nombre: "Panel 450W ET Solar", potencia: 450, imagen: "IMG/panel 1.png" },
-                { nombre: "Panel 450W Canadian Solar", potencia: 450, imagen: "IMG/panel 4.png" },
-                { nombre: "Panel 400W Sunpok", potencia: 400, imagen: "IMG/panel 3.png" },
-                { nombre: "Panel 360W Allrun", potencia: 360, imagen: "IMG/panel 2.png" }
+                { nombre: "Panel 450W ET Solar", potencia: 450, eficiencia: 0.20, imagen: "IMG/panel 1.png" },
+                { nombre: "Panel 450W Canadian Solar", potencia: 450, eficiencia: 0.18, imagen: "IMG/panel 4.png" },
+                { nombre: "Panel 400W Sunpok", potencia: 400, eficiencia: 0.17, imagen: "IMG/panel 3.png" },
+                { nombre: "Panel 360W Allrun", potencia: 360, eficiencia: 0.19, imagen: "IMG/panel 2.png" }
             ];
-            let energia = paneles.map(panel => (panel.potencia * (GHI / 1000) * 5));
+
+            const energia = paneles.map(panel => {
+                return {
+                    panel: panel.nombre,
+                    energiaGHI: (panel.potencia * (ghi / 1000) * panel.eficiencia * 5).toFixed(2), 
+                    energiaDNI: (panel.potencia * (dni / 1000) * panel.eficiencia * 5).toFixed(2),
+                    energiaDHI: (panel.potencia * (dhi / 1000) * panel.eficiencia * 5).toFixed(2)
+                };
+            });
+
             mostrarPaneles(paneles, energia);
         }
 
@@ -87,10 +109,98 @@
                     <div class="panel">
                         <img src="${panel.imagen}" alt="${panel.nombre}">
                         <h3>${panel.nombre}</h3>
-                        <p>Generación: ${energia[index].toFixed(2)} kWh/día</p>
+                        <p>Generación GHI: ${energia[index].energiaGHI} kWh/día</p>
+                        <p>Generación DNI: ${energia[index].energiaDNI} kWh/día</p>
+                        <p>Generación DHI: ${energia[index].energiaDHI} kWh/día</p>
                     </div>
                 `;
             });
+        }
+
+        function mostrarGraficaBoxplot(ghi, dni, dhi) {
+            const chart = echarts.init(document.getElementById('boxplot-chart'));
+
+            const panelGenerations = [
+                [450 * (ghi / 1000) * 0.20 * 5, 450 * (dni / 1000) * 0.20 * 5, 450 * (dhi / 1000) * 0.20 * 5], 
+                [450 * (ghi / 1000) * 0.18 * 5, 450 * (dni / 1000) * 0.18 * 5, 450 * (dhi / 1000) * 0.18 * 5], 
+                [400 * (ghi / 1000) * 0.17 * 5, 400 * (dni / 1000) * 0.17 * 5, 400 * (dhi / 1000) * 0.17 * 5],
+                [360 * (ghi / 1000) * 0.19 * 5, 360 * (dni / 1000) * 0.19 * 5, 360 * (dhi / 1000) * 0.19 * 5]
+            ];
+
+            function calculateBoxplotData(values) {
+                const sorted = values.sort((a, b) => a - b);
+                const median = getMedian(sorted);
+                const Q1 = getMedian(sorted.slice(0, Math.floor(sorted.length / 2)));
+                const Q3 = getMedian(sorted.slice(Math.ceil(sorted.length / 2)));
+                const IQR = Q3 - Q1;
+                const lower = Q1 - 1.5 * IQR;
+                const upper = Q3 + 1.5 * IQR;
+                const outliers = sorted.filter(x => x < lower || x > upper);
+
+                return {
+                    lower,
+                    Q1,
+                    median,
+                    Q3,
+                    upper,
+                    outliers
+                };
+            }
+
+            function getMedian(arr) {
+                const middle = Math.floor(arr.length / 2);
+                if (arr.length % 2 === 0) {
+                    return (arr[middle - 1] + arr[middle]) / 2;
+                } else {
+                    return arr[middle];
+                }
+            }
+
+            const boxplotData = panelGenerations.map(item => {
+                const { lower, Q1, median, Q3, upper, outliers } = calculateBoxplotData(item);
+                return [lower, Q1, median, Q3, upper];
+            });
+
+            const option = {
+                title: { text: 'Generación de Energía por Panel Solar', left: 'center' },
+                tooltip: { trigger: 'item', axisPointer: { type: 'shadow' } },
+                grid: { left: '10%', right: '10%', bottom: '15%' },
+                yAxis: { type: 'category', data: ['Panel 1', 'Panel 2', 'Panel 3', 'Panel 4'], boundaryGap: true },
+                xAxis: { type: 'value', name: 'Generación (kWh)' },
+                series: [
+                    { name: 'boxplot', type: 'boxplot', data: boxplotData, tooltip: { formatter: function (param) { return ['Generación de Energía:', 'upper: ' + param.data[4], 'Q3: ' + param.data[3], 'median: ' + param.data[2], 'Q1: ' + param.data[1], 'lower: ' + param.data[0]].join('<br/>'); } } },
+                    { name: 'outlier', type: 'scatter', data: boxplotData[0].outliers || [] }
+                ]
+            };
+
+            chart.setOption(option);
+        }
+
+        function mostrarGraficaLinea(ghi, dni, dhi) {
+            const chart = echarts.init(document.getElementById('line-chart'));
+
+            const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+            const panel1Data = Array.from({ length: 7 }, (_, i) => 450 * (ghi / 1000) * 0.20 + Math.random() * 5);
+            const panel2Data = Array.from({ length: 7 }, (_, i) => 450 * (dni / 1000) * 0.18 + Math.random() * 5);
+            const panel3Data = Array.from({ length: 7 }, (_, i) => 400 * (ghi / 1000) * 0.17 + Math.random() * 5);
+            const panel4Data = Array.from({ length: 7 }, (_, i) => 360 * (dhi / 1000) * 0.19 + Math.random() * 5);
+
+            const option = {
+                title: { text: 'Generación de Energía por Día', left: 'center' },
+                tooltip: { trigger: 'axis' },
+                legend: { data: ['Panel 1', 'Panel 2', 'Panel 3', 'Panel 4'] },
+                xAxis: { type: 'category', data: days },
+                yAxis: { type: 'value', name: 'Generación (kWh)' },
+                series: [
+                    { name: 'Panel 1', type: 'line', data: panel1Data, itemStyle: { color: '#1f78b4' } },  // Azul
+                    { name: 'Panel 2', type: 'line', data: panel2Data, itemStyle: { color: '#ff7f00' } },  // Amarillo
+                    { name: 'Panel 3', type: 'line', data: panel3Data, itemStyle: { color: '#e31a1c' } },  // Rojo
+                    { name: 'Panel 4', type: 'line', data: panel4Data, itemStyle: { color: '#33a02c' } }   // Verde
+                ]
+            };
+
+            chart.setOption(option);
         }
 
         mostrarRadiacion();
