@@ -1,36 +1,115 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>proyecto solar</title>
-    <link rel="stylesheet" href="styleform.css">
+    <title>Radiación Solar</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .contenedor {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            display: inline-block;
+            background-color: #f9f9f9;
+        }
+        #map {
+            height: 400px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        #btn-rendimiento {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+    </style>
 </head>
-
 <body>
-    
     <nav>
         <a href="index.html">inicio</a>
-        <a href="contactanos.html">vacia</a>
        <a href="datos.html">Estadistica descriptiva</a>
-       <a href="radiacion.html">Radiacion</a>
+       <a href="contactanos.html">Radiacion</a>
     </nav>
-   
-    <footer class="footer">
-        <a class="enlace-footer" href="#">
-            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="50" height="50" viewBox="0 0 226 226"
-                style=" fill:#000000;">
-                <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt"
-                    stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0"
-                    font-family="none" font-weight="none" font-size="none" text-anchor="none"
-                    style="mix-blend-mode: normal">
-                    <path d="M0,226v-226h226v226z" fill="#000000"></path>
-                </g>
-            </svg>
-        </a>
+    
+    <h1>Radiación Solar en Tiempo Real</h1>
+    <h2>Selecciona tu ubicación para ver la radiación solar</h2>
+    <div id="map"></div>
+    <div class="contenedor">
+        <p id="fecha">Cargando datos...</p>
+        <p id="ghi"></p>
+        <p id="dni"></p>
+        <p id="dhi"></p>
+    </div>
+    
+    <button id="btn-rendimiento" onclick="irARendimiento()">Calcular Rendimiento</button>
 
+    <script>
+        var map = L.map('map').setView([19.7008, -101.1844], 5);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        var marker, datosRadiacion = {};
+
+        function onMapClick(e) {
+            if (marker) {
+                marker.setLatLng(e.latlng);
+            } else {
+                marker = L.marker(e.latlng).addTo(map);
+            }
+            obtenerRadiacionSolar(e.latlng.lat, e.latlng.lng);
+        }
+
+        map.on('click', onMapClick);
+
+        async function obtenerRadiacionSolar(lat = 19.7008, lon = -101.1844) {
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=shortwave_radiation,direct_radiation,diffuse_radiation&timezone=America/Mexico_City`;
+            
+            try {
+                const respuesta = await fetch(url);
+                const datos = await respuesta.json();
+                
+                if (datos && datos.current) {
+                    document.getElementById('fecha').textContent = `Última actualización: ${new Date().toLocaleString()}`;
+                    document.getElementById('ghi').textContent = `GHI: ${datos.current.shortwave_radiation} W/m²`;
+                    document.getElementById('dni').textContent = `DNI: ${datos.current.direct_radiation} W/m²`;
+                    document.getElementById('dhi').textContent = `DHI: ${datos.current.diffuse_radiation} W/m²`;
+
+                    datosRadiacion = {
+                        ghi: datos.current.shortwave_radiation,
+                        dni: datos.current.direct_radiation,
+                        dhi: datos.current.diffuse_radiation
+                    };
+                }
+            } catch (error) {
+                console.error('Error al obtener los datos:', error);
+            }
+        }
+
+        function irARendimiento() {
+            if (datosRadiacion.ghi) {
+                window.location.href = `rendimiento.html?ghi=${datosRadiacion.ghi}&dni=${datosRadiacion.dni}&dhi=${datosRadiacion.dhi}`;
+            } else {
+                alert("Primero selecciona una ubicación en el mapa.");
+            }
+        }
+
+        obtenerRadiacionSolar();
+        setInterval(obtenerRadiacionSolar, 60000); // Actualiza cada 60 segundos
+    </script>
 </body>
-
 </html>

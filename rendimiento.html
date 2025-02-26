@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparación de Paneles Solares</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+
+        
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        .contenedor {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .panel {
+            border: 1px solid #ddd;
+            padding: 20px;
+            background-color: #f9f9f9;
+            width: 300px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    
+    <nav>
+        <a href="index.html">inicio</a>
+       <a href="datos.html">Estadistica descriptiva</a>
+       <a href="contactanos.html">Radiacion</a>
+    </nav>
+
+    <h1>Comparación de Paneles Solares</h1>
+    <div class="datos-radiacion">
+        <h2>Datos de Radiación Solar</h2>
+        <p id="ghi">GHI: Cargando...</p>
+        <p id="dni">DNI: Cargando...</p>
+        <p id="dhi">DHI: Cargando...</p>
+    </div>
+    
+    <div class="contenedor" id="paneles"></div>
+    
+    <script>
+        function obtenerParametrosURL() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                ghi: parseFloat(params.get("ghi")) || 0,
+                dni: parseFloat(params.get("dni")) || 0,
+                dhi: parseFloat(params.get("dhi")) || 0
+            };
+        }
+
+        function mostrarRadiacion() {
+            const datos = obtenerParametrosURL();
+            document.getElementById('ghi').textContent = `GHI: ${datos.ghi} W/m²`;
+            document.getElementById('dni').textContent = `DNI: ${datos.dni} W/m²`;
+            document.getElementById('dhi').textContent = `DHI: ${datos.dhi} W/m²`;
+            calcularGeneracion(datos.ghi);
+        }
+
+        function calcularGeneracion(GHI) {
+            const paneles = [
+                { nombre: "Panel 450W ET Solar", potencia: 450, imagen: "IMG/panel 1.png" },
+                { nombre: "Panel 450W Canadian Solar", potencia: 450, imagen: "IMG/panel 4.png" },
+                { nombre: "Panel 400W Sunpok", potencia: 400, imagen: "IMG/panel 3.png" },
+                { nombre: "Panel 360W Allrun", potencia: 360, imagen: "IMG/panel 2.png" }
+            ];
+            let energia = paneles.map(panel => (panel.potencia * (GHI / 1000) * 5));
+            mostrarPaneles(paneles, energia);
+        }
+
+        function mostrarPaneles(paneles, energia) {
+            const contenedor = document.getElementById("paneles");
+            contenedor.innerHTML = "";
+            paneles.forEach((panel, index) => {
+                contenedor.innerHTML += `
+                    <div class="panel">
+                        <img src="${panel.imagen}" alt="${panel.nombre}">
+                        <h3>${panel.nombre}</h3>
+                        <p>Generación: ${energia[index].toFixed(2)} kWh/día</p>
+                    </div>
+                `;
+            });
+        }
+
+        mostrarRadiacion();
+    </script>
+</body>
+</html>
