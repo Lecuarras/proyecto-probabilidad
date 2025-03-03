@@ -145,22 +145,49 @@
         function calcularCurtosis() {
             let inputDatos = document.getElementById("datos").value;
             let valores = inputDatos.split(',').map(Number).filter(n => !isNaN(n));
-            
-            if (valores.length === 0) {
-                document.getElementById("resultado").innerHTML = "Por favor, ingresa datos válidos.";
+    
+            if (valores.length < 2) {
+                document.getElementById("resultado").innerHTML = "Por favor, ingresa al menos dos datos válidos.";
                 return;
             }
-            
+    
+            let n = valores.length;
             let media = math.mean(valores);
-            let curtosis = math.std(valores);
-            let sumatoria = valores.map(x => `( ${x} - ${media.toFixed(2)} )^2`).join(' + ');
-
-            let formulaHTML = `\[ \kappa = \sqrt{ \frac{${sumatoria}}{${valores.length}} } \]`;
+            let desviacionEstandar = math.std(valores, 'unbiased'); // Desviación estándar muestral
+    
+            // Cálculo de curtosis
+            let sumaCuartaPotencia = valores.reduce((sum, x) => sum + Math.pow(x - media, 4), 0);
+            let sumaCuadrados = valores.reduce((sum, x) => sum + Math.pow(x - media, 2), 0);
+    
+            let curtosis = (n * sumaCuartaPotencia) / (sumaCuadrados ** 2);
+            let curtosisExceso = curtosis - 3; // Para comparar con la distribución normal
+    
+            // Mostrar resultados
+            document.getElementById("resultado").innerHTML = `
+                <p><strong>Curtosis:</strong> ${curtosis.toFixed(4)}</p>
+                <p><strong>Curtosis con exceso:</strong> ${curtosisExceso.toFixed(4)}</p>
+                <p>Tipo de distribución: ${determinarTipoCurtosis(curtosisExceso)}</p>
+            `;
+    
+            // Mostrar fórmula con valores insertados
+            let formulaHTML = `
+            \\[
+            K = \\frac{${n} \\sum (x_i - ${media.toFixed(2)})^4}{(\\sum (x_i - ${media.toFixed(2)})^2)^2}
+            \\]
+            `;
             document.getElementById("formula").innerHTML = formulaHTML;
             MathJax.Hub.Queue(["Typeset", MathJax.Hub, "formula"]);
-            
-            document.getElementById("resultado").innerHTML = `<p>Curtosis: ${curtosis.toFixed(2)}</p>`;
         }
+    
+        function determinarTipoCurtosis(curtosisExceso) {
+            if (curtosisExceso > 0) {
+                return "Leptocúrtica (colas más largas y pico más alto)";
+            } else if (curtosisExceso < 0) {
+                return "Platicúrtica (colas más cortas y pico más bajo)";
+            } else {
+                return "Mesocúrtica (similar a la normal)";
+            }
+        }    
 
         function leerArchivo(event) {
             let archivo = event.target.files[0];
