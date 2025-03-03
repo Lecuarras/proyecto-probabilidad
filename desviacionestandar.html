@@ -1,67 +1,140 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora Estadística</title>
+    <title>Desviación Estándar</title>
     <link rel="stylesheet" href="styleform.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.3.2/math.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+    <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <style>
         textarea {
             font-size: 18px;
+            padding: 10px;
+            width: 100%;
+            height: 100px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
         }
-        #resultado {
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #resultado, #formula {
             font-size: 20px;
+        }
+        .pagina-ayuda {
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .img-fondo {
+            background-image: url('fondo.jpg');
+            background-size: cover;
+            padding: 20px;
+        }
+        .velo-negro {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .header {
+            background-color: #333;
+            padding: 10px;
+            text-align: center;
+            color: white;
+        }
+        nav a {
+            color: white;
+            padding: 10px;
+            text-decoration: none;
+        }
+        .contenedor {
+            margin: 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .titulo {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+        #file-input {
+            padding: 10px;
+            font-size: 16px;
+            margin-top: 10px;
         }
     </style>
 </head>
-
-<body>
+<body class="pagina-ayuda">
     <div class="img-fondo">
         <div class="velo-negro">
             <header class="header"></header>
             <nav>
-                <a href="index.html">inicio</a>
-               <a href="datos.html">Estadistica descriptiva</a>
-               <a href="contactanos.html">Radiacion</a>
+                <a href="index.html">Inicio</a>
+                <a href="datos.html">Estadística Descriptiva</a>
+                <a href="contactanos.html">Radiación</a>
             </nav>
             <nav>
                 <a href="moda.html">Moda</a>
-                <a href="media.html">media</a>
-               <a href="mediana.html">Mediana</a>
-               <a href="Varianza.html">Varianza</a>
-               <a href="desviacionestandar.html">Desviacion estandar</a>
-               <a href="cuartiles.html">Cuartiles</a>
-               <a href="sesgo.html">Sesgo</a>
-               <a href="curtosis.html">Curtosis</a>
+                <a href="media.html">Media</a>
+                <a href="mediana.html">Mediana</a>
+                <a href="varianza.html">Varianza</a>
+                <a href="desviacionestandar.html">Desviación Estándar</a>
+                <a href="cuartiles.html">Cuartiles</a>
+                <a href="sesgo.html">Sesgo</a>
+                <a href="curtosis.html">Curtosis</a>
             </nav>
             
             <main class="contenedor">
-                <h1 class="titulo">Calculadora Estadística</h1>
+                <h1 class="titulo">Desviación Estándar</h1>
                 
-                <div class="calculadora">
+                <section>
+                    <h2>¿Qué es la Desviación Estándar?</h2>
+                    <p>La desviación estándar es una medida de dispersión que indica cuánto se alejan los valores de un conjunto de datos de su media. Es útil para entender la variabilidad de los datos y se usa en estadística, economía, ingeniería y muchas otras áreas.</p>
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdXjzxPbLZ37vneOKN_R322RhLUWrEZR6KPA&s" alt="Ejemplo gráfico de desviación estándar">
+                </section>
+                
+                <section>
+                    <h2>Fórmula de la Desviación Estándar</h2>
+                    <p>La desviación estándar de una muestra se calcula con la siguiente fórmula:</p>
+                    <p id="formula">\[ \sigma = \sqrt{ \frac{\sum (x_i - \bar{x})^2}{n} } \]</p>
+                    <p>Donde:</p>
+                    <ul>
+                        <li>\( x_i \) son los valores del conjunto de datos.</li>
+                        <li>\( \bar{x} \) es la media de los datos.</li>
+                        <li>\( n \) es el número total de datos.</li>
+                    </ul>
+                </section>
+                
+                <section>
+                    <h2>Calculadora de Desviación Estándar</h2>
                     <label for="datos">Ingresa los datos separados por comas:</label>
-                    <textarea id="datos" placeholder="Ejemplo: 1,2,3,4,5,6,7,9" rows="6" cols="50"></textarea>
-                    <button onclick="calcularEstadisticas()">Calcular</button>
-                    <button onclick="seleccionarDatos('clima')">Datos de Clima</button>
-                    <button onclick="seleccionarDatos('radiacion')">Datos de Radiación</button>
-                    <br><br>
-                    <input type="file" id="archivoExcel" accept=".xlsx" onchange="procesarArchivo(event)">
+                    <textarea id="datos" placeholder="Ejemplo: 5,10,15,20,25"></textarea>
+                    <button onclick="calcularDesviacion()">Calcular</button>
                     <div id="resultado"></div>
-                </div>
+                </section>
+
+                <section>
+                    <h2>Cargar archivo Excel con los datos</h2>
+                    <input type="file" id="file-input" accept=".xlsx" onchange="leerArchivo(event)">
+                </section>
             </main>
         </div>
     </div>
-
-    <footer class="footer">
-      
-    </footer>
-
+    
     <script>
-        function calcularEstadisticas(datos = null) {
-            let inputDatos = datos || document.getElementById("datos").value;
+        function calcularDesviacion() {
+            let inputDatos = document.getElementById("datos").value;
             let valores = inputDatos.split(',').map(Number).filter(n => !isNaN(n));
             
             if (valores.length === 0) {
@@ -70,48 +143,33 @@
             }
             
             let media = math.mean(valores);
-            let mediana = math.median(valores);
             let desviacion = math.std(valores);
-            let moda = math.mode(valores);
-            let varianza = math.variance(valores);
-            let cuartiles = [math.quantileSeq(valores, 0.25), math.quantileSeq(valores, 0.5), math.quantileSeq(valores, 0.75)];
+            let sumatoria = valores.map(x => `( ${x} - ${media.toFixed(2)} )^2`).join(' + ');
+
+            let formulaHTML = `\\[ \sigma = \sqrt{ \frac{${sumatoria}}{${valores.length}} } \\]`;
+            document.getElementById("formula").innerHTML = formulaHTML;
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub, "formula"]);
             
-            document.getElementById("resultado").innerHTML = `
-                <p>Media: ${media.toFixed(2)}</p>
-                <p>Mediana: ${mediana}</p>
-                <p>Desviación estándar: ${desviacion.toFixed(2)}</p>
-                <p>Varianza: ${varianza.toFixed(2)}</p>
-                <p>Moda: ${moda}</p>
-                <p>Cuartiles: ${cuartiles.map(q => q.toFixed(2)).join(', ')}</p>
-            `;
+            document.getElementById("resultado").innerHTML = `<p>Desviación estándar: ${desviacion.toFixed(2)}</p>`;
         }
 
-        function seleccionarDatos(tipo) {
-            let datosEjemplo = {
-                clima: "15,18,22,20,21,19,24,25,23,22,26,27,30,31,28,29,35,34,33,32",
-                radiacion: "200,220,210,230,250,240,235,220,210,215,280,290,300,310,320,330,340,350,360,370"
-            };
-            document.getElementById("datos").value = datosEjemplo[tipo];
-            calcularEstadisticas(datosEjemplo[tipo]);
-        }
-
-        function procesarArchivo(event) {
+        function leerArchivo(event) {
             let archivo = event.target.files[0];
             if (!archivo) return;
-
+            
             let lector = new FileReader();
-            lector.onload = function (e) {
-                let datos = new Uint8Array(e.target.result);
-                let libro = XLSX.read(datos, { type: 'array' });
-                let hoja = libro.Sheets[libro.SheetNames[0]];
-                let datosConvertidos = XLSX.utils.sheet_to_json(hoja, { header: 1 });
-                let valores = datosConvertidos.flat().filter(n => !isNaN(n)).join(',');
-                document.getElementById("datos").value = valores;
-                calcularEstadisticas(valores);
+            lector.onload = function(e) {
+                let datos = e.target.result;
+                let workbook = XLSX.read(datos, { type: 'binary' });
+                let hoja = workbook.Sheets[workbook.SheetNames[0]];
+                let datosExcel = XLSX.utils.sheet_to_json(hoja, { header: 1 }).flat();
+                
+                // Convertir los datos a un formato adecuado
+                let datosText = datosExcel.join(',');
+                document.getElementById("datos").value = datosText;
             };
-            lector.readAsArrayBuffer(archivo);
+            lector.readAsBinaryString(archivo);
         }
     </script>
 </body>
-
 </html>

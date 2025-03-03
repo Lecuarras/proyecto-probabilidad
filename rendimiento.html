@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Comparación de Paneles Solares</title>
+    <link rel="stylesheet" href="styleform.css">
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -38,7 +39,7 @@
 </head>
 <body>
     
-    <nav>
+    <nav class="pagina-ayuda">
         <a href="index.html">inicio</a>
         <a href="datos.html">Estadistica descriptiva</a>
         <a href="contactanos.html">Radiacion</a>
@@ -57,6 +58,9 @@
 
     <!-- Gráfico Boxplot -->
     <div id="boxplot-chart"></div>
+
+    <!-- Salto de línea después del gráfico de Boxplot -->
+    <br>
 
     <!-- Gráfico de Líneas -->
     <div id="line-chart"></div>
@@ -187,9 +191,14 @@
             const panel4Data = Array.from({ length: 7 }, (_, i) => 360 * (dhi / 1000) * 0.19 + Math.random() * 5);
 
             const option = {
-                title: { text: 'Generación de Energía por Día', left: 'center' },
+                title: { 
+                    text: 'Generación de Energía por Día', 
+                    left: 'center', 
+                    top: '10px', // Mover el título hacia arriba para evitar la superposición
+                    textStyle: { fontSize: 16 }
+                },
                 tooltip: { trigger: 'axis' },
-                legend: { data: ['Panel 1', 'Panel 2', 'Panel 3', 'Panel 4'] },
+                legend: { data: ['Panel 1', 'Panel 2', 'Panel 3', 'Panel 4'], top: '40px' }, // Ajustar la posición de la leyenda
                 xAxis: { type: 'category', data: days },
                 yAxis: { type: 'value', name: 'Generación (kWh)' },
                 series: [

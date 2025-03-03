@@ -1,6 +1,6 @@
 html {
     box-sizing: border-box;
-    font-size: 60.5%;
+    font-size: 100%; /* Tamaño de fuente estándar */
 }
 
 *, *::before, *::after {
@@ -36,8 +36,9 @@ nav {
     background-color: rgba(0, 0, 0, 0.768);
     padding: 2rem;
     display: flex;
-    justify-content: center;
-    gap: 10rem;
+    justify-content: center;  /* Ajusta el espacio entre los elementos */
+    flex-wrap: wrap;  /* Permite que los elementos se ajusten en varias filas si es necesario */
+    gap: 2rem; /* Espacio flexible entre los elementos */
 }
 
 a {
@@ -47,9 +48,11 @@ a {
 nav a {
     font-family: Arial, Helvetica, sans-serif;
     font-weight: 800;
-    font-size: 3rem;
+    font-size: 2rem; /* Ajustado el tamaño de la fuente para una lectura más cómoda */
     color: white;
     text-transform: uppercase;
+    padding: 1rem;
+    transition: color 0.3s ease;
 }
 
 nav a:hover {
@@ -59,7 +62,7 @@ nav a:hover {
 .nustros-productos {
     font-family: Arial, Helvetica, sans-serif;
     color: white;
-    font-size: 4rem;
+    font-size: 3rem;
     text-align: center;
     text-transform: uppercase;
     font-weight: 800;
@@ -78,7 +81,7 @@ nav a:hover {
 
 .producto-blanco {
     background-color: white;
-    height: 40rem; /* Aumentado */
+    height: 25rem; /* Aumentado */
     object-fit: contain;
     padding: 1rem;
     width: 300px; /* Aumentado */
@@ -89,16 +92,16 @@ nav a:hover {
     color: white;  
     font-family: Arial, Helvetica;
     text-align: center;
-    font-size: 12px; /* Ajusta el tamaño según necesites */
+    font-size: 1rem; /* Ajustado para ser más legible */
 }
 
 .producto-precio {
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: 500;
 }
 
 .producto-nombre {
-    font-size: 15px;
+    font-size: 1.2rem; /* Aumentado el tamaño para mayor visibilidad */
     font-weight: 200;
     text-align: center;
 }
@@ -109,7 +112,7 @@ nav a:hover {
     font-family: Arial, Helvetica, sans-serif;
     padding-bottom: 2rem;
     color: white;
-    font-size: 2rem;
+    font-size: 1.5rem; /* Aumentado el tamaño de la fuente */
     text-align: center;
 }
 
@@ -122,7 +125,7 @@ nav a:hover {
 
 .nosotros-texto {
     color: white;
-    font-size: 3rem;
+    font-size: 2.5rem; /* Aumentado para mejor legibilidad */
     font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -130,7 +133,7 @@ nav a:hover {
     background: linear-gradient(135deg, #6e8efb, #a777e3); /* Degradado de colores */
     color: white;
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 16px;
+    font-size: 1.2rem; /* Aumentado */
     font-weight: bold;
     text-transform: uppercase;
     border: none;
@@ -170,14 +173,14 @@ nav a:hover {
 .bloque {
     text-align: center;
     color: white;
-    font-size: 3rem;
+    font-size: 2rem; /* Aumentado */
     font-family: Arial, Helvetica, sans-serif;
     margin-bottom: 5rem;
 }
 
 .bloque-titulo {
     color: rgb(255, 255, 255);
-    font-size: 4rem;
+    font-size: 3rem; /* Aumentado */
     margin: 3rem;
     text-transform: uppercase;
     font-weight: 800;
@@ -247,4 +250,48 @@ textarea {
 #logo {
     height: 350px;
     width: 350px;
+}
+
+nav:nth-of-type(2) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    background-color: #333;
+    padding: 10px;
+    gap: 10px; /* Mayor separación entre elementos */
+}
+
+nav:nth-of-type(2) a {
+    color: white;
+    text-decoration: none;
+    font-size: 14px; /* Letra más pequeña */
+    padding: 8px 12px;
+    border-radius: 5px;
+    background-color: #444;
+    transition: background 0.3s;
+}
+
+nav:nth-of-type(2) a:hover {
+    background-color: #666;
+}
+
+/* Adaptabilidad para pantallas pequeñas */
+@media (max-width: 600px) {
+    nav:nth-of-type(2) {
+        flex-direction: column;
+        align-items: center;
+    }
+    nav:nth-of-type(2) a {
+        font-size: 12px;
+        padding: 6px 10px;
+        width: 80%;
+        text-align: center;
+    }
+}
+
+/* Aumento del tamaño de los párrafos */
+p {
+    font-size: 1.25rem; /* Tamaño aumentado de los párrafos */
+    line-height: 1.6; /* Mejor separación entre líneas */
+    color: rgb(0, 0, 0); /* Texto blanco para mejor legibilidad */
 }
