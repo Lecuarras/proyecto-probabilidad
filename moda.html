@@ -149,10 +149,10 @@
     <script>
         function calcularModa() {
             let inputDatos = document.getElementById("datos").value;
-            let valores = inputDatos.split(',').map(Number).filter(n => !isNaN(n));
+            let valores = inputDatos.split(',').map(num => parseFloat(num.trim())).filter(n => !isNaN(n));
 
             if (valores.length === 0) {
-                document.getElementById("resultado").innerHTML = "Por favor, ingresa datos válidos.";
+                document.getElementById("resultado").innerHTML = "<p><strong>Error:</strong> Por favor, ingresa datos válidos.</p>";
                 return;
             }
 
@@ -160,14 +160,34 @@
             valores.forEach(num => frecuencias[num] = (frecuencias[num] || 0) + 1);
 
             let maxFrecuencia = Math.max(...Object.values(frecuencias));
-            let modas = Object.keys(frecuencias).filter(num => frecuencias[num] === maxFrecuencia).map(Number);
+            let modas = Object.keys(frecuencias)
+                .filter(num => frecuencias[num] === maxFrecuencia)
+                .map(Number);
 
-            let formulaHTML = `\[ \\text{Moda} = \\arg\\max_x f(x) \]`;
+            // Caso en que todos los valores tienen la misma frecuencia
+            let mensajeModa = "";
+            if (modas.length === Object.keys(frecuencias).length) {
+                mensajeModa = "<p>No hay una moda clara (todos los valores tienen la misma frecuencia).</p>";
+            } else {
+                mensajeModa = `<p><strong>Moda:</strong> ${modas.join(', ')}</p>`;
+            }
+
+            // Mostrar resultados en pantalla
+            document.getElementById("resultado").innerHTML = `
+                ${mensajeModa}
+                <p><strong>Frecuencia máxima:</strong> ${maxFrecuencia}</p>
+            `;
+
+            // Mostrar la fórmula con MathJax
+            let formulaHTML = `
+            \\[
+            \\text{Moda} = \\underset{x}{\\operatorname{argmax}} \\, f(x)
+            \\]`;
+            
             document.getElementById("formula").innerHTML = formulaHTML;
             MathJax.Hub.Queue(["Typeset", MathJax.Hub, "formula"]);
-
-            document.getElementById("resultado").innerHTML = `<p>Moda: ${modas.join(', ')}</p>`;
         }
+
 
         function leerArchivo(event) {
             let archivo = event.target.files[0];
