@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Desviación Estándar</title>
+    <title>Sesgo</title>
     <link rel="stylesheet" href="styleform.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.3.2/math.min.js"></script>
     <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
@@ -96,23 +96,24 @@
             </nav>
             
             <main class="contenedor">
-                <h1 class="titulo">Desviación Estándar</h1>
+                <h1 class="titulo">Sesgo</h1>
                 
                 <section>
-                    <h2>¿Qué es la Desviación Estándar?</h2>
-                    <!-- Aquí puedes añadir texto de descripción -->
+                    <h2>¿Qué es el Sesgo?</h2>
+                    <p>En estadística, el sesgo es una medida de la asimetría de la distribución de una variable aleatoria en torno a su media. Un sesgo positivo indica que la cola derecha de la distribución es más larga o tiene más valores extremos, mientras que un sesgo negativo indica que la cola izquierda es más prominente. Un sesgo cercano a cero sugiere que la distribución es aproximadamente simétrica.</p>
                 </section>
                 
                 <section>
-                    <h2>Fórmula de la Desviación Estándar</h2>
-                    <!-- Aquí puedes poner la fórmula -->
+                    <h2>Fórmula del Sesgo</h2>
+                    <p>El sesgo se calcula con la siguiente fórmula:</p>
+                    <div id="formula">\[ g_1 = \frac{\sum_{i=1}^{n} (x_i - \bar{x})^3}{n s^3} \]</div>
                 </section>
                 
                 <section>
-                    <h2>Calculadora de Desviación Estándar</h2>
+                    <h2>Calculadora de Sesgo</h2>
                     <label for="datos">Ingresa los datos separados por comas:</label>
                     <textarea id="datos"></textarea>
-                    <button onclick="calcularDesviacion()">Calcular</button>
+                    <button onclick="calcularSesgo()">Calcular</button>
                     <div id="resultado"></div>
                 </section>
 
@@ -125,7 +126,7 @@
     </div>
     
     <script>
-        function calcularDesviacion() {
+        function calcularSesgo() {
             let inputDatos = document.getElementById("datos").value;
             let valores = inputDatos.split(',').map(Number).filter(n => !isNaN(n));
             
@@ -136,13 +137,12 @@
             
             let media = math.mean(valores);
             let desviacion = math.std(valores);
-            let sumatoria = valores.map(x => `( ${x} - ${media.toFixed(2)} )^2`).join(' + ');
+            let n = valores.length;
+            let sumatoria = valores.reduce((acc, x) => acc + Math.pow(x - media, 3), 0);
+            let sesgo = sumatoria / (n * Math.pow(desviacion, 3));
 
-            let formulaHTML = `\\[ \sigma = \sqrt{ \frac{${sumatoria}}{${valores.length}} } \\]`;
-            document.getElementById("formula").innerHTML = formulaHTML;
+            document.getElementById("resultado").innerHTML = `<p>Sesgo: ${sesgo.toFixed(4)}</p>`;
             MathJax.Hub.Queue(["Typeset", MathJax.Hub, "formula"]);
-            
-            document.getElementById("resultado").innerHTML = `<p>Desviación estándar: ${desviacion.toFixed(2)}</p>`;
         }
 
         function leerArchivo(event) {
