@@ -77,14 +77,30 @@
                 <a href="multiplicacionmatriz.html">Multiplicación matriz</a>
                 <a href="divisionmatriz.html">División matriz</a>
                 <a href="minimoscuadrados.html">Mínimos cuadrados</a>
-                <a href="mediana.html">Agregar su tema</a>
-                <a href="Varianza.html">Agregar su tema</a>
+                <a href="transpuesta.html">transpuesta matriz</a>
+                <a href="matrizinversa.html">inversa matriz</a>
             </nav>
             
             <main class="contenedor">
                 <h1>Inversa de una Matriz</h1>
-                <p>Para calcular la inversa de una matriz, la matriz debe ser cuadrada y su determinante no debe ser cero. La inversa de una matriz A se denota como A<sup>-1</sup> y cumple la propiedad:</p>
-                <p><strong>A * A<sup>-1</sup> = I</strong>, donde I es la matriz identidad.</p>
+                <p>La <strong>inversa de una matriz</strong> A, denotada como A<sup>-1</sup>, es otra matriz que, cuando se multiplica por A, da como resultado la matriz identidad (I). Es decir, A * A<sup>-1</sup> = I. Solo las matrices cuadradas (con el mismo número de filas y columnas) tienen inversa, y además, su determinante debe ser distinto de cero para que exista.</p>
+                <p>En otras palabras, la matriz inversa "deshace" la operación realizada por la matriz original.</p>
+                
+                <h2>Ejemplo:</h2>
+                <p>Sea la matriz A:</p>
+                <pre>
+                A = | 4  7 |
+                    | 2  6 |
+                </pre>
+                Su inversa A<sup>-1</sup> es la siguiente matriz:</p>
+                <pre>
+                A<sup>-1</sup> = |  6  -7 |
+                               | -2   4 |
+                </pre>
+                <p>Para calcular la inversa, primero calculamos el determinante de A, que en este caso es:</p>
+                <p>det(A) = 4 * 6 - 7 * 2 = 24 - 14 = 10</p>
+                <p>Como el determinante es diferente de cero, A tiene inversa.</p>
+
                 <label for="filasA">Filas de A:</label>
                 <input type="number" id="filasA" min="1" value="2">
                 <label for="columnasA">Columnas de A:</label>

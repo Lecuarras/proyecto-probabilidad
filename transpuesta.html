@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moda</title>
+    <title>Transpuesta de una Matriz</title>
     <link rel="stylesheet" href="styleform.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.3.2/math.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
@@ -71,29 +71,42 @@
                 <a href="contactanos.html">Radiación</a>
                 <a href="matrices.html">Matrices</a>
             </nav>
+            <!-- Agrega esta sección de navegación para operaciones de matrices -->
             <nav>
                 <a href="sumamatiz.html">Suma matriz</a>
                 <a href="restamatriz.html">Resta matriz</a>
                 <a href="multiplicacionmatriz.html">Multiplicación matriz</a>
                 <a href="divisionmatriz.html">División matriz</a>
                 <a href="minimoscuadrados.html">Mínimos cuadrados</a>
-                <a href="transpuesta.html">transpuesta matriz</a>
-                <a href="matrizinversa.html">inversa matriz</a>
+                <a href="matrizinversa.html">Inversa de matriz</a>
+                <a href="transpuesta.html">Transpuesta de matriz</a>
             </nav>
             
             <main class="contenedor">
-                <h1>Suma de Matrices</h1>
-                <p>Para sumar dos matrices, ambas deben tener el mismo número de filas y columnas. La suma se realiza sumando cada elemento correspondiente de las matrices, es decir:</p>
-                <p><strong>(A + B)[i][j] = A[i][j] + B[i][j]</strong></p>
-                <p>Cada elemento de la matriz resultante es la suma de los elementos en la misma posición de las matrices originales.</p>
+                <h1>Transpuesta de una Matriz</h1>
+                <p>La <strong>transpuesta de una matriz</strong> es una operación que intercambia las <strong>filas</strong> por las <strong>columnas</strong> de la matriz original. Si una matriz tiene <strong>m filas</strong> y <strong>n columnas</strong>, su transpuesta tendrá <strong>n filas</strong> y <strong>m columnas</strong>.</p>
+                
+                <h2>Ejemplo</h2>
+                <p>Si tenemos la siguiente matriz <strong>A</strong>:</p>
+                <pre>
+A = [1, 2, 3]
+    [4, 5, 6]
+                </pre>
+                <p>Su transpuesta <strong>Aᵀ</strong> será:</p>
+                <pre>
+Aᵀ = [1, 4]
+     [2, 5]
+     [3, 6]
+                </pre>
+                
                 <label for="filas">Filas:</label>
                 <input type="number" id="filas" min="1" value="2">
                 <label for="columnas">Columnas:</label>
                 <input type="number" id="columnas" min="1" value="2">
-                <button onclick="generarCampos()">Generar Matrices</button>
+                <button onclick="generarCampos()">Generar Matriz</button>
                 
-                <div id="matrices"></div>
-                <button onclick="sumarMatrices()">Sumar</button>
+                <div id="matriz"></div>
+                <button onclick="calcularTranspuesta()">Calcular Transpuesta</button>
                 <div id="resultado"></div>
             </main>
         </div>
@@ -103,37 +116,44 @@
         function generarCampos() {
             let filas = document.getElementById("filas").value;
             let columnas = document.getElementById("columnas").value;
-            let contenedor = document.getElementById("matrices");
+            let contenedor = document.getElementById("matriz");
             contenedor.innerHTML = "";
             
-            ['A', 'B'].forEach(matriz => {
-                let div = document.createElement("div");
-                div.classList.add("matrix-container");
-                div.innerHTML = `<h3>Matriz ${matriz}</h3>`;
-                for (let i = 0; i < filas; i++) {
-                    for (let j = 0; j < columnas; j++) {
-                        div.innerHTML += `<input type='number' id='${matriz}_${i}_${j}' value='0' size='3'>`;
-                    }
-                    div.innerHTML += "<br>";
-                }
-                contenedor.appendChild(div);
-            });
-        }
-
-        function sumarMatrices() {
-            let filas = document.getElementById("filas").value;
-            let columnas = document.getElementById("columnas").value;
-            let resultado = "<h3>Resultado</h3>";
-            
+            let div = document.createElement("div");
+            div.classList.add("matrix-container");
+            div.innerHTML = `<h3>Matriz</h3>`;
             for (let i = 0; i < filas; i++) {
                 for (let j = 0; j < columnas; j++) {
-                    let a = Number(document.getElementById(`A_${i}_${j}`).value);
-                    let b = Number(document.getElementById(`B_${i}_${j}`).value);
-                    resultado += `<input type='number' value='${a + b}' size='3' disabled>`;
+                    div.innerHTML += `<input type='number' id='matriz_${i}_${j}' value='0' size='3'>`;
                 }
-                resultado += "<br>";
+                div.innerHTML += "<br>";
             }
-            document.getElementById("resultado").innerHTML = resultado;
+            contenedor.appendChild(div);
+        }
+
+        function calcularTranspuesta() {
+            let filas = document.getElementById("filas").value;
+            let columnas = document.getElementById("columnas").value;
+            let matriz = [];
+            
+            for (let i = 0; i < filas; i++) {
+                matriz[i] = [];
+                for (let j = 0; j < columnas; j++) {
+                    matriz[i][j] = Number(document.getElementById(`matriz_${i}_${j}`).value);
+                }
+            }
+            
+            let transpuesta = matriz[0].map((_, colIndex) => matriz.map(row => row[colIndex]));
+            let resultadoHTML = "<h3>Transpuesta:</h3>";
+            
+            for (let i = 0; i < transpuesta.length; i++) {
+                for (let j = 0; j < transpuesta[i].length; j++) {
+                    resultadoHTML += `<input type='number' value='${transpuesta[i][j]}' size='3' disabled>`;
+                }
+                resultadoHTML += "<br>";
+            }
+            
+            document.getElementById("resultado").innerHTML = resultadoHTML;
         }
     </script>
 </body>
