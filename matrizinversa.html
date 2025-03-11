@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inversa de Matrices</title>
+    <link rel="stylesheet" href="styleform.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.3.2/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <style>
+        textarea {
+            font-size: 18px;
+            padding: 10px;
+            width: 100%;
+            height: 100px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #d9534f;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #c9302c;
+        }
+        .contenedor {
+            margin: 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .matrix-container {
+            display: inline-block;
+            text-align: left;
+            margin: 20px;
+        }
+        label {
+            font-size: 24px; /* Aumentado el tamaño de la fuente */
+            font-weight: bold;
+            margin-right: 15px;
+            display: inline-block;
+            width: 150px;
+        }
+        input[type="number"] {
+            padding: 5px;
+            font-size: 16px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            width: 60px;
+            text-align: center;
+        }
+        #resultado {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body class="pagina-ayuda">
+    <div class="img-fondo">
+        <div class="velo-negro">
+            <header class="header"></header>
+            <nav>
+                <a href="index.html">Inicio</a>
+                <a href="datos.html">Estadística Descriptiva</a>
+                <a href="contactanos.html">Radiación</a>
+                <a href="matrices.html">Matrices</a>
+            </nav>
+            <nav>
+                <a href="sumamatiz.html">Suma matriz</a>
+                <a href="restamatriz.html">Resta matriz</a>
+                <a href="multiplicacionmatriz.html">Multiplicación matriz</a>
+                <a href="divisionmatriz.html">División matriz</a>
+                <a href="minimoscuadrados.html">Mínimos cuadrados</a>
+                <a href="mediana.html">Agregar su tema</a>
+                <a href="Varianza.html">Agregar su tema</a>
+            </nav>
+            
+            <main class="contenedor">
+                <h1>Inversa de una Matriz</h1>
+                <p>Para calcular la inversa de una matriz, la matriz debe ser cuadrada y su determinante no debe ser cero. La inversa de una matriz A se denota como A<sup>-1</sup> y cumple la propiedad:</p>
+                <p><strong>A * A<sup>-1</sup> = I</strong>, donde I es la matriz identidad.</p>
+                <label for="filasA">Filas de A:</label>
+                <input type="number" id="filasA" min="1" value="2">
+                <label for="columnasA">Columnas de A:</label>
+                <input type="number" id="columnasA" min="1" value="2">
+                <button onclick="generarCampos()">Generar Matriz</button>
+                
+                <div id="matrices"></div>
+                <button onclick="calcularInversa()">Calcular Inversa</button>
+                <div id="resultado"></div>
+            </main>
+        </div>
+    </div>
+    
+    <script>
+        function generarCampos() {
+            let filasA = document.getElementById("filasA").value;
+            let columnasA = document.getElementById("columnasA").value;
+            
+            if (filasA != columnasA) {
+                alert("La matriz debe ser cuadrada (el número de filas debe ser igual al número de columnas).");
+                return;
+            }
+            
+            let contenedor = document.getElementById("matrices");
+            contenedor.innerHTML = "";
+            
+            let div = document.createElement("div");
+            div.classList.add("matrix-container");
+            div.innerHTML = "<h3>Matriz A</h3>";
+            for (let i = 0; i < filasA; i++) {
+                for (let j = 0; j < columnasA; j++) {
+                    div.innerHTML += `<input type='number' id='A_${i}_${j}' value='0' size='3'>`;
+                }
+                div.innerHTML += "<br>";
+            }
+            contenedor.appendChild(div);
+        }
+
+        function calcularInversa() {
+            let filasA = document.getElementById("filasA").value;
+            let columnasA = document.getElementById("columnasA").value;
+            
+            if (filasA != columnasA) {
+                alert("La matriz debe ser cuadrada (el número de filas debe ser igual al número de columnas).");
+                return;
+            }
+
+            let matrizA = [];
+            for (let i = 0; i < filasA; i++) {
+                matrizA[i] = [];
+                for (let j = 0; j < columnasA; j++) {
+                    matrizA[i][j] = Number(document.getElementById(`A_${i}_${j}`).value);
+                }
+            }
+            
+            try {
+                let inversa = math.inv(matrizA);
+                let resultado = "<h3>Resultado de la Inversa</h3>";
+                for (let i = 0; i < filasA; i++) {
+                    for (let j = 0; j < columnasA; j++) {
+                        resultado += `<input type='number' value='${inversa[i][j]}' size='3' disabled>`;
+                    }
+                    resultado += "<br>";
+                }
+                document.getElementById("resultado").innerHTML = resultado;
+            } catch (e) {
+                alert("La matriz no tiene inversa (su determinante es cero).");
+            }
+        }
+    </script>
+</body>
+</html>
