@@ -84,16 +84,15 @@
                 <a href="datos.html">Estadística Descriptiva</a>
                 <a href="contactanos.html">Radiación</a>
                 <a href="matrices.html">Matrices</a>
-
             </nav>
             <nav>
-                <a href="sumamatiz.html">suma matriz</a>
-                <a href="restamatriz.html">resta matriz</a>
-                <a href="multiplicacionmatriz.html">multiplicacion matriz</a>
-                <a href="Varianza.html">division matriz</a>
-                <a href="restamatriz.html">agregar su tema</a>
-                <a href="mediana.html">agregar su tema</a>
-                <a href="Varianza.html">agregar su tema</a>
+                <a href="sumamatiz.html">Suma matriz</a>
+                <a href="restamatriz.html">Resta matriz</a>
+                <a href="multiplicacionmatriz.html">Multiplicación matriz</a>
+                <a href="divisionmatriz.html">División matriz</a>
+                <a href="minimoscuadrados.html">Mínimos cuadrados</a>
+                <a href="mediana.html">Agregar su tema</a>
+                <a href="Varianza.html">Agregar su tema</a>
             </nav>
             
             <main class="contenedor">
@@ -175,13 +174,18 @@
                 return;
             }
 
+            // Sumar las matrices
             let suma = matrizA.map((row, i) => row.map((elem, j) => elem + matrizB[i][j]));
 
+            // Mostrar el resultado dinámicamente
             let resultado = "<p>Resultado de la suma de matrices:</p>";
             resultado += "<div class='matrix-display'>";
             resultado += "<div><span>𝐴 + 𝐵 =</span>";
-            resultado += "<pre>[ " + suma[0][0] + ", " + suma[0][1] + " ]</pre>";
-            resultado += "<pre>[ " + suma[1][0] + ", " + suma[1][1] + " ]</pre>";
+
+            suma.forEach(row => {
+                resultado += "<pre>[ " + row.join(", ") + " ]</pre>";
+            });
+
             resultado += "</div></div>";
             document.getElementById("resultado").innerHTML = resultado;
         }

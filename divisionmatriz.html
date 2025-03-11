@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moda</title>
+    <title>División de Matrices</title>
     <link rel="stylesheet" href="styleform.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.3.2/math.min.js"></script>
     <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
@@ -84,128 +84,119 @@
                 <a href="datos.html">Estadística Descriptiva</a>
                 <a href="contactanos.html">Radiación</a>
                 <a href="matrices.html">Matrices</a>
-
             </nav>
             <nav>
-                <a href="sumamatiz.html">suma matriz</a>
-                <a href="restamatriz.html">resta matriz</a>
-                <a href="mediana.html">multiplicacion matriz</a>
-                <a href="Varianza.html">division matriz</a>
-                <a href="restamatriz.html">agregar su tema</a>
-                <a href="mediana.html">agregar su tema</a>
-                <a href="Varianza.html">agregar su tema</a>
+                <a href="sumamatiz.html">Suma matriz</a>
+                <a href="restamatriz.html">Resta matriz</a>
+                <a href="multiplicacionmatriz.html">Multiplicación matriz</a>
+                <a href="divisionmatriz.html">División matriz</a>
+                <a href="minimoscuadrados.html">Mínimos cuadrados</a>
+                <a href="mediana.html">Agregar su tema</a>
+                <a href="Varianza.html">Agregar su tema</a>
             </nav>
             
             <main class="contenedor">
-                <h1 class="titulo">Moda</h1>
-                
+                <h1>División de Matrices</h1>
+
                 <section>
-                    <h2>¿Qué es la Moda?</h2>
-                    <p>La moda es la medida de tendencia central que representa el valor o valores más frecuentes en un conjunto de datos.</p>
+                    <h2>¿Cómo se realiza la división de matrices?</h2>
+                    <p>La división de matrices no se realiza de forma directa, pero podemos multiplicar una matriz por la inversa de la segunda matriz. La división de A entre B se traduce como A × B⁻¹, donde B⁻¹ es la matriz inversa de B.</p>
+                    <p><strong>Reglas de la División de Matrices:</strong></p>
                     <ul>
-                        <li><strong>Unimodal:</strong> Una sola moda.</li>
-                        <li><strong>Bimodal:</strong> Dos valores con la misma frecuencia más alta.</li>
-                        <li><strong>Multimodal:</strong> Más de dos valores con la misma frecuencia más alta.</li>
+                        <li>La matriz B debe ser invertible (es decir, su determinante no debe ser cero).</li>
                     </ul>
+                    <p><strong>Ejemplo:</strong></p>
+
+                    <!-- Example Matrices Display -->
+                    <div class="matrix-display">
+                        <div>
+                            <span>𝐴 =</span>
+                            <pre>[ 1, 2 ]</pre>
+                            <pre>[ 3, 4 ]</pre>
+                        </div>
+                        <div>
+                            <span>𝐵 =</span>
+                            <pre>[ 5, 6 ]</pre>
+                            <pre>[ 7, 8 ]</pre>
+                        </div>
+                    </div>
+
+                    <p>División de A entre B será:</p>
+
+                    <!-- Product Display -->
+                    <div class="matrix-display">
+                        <div>
+                            <span>𝐴 ÷ 𝐵 = 𝐴 × 𝐵⁻¹ =</span>
+                            <pre>[ 1×(-4)+2×3, 1×2+2×(-1) ]</pre>
+                            <pre>[ 3×(-4)+4×3, 3×2+4×(-1) ]</pre>
+                            <pre>[ 2, -1 ]</pre>
+                            <pre>[ -1, 2 ]</pre>
+                        </div>
+                    </div>
                 </section>
 
+                <!-- Matrix Input Section -->
                 <section>
-                    <img src="IMG/Moda.png" alt="Ejemplo de Moda" style="max-width: 40%; height: auto; display: block; margin: 20px auto; border-radius: 8px;">
-                </section>
+                    <h2>Introduce las matrices</h2>
+                    <p>Introduce las matrices en el siguiente formato:</p>
+                    <div class="example-matrix">
+                        <span>Ejemplo de Matriz A:</span>
+                        <pre>[ 1, 2 ]</pre>
+                        <pre>[ 3, 4 ]</pre>
+                        <span>Ejemplo de Matriz B:</span>
+                        <pre>[ 5, 6 ]</pre>
+                        <pre>[ 7, 8 ]</pre>
+                    </div>
 
-                <section>
-                    <h2>Fórmula de la Moda</h2>
-                    <p>Para datos agrupados, la moda se calcula con la siguiente fórmula:</p>
-                    \[
-                    Moda = L + \left(\frac{f_1 - f_0}{2f_1 - f_0 - f_2} \right) \times c
-                    \]
-                    <p>donde:</p>
-                    <ul>
-                        <li><strong>L:</strong> Límite inferior de la clase modal.</li>
-                        <li><strong>f₁:</strong> Frecuencia de la clase modal.</li>
-                        <li><strong>f₀:</strong> Frecuencia de la clase anterior a la modal.</li>
-                        <li><strong>f₂:</strong> Frecuencia de la clase posterior a la modal.</li>
-                        <li><strong>c:</strong> Amplitud del intervalo de clase.</li>
-                    </ul>
-                </section>
+                    <label for="matrizA">Matriz A:</label>
+                    <textarea id="matrizA">[1, 2] [3, 4]</textarea>
+                    <span class="input-example">Ejemplo: [1, 2] [3, 4]</span>
 
-                
-                
-                <section>
-                    <h2>Calculadora de Moda</h2>
-                    <label for="datos">Ingresa los datos separados por comas:</label>
-                    <textarea id="datos"></textarea>
-                    <button onclick="calcularModa()">Calcular</button>
+                    <label for="matrizB">Matriz B:</label>
+                    <textarea id="matrizB">[5, 6] [7, 8]</textarea>
+                    <span class="input-example">Ejemplo: [5, 6] [7, 8]</span>
+
+                    <button onclick="dividirMatrices()">Dividir</button>
                     <div id="resultado"></div>
-                </section>
-
-                <section>
-                    <h2>Cargar archivo Excel con los datos</h2>
-                    <input type="file" id="file-input" accept=".xlsx" onchange="leerArchivo(event)">
                 </section>
             </main>
         </div>
     </div>
     
     <script>
-        function calcularModa() {
-            let inputDatos = document.getElementById("datos").value;
-            let valores = inputDatos.split(',').map(num => parseFloat(num.trim())).filter(n => !isNaN(n));
+        function dividirMatrices() {
+            let matrizA = document.getElementById("matrizA").value.trim().split("[").filter(val => val).map(row => row.replace("]", "").split(",").map(Number));
+            let matrizB = document.getElementById("matrizB").value.trim().split("[").filter(val => val).map(row => row.replace("]", "").split(",").map(Number));
 
-            if (valores.length === 0) {
-                document.getElementById("resultado").innerHTML = "<p><strong>Error:</strong> Por favor, ingresa datos válidos.</p>";
+            if (matrizA[0].length !== matrizB.length) {
+                document.getElementById("resultado").innerHTML = "<p style='color: red;'>El número de columnas de la matriz A debe ser igual al número de filas de la matriz B.</p>";
                 return;
             }
 
-            let frecuencias = {};
-            valores.forEach(num => frecuencias[num] = (frecuencias[num] || 0) + 1);
+            // Calculamos la inversa de la matriz B
+            try {
+                let inversaB = math.inv(matrizB);
+                // Multiplicar A por la inversa de B
+                let resultado = matrizA.map((row, i) => {
+                    return inversaB[0].map((_, j) => row.reduce((sum, _, k) => sum + matrizA[i][k] * inversaB[k][j], 0));
+                });
 
-            let maxFrecuencia = Math.max(...Object.values(frecuencias));
-            let modas = Object.keys(frecuencias)
-                .filter(num => frecuencias[num] === maxFrecuencia)
-                .map(Number);
+                // Mostrar el resultado dinámicamente
+                let result = "<p>Resultado de la división de matrices (A ÷ B):</p>";
+                result += "<div class='matrix-display'>";
+                result += "<div><span>𝐴 ÷ 𝐵 = 𝐴 × 𝐵⁻¹ =</span>";
 
-            // Caso en que todos los valores tienen la misma frecuencia
-            let mensajeModa = "";
-            if (modas.length === Object.keys(frecuencias).length) {
-                mensajeModa = "<p>No hay una moda clara (todos los valores tienen la misma frecuencia).</p>";
-            } else {
-                mensajeModa = `<p><strong>Moda:</strong> ${modas.join(', ')}</p>`;
+                resultado.forEach(row => {
+                    result += "<pre>[ " + row.join(", ") + " ]</pre>";
+                });
+
+                result += "</div></div>";
+                document.getElementById("resultado").innerHTML = result;
+            } catch (error) {
+                document.getElementById("resultado").innerHTML = "<p style='color: red;'>La matriz B no es invertible. No se puede realizar la división.</p>";
             }
-
-            // Mostrar resultados en pantalla
-            document.getElementById("resultado").innerHTML = `
-                ${mensajeModa}
-                <p><strong>Frecuencia máxima:</strong> ${maxFrecuencia}</p>
-            `;
-
-            // Mostrar la fórmula con MathJax
-            let formulaHTML = `
-            \\[
-            \\text{Moda} = \\underset{x}{\\operatorname{argmax}} \\, f(x)
-            \\]`;
-            
-            document.getElementById("formula").innerHTML = formulaHTML;
-            MathJax.Hub.Queue(["Typeset", MathJax.Hub, "formula"]);
-        }
-
-
-        function leerArchivo(event) {
-            let archivo = event.target.files[0];
-            if (!archivo) return;
-            
-            let lector = new FileReader();
-            lector.onload = function(e) {
-                let datos = e.target.result;
-                let workbook = XLSX.read(datos, { type: 'binary' });
-                let hoja = workbook.Sheets[workbook.SheetNames[0]];
-                let datosExcel = XLSX.utils.sheet_to_json(hoja, { header: 1 }).flat();
-                
-                let datosText = datosExcel.join(',');
-                document.getElementById("datos").value = datosText;
-            };
-            lector.readAsBinaryString(archivo);
         }
     </script>
+
 </body>
 </html>
