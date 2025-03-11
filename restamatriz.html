@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moda</title>
+    <link rel="stylesheet" href="styleform.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.3.2/math.min.js"></script>
+    <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <style>
+        textarea {
+            font-size: 18px;
+            padding: 10px;
+            width: 100%;
+            height: 100px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #resultado, #formula {
+            font-size: 20px;
+        }
+        .pagina-ayuda {
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .img-fondo {
+            background-image: url('fondo.jpg');
+            background-size: cover;
+            padding: 20px;
+        }
+        .velo-negro {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .header {
+            background-color: #333;
+            padding: 10px;
+            text-align: center;
+            color: white;
+        }
+        nav a {
+            color: white;
+            padding: 10px;
+            text-decoration: none;
+        }
+        .contenedor {
+            margin: 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .titulo {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+        #file-input {
+            padding: 10px;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body class="pagina-ayuda">
+    <div class="img-fondo">
+        <div class="velo-negro">
+            <header class="header"></header>
+            <nav>
+                <a href="index.html">Inicio</a>
+                <a href="datos.html">Estadística Descriptiva</a>
+                <a href="contactanos.html">Radiación</a>
+                <a href="matrices.html">Matrices</a>
+
+            </nav>
+            <nav>
+                <a href="sumamatiz.html">suma matriz</a>
+                <a href="restamatriz.html">resta matriz</a>
+                <a href="multiplicacionmatriz.html">multiplicacion matriz</a>
+                <a href="Varianza.html">division matriz</a>
+                <a href="restamatriz.html">agregar su tema</a>
+                <a href="mediana.html">agregar su tema</a>
+                <a href="Varianza.html">agregar su tema</a>
+            </nav>
+            
+            <main class="contenedor">
+                <h1>Resta de Matrices</h1>
+            
+                <section>
+                    <h2>¿Cómo se realiza la resta de matrices?</h2>
+                    <p>La resta de matrices se lleva a cabo restando los elementos correspondientes de cada matriz. Para que la resta esté definida, las matrices deben tener las mismas dimensiones.</p>
+                    <p><strong>Reglas de la Resta de Matrices:</strong></p>
+                    <ul>
+                        <li>Las matrices deben tener el mismo número de filas.</li>
+                        <li>Las matrices deben tener el mismo número de columnas.</li>
+                    </ul>
+                    <p><strong>Ejemplo:</strong></p>
+            
+                    <!-- Example Matrices Display -->
+                    <div class="matrix-display">
+                        <div>
+                            <span>𝐴 =</span>
+                            <pre>[ 5, 6 ]</pre>
+                            <pre>[ 7, 8 ]</pre>
+                        </div>
+                        <div>
+                            <span>𝐵 =</span>
+                            <pre>[ 1, 2 ]</pre>
+                            <pre>[ 3, 4 ]</pre>
+                        </div>
+                    </div>
+            
+                    <p>Su resta será:</p>
+            
+                    <!-- Difference Display -->
+                    <div class="matrix-display">
+                        <div>
+                            <span>𝐴 - 𝐵 =</span>
+                            <pre>[ 5-1, 6-2 ]</pre>
+                            <pre>[ 7-3, 8-4 ]</pre>
+                            <pre>[ 4, 4 ]</pre>
+                            <pre>[ 4, 4 ]</pre>
+                        </div>
+                    </div>
+                </section>
+            
+                <!-- Matrix Input Section -->
+                <section>
+                    <h2>Introduce las matrices</h2>
+                    <p>Introduce las matrices en el siguiente formato:</p>
+                    <div class="example-matrix">
+                        <span>Ejemplo de Matriz A:</span>
+                        <pre>[ 5, 6 ]</pre>
+                        <pre>[ 7, 8 ]</pre>
+                        <span>Ejemplo de Matriz B:</span>
+                        <pre>[ 1, 2 ]</pre>
+                        <pre>[ 3, 4 ]</pre>
+                    </div>
+            
+                    <label for="matrizA">Matriz A:</label>
+                    <textarea id="matrizA">[5, 6] [7, 8]</textarea>
+                    <span class="input-example">Ejemplo: [5, 6] [7, 8]</span>
+            
+                    <label for="matrizB">Matriz B:</label>
+                    <textarea id="matrizB">[1, 2] [3, 4]</textarea>
+                    <span class="input-example">Ejemplo: [1, 2] [3, 4]</span>
+            
+                    <button onclick="restarMatrices()">Restar</button>
+                    <div id="resultado"></div>
+                </section>
+            </main>
+            
+            <script>
+                function restarMatrices() {
+                    let matrizA = document.getElementById("matrizA").value.trim().split("[").filter(val => val).map(row => row.replace("]", "").split(",").map(Number));
+                    let matrizB = document.getElementById("matrizB").value.trim().split("[").filter(val => val).map(row => row.replace("]", "").split(",").map(Number));
+            
+                    if (matrizA.length !== matrizB.length || matrizA[0].length !== matrizB[0].length) {
+                        document.getElementById("resultado").innerHTML = "<p style='color: red;'>Las matrices deben tener las mismas dimensiones para ser restadas.</p>";
+                        return;
+                    }
+            
+                    let resta = matrizA.map((row, i) => row.map((elem, j) => elem - matrizB[i][j]));
+            
+                    let resultado = "<p>Resultado de la resta de matrices:</p>";
+                    resultado += "<div class='matrix-display'>";
+                    resultado += "<div><span>𝐴 - 𝐵 =</span>";
+                    resultado += "<pre>[ " + resta[0][0] + ", " + resta[0][1] + " ]</pre>";
+                    resultado += "<pre>[ " + resta[1][0] + ", " + resta[1][1] + " ]</pre>";
+                    resultado += "</div></div>";
+                    document.getElementById("resultado").innerHTML = resultado;
+                }
+            </script>
+            
+</body>
+</html>

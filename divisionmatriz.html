@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Varianza</title>
+    <title>Moda</title>
     <link rel="stylesheet" href="styleform.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.3.2/math.min.js"></script>
     <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/echarts@5.3.3/dist/echarts.min.js"></script>
     <style>
         textarea {
             font-size: 18px;
@@ -88,42 +87,55 @@
 
             </nav>
             <nav>
-                <a href="moda.html">Moda</a>
-                <a href="media.html">Media</a>
-                <a href="mediana.html">Mediana</a>
-                <a href="Varianza.html">Varianza</a>
-                <a href="desviacionestandar.html">Desviación Estándar</a>
-                <a href="cuartiles.html">Cuartiles</a>
-                <a href="sesgo.html">Sesgo</a>
-                <a href="curtosis.html">Curtosis</a>
+                <a href="sumamatiz.html">suma matriz</a>
+                <a href="restamatriz.html">resta matriz</a>
+                <a href="mediana.html">multiplicacion matriz</a>
+                <a href="Varianza.html">division matriz</a>
+                <a href="restamatriz.html">agregar su tema</a>
+                <a href="mediana.html">agregar su tema</a>
+                <a href="Varianza.html">agregar su tema</a>
             </nav>
             
             <main class="contenedor">
-                <h1 class="titulo">Varianza</h1>
+                <h1 class="titulo">Moda</h1>
                 
                 <section>
-                    <h2>¿Qué es la Varianza?</h2>
-                    <p>La varianza es una medida de dispersión que indica cuánto se alejan los valores de un conjunto de datos de su media, al igual que la desviación estándar, pero en unidades cuadradas. La varianza es útil para entender la variabilidad de los datos y se usa en estadística, economía, ingeniería y muchas otras áreas.</p>
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRS3t99S7TkGkk6IJ1bzTQAyWtN1kOwfHnKrw&s" alt="Ejemplo gráfico de varianza">
-                </section>
-                
-                <section>
-                    <h2>Fórmula de la Varianza</h2>
-                    <p>La varianza de una muestra se calcula con la siguiente fórmula:</p>
-                    <p id="formula">\[ \sigma^2 = \frac{\sum (x_i - \bar{x})^2}{n} \]</p>
-                    <p>Donde:</p>
+                    <h2>¿Qué es la Moda?</h2>
+                    <p>La moda es la medida de tendencia central que representa el valor o valores más frecuentes en un conjunto de datos.</p>
                     <ul>
-                        <li>\( x_i \) son los valores del conjunto de datos.</li>
-                        <li>\( \bar{x} \) es la media de los datos.</li>
-                        <li>\( n \) es el número total de datos.</li>
+                        <li><strong>Unimodal:</strong> Una sola moda.</li>
+                        <li><strong>Bimodal:</strong> Dos valores con la misma frecuencia más alta.</li>
+                        <li><strong>Multimodal:</strong> Más de dos valores con la misma frecuencia más alta.</li>
                     </ul>
                 </section>
+
+                <section>
+                    <img src="IMG/Moda.png" alt="Ejemplo de Moda" style="max-width: 40%; height: auto; display: block; margin: 20px auto; border-radius: 8px;">
+                </section>
+
+                <section>
+                    <h2>Fórmula de la Moda</h2>
+                    <p>Para datos agrupados, la moda se calcula con la siguiente fórmula:</p>
+                    \[
+                    Moda = L + \left(\frac{f_1 - f_0}{2f_1 - f_0 - f_2} \right) \times c
+                    \]
+                    <p>donde:</p>
+                    <ul>
+                        <li><strong>L:</strong> Límite inferior de la clase modal.</li>
+                        <li><strong>f₁:</strong> Frecuencia de la clase modal.</li>
+                        <li><strong>f₀:</strong> Frecuencia de la clase anterior a la modal.</li>
+                        <li><strong>f₂:</strong> Frecuencia de la clase posterior a la modal.</li>
+                        <li><strong>c:</strong> Amplitud del intervalo de clase.</li>
+                    </ul>
+                </section>
+
+                
                 
                 <section>
-                    <h2>Calculadora de Varianza</h2>
+                    <h2>Calculadora de Moda</h2>
                     <label for="datos">Ingresa los datos separados por comas:</label>
-                    <textarea id="datos" placeholder="Ejemplo: 5,10,15,20,25"></textarea>
-                    <button onclick="calcularVarianza()">Calcular</button>
+                    <textarea id="datos"></textarea>
+                    <button onclick="calcularModa()">Calcular</button>
                     <div id="resultado"></div>
                 </section>
 
@@ -131,56 +143,52 @@
                     <h2>Cargar archivo Excel con los datos</h2>
                     <input type="file" id="file-input" accept=".xlsx" onchange="leerArchivo(event)">
                 </section>
-
-                <section>
-                    <h2>Gráfica de los Datos</h2>
-                    <div id="grafica" style="width: 100%; height: 400px;"></div>
-                </section>
             </main>
         </div>
     </div>
     
     <script>
-        function calcularVarianza() {
+        function calcularModa() {
             let inputDatos = document.getElementById("datos").value;
-            let valores = inputDatos.split(',').map(Number).filter(n => !isNaN(n));
-            
+            let valores = inputDatos.split(',').map(num => parseFloat(num.trim())).filter(n => !isNaN(n));
+
             if (valores.length === 0) {
-                document.getElementById("resultado").innerHTML = "Por favor, ingresa datos válidos.";
+                document.getElementById("resultado").innerHTML = "<p><strong>Error:</strong> Por favor, ingresa datos válidos.</p>";
                 return;
             }
-            
-            let media = math.mean(valores);
-            let varianza = math.variance(valores);
-            let sumatoria = valores.map(x => `( ${x} - ${media.toFixed(2)} )^2`).join(' + ');
 
-            let formulaHTML = `\\[ \sigma^2 = \frac{${sumatoria}}{${valores.length}} \\]`;
+            let frecuencias = {};
+            valores.forEach(num => frecuencias[num] = (frecuencias[num] || 0) + 1);
+
+            let maxFrecuencia = Math.max(...Object.values(frecuencias));
+            let modas = Object.keys(frecuencias)
+                .filter(num => frecuencias[num] === maxFrecuencia)
+                .map(Number);
+
+            // Caso en que todos los valores tienen la misma frecuencia
+            let mensajeModa = "";
+            if (modas.length === Object.keys(frecuencias).length) {
+                mensajeModa = "<p>No hay una moda clara (todos los valores tienen la misma frecuencia).</p>";
+            } else {
+                mensajeModa = `<p><strong>Moda:</strong> ${modas.join(', ')}</p>`;
+            }
+
+            // Mostrar resultados en pantalla
+            document.getElementById("resultado").innerHTML = `
+                ${mensajeModa}
+                <p><strong>Frecuencia máxima:</strong> ${maxFrecuencia}</p>
+            `;
+
+            // Mostrar la fórmula con MathJax
+            let formulaHTML = `
+            \\[
+            \\text{Moda} = \\underset{x}{\\operatorname{argmax}} \\, f(x)
+            \\]`;
+            
             document.getElementById("formula").innerHTML = formulaHTML;
             MathJax.Hub.Queue(["Typeset", MathJax.Hub, "formula"]);
-            
-            document.getElementById("resultado").innerHTML = `<p>Varianza: ${varianza.toFixed(2)}</p>`;
-            
-            // Crear la gráfica
-            let myChart = echarts.init(document.getElementById('grafica'));
-
-            let option = {
-                xAxis: {
-                    type: 'category',
-                    data: valores.map((_, index) => `Dato ${index + 1}`)
-                },
-                yAxis: {
-                    type: 'value'
-                },
-                series: [
-                    {
-                        data: valores,
-                        type: 'bar'
-                    }
-                ]
-            };
-
-            myChart.setOption(option);
         }
+
 
         function leerArchivo(event) {
             let archivo = event.target.files[0];
@@ -193,7 +201,6 @@
                 let hoja = workbook.Sheets[workbook.SheetNames[0]];
                 let datosExcel = XLSX.utils.sheet_to_json(hoja, { header: 1 }).flat();
                 
-                // Convertir los datos a un formato adecuado
                 let datosText = datosExcel.join(',');
                 document.getElementById("datos").value = datosText;
             };

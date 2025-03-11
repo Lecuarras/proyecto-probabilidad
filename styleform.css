@@ -15,6 +15,7 @@ img {
     width: 100%; /* Ajusta las imágenes al 100% del contenedor */
     max-width: 400px; /* Máximo tamaño para evitar que se estiren demasiado */
     height: auto; /* Mantiene la proporción */
+    object-fit: cover; /* Asegura que la imagen cubra el espacio sin distorsionarse */
 }
 
 .velo-negro {
@@ -71,6 +72,7 @@ nav a:hover {
 .productos {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    gap: 2rem; /* Espacio entre los productos */
 }
 
 .producto {
@@ -81,10 +83,10 @@ nav a:hover {
 
 .producto-blanco {
     background-color: white;
-    height: 25rem; /* Aumentado */
+    height: 20rem; /* Aumentado */
     object-fit: contain;
     padding: 1rem;
-    width: 300px; /* Aumentado */
+    width: 100%; /* Asegura que las imágenes ocupen todo el ancho */
 }
 
 .producto-precio,
@@ -276,16 +278,15 @@ nav:nth-of-type(2) a:hover {
 }
 
 /* Adaptabilidad para pantallas pequeñas */
-@media (max-width: 600px) {
-    nav:nth-of-type(2) {
-        flex-direction: column;
-        align-items: center;
+@media (max-width: 768px) {
+    .productos {
+        grid-template-columns: repeat(2, 1fr); /* Dos columnas */
     }
-    nav:nth-of-type(2) a {
-        font-size: 12px;
-        padding: 6px 10px;
-        width: 80%;
-        text-align: center;
+}
+
+@media (max-width: 480px) {
+    .productos {
+        grid-template-columns: 1fr; /* Una columna en pantallas más pequeñas */
     }
 }
 
@@ -355,9 +356,4 @@ textarea {
     margin-top: 10px;
 }
 
-/* Estilos para la gráfica */
-#grafica {
-    width: 100%;
-    height: 400px;
-    margin-top: 20px;
-}
+/* Estilos para la gráfica

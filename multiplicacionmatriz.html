@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiplicación de Matrices</title>
+    <link rel="stylesheet" href="styleform.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.3.2/math.min.js"></script>
+    <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <style>
+        textarea {
+            font-size: 18px;
+            padding: 10px;
+            width: 100%;
+            height: 100px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #resultado {
+            font-size: 20px;
+            margin-top: 10px;
+        }
+        .pagina-ayuda {
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .img-fondo {
+            background-image: url('fondo.jpg');
+            background-size: cover;
+            padding: 20px;
+        }
+        .velo-negro {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .header {
+            background-color: #333;
+            padding: 10px;
+            text-align: center;
+            color: white;
+        }
+        nav a {
+            color: white;
+            padding: 10px;
+            text-decoration: none;
+        }
+        .contenedor {
+            margin: 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .titulo {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body class="pagina-ayuda">
+    <div class="img-fondo">
+        <div class="velo-negro">
+            <header class="header"></header>
+            <nav>
+                <a href="index.html">Inicio</a>
+                <a href="datos.html">Estadística Descriptiva</a>
+                <a href="contactanos.html">Radiación</a>
+                <a href="matrices.html">Matrices</a>
+            </nav>
+            <nav>
+                <a href="sumamatiz.html">Suma de Matrices</a>
+                <a href="restamatriz.html">Resta de Matrices</a>
+                <a href="multiplicacionmatriz.html">Multiplicación de Matrices</a>
+                <a href="division.html">División de Matrices</a>
+            </nav>
+
+            <main class="contenedor">
+                <h1>Multiplicación de Matrices</h1>
+
+                <section>
+                    <h2>¿Cómo se realiza la multiplicación de matrices?</h2>
+                    <p>La multiplicación de matrices se realiza multiplicando las filas de la primera matriz por las columnas de la segunda matriz y sumando los productos correspondientes.</p>
+                    <p><strong>Reglas de la Multiplicación de Matrices:</strong></p>
+                    <ul>
+                        <li>El número de columnas de la primera matriz debe ser igual al número de filas de la segunda matriz.</li>
+                        <li>El resultado es una nueva matriz con las dimensiones de las filas de la primera y las columnas de la segunda.</li>
+                    </ul>
+                    
+                    <p><strong>Ejemplo:</strong></p>
+                    <div class="matrix-display">
+                        <div>
+                            <span>𝐴 =</span>
+                            <pre>[ 1, 2 ]</pre>
+                            <pre>[ 3, 4 ]</pre>
+                        </div>
+                        <div>
+                            <span>𝐵 =</span>
+                            <pre>[ 5, 6 ]</pre>
+                            <pre>[ 7, 8 ]</pre>
+                        </div>
+                    </div>
+
+                    <p>Su multiplicación será:</p>
+
+                    <div class="matrix-display">
+                        <div>
+                            <span>𝐴 × 𝐵 =</span>
+                            <pre>[ (1×5 + 2×7), (1×6 + 2×8) ]</pre>
+                            <pre>[ (3×5 + 4×7), (3×6 + 4×8) ]</pre>
+                            <pre>[ 19, 22 ]</pre>
+                            <pre>[ 43, 50 ]</pre>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Introduce las matrices</h2>
+                    <label for="matrizA">Matriz A:</label>
+                    <textarea id="matrizA">[1, 2] [3, 4]</textarea>
+
+                    <label for="matrizB">Matriz B:</label>
+                    <textarea id="matrizB">[5, 6] [7, 8]</textarea>
+
+                    <button onclick="multiplicarMatrices()">Multiplicar</button>
+                    <div id="resultado"></div>
+                </section>
+            </main>
+        </div>
+    </div>
+    
+    <script>
+        function multiplicarMatrices() {
+            let matrizA = document.getElementById("matrizA").value.trim().split("[").filter(val => val).map(row => row.replace("]", "").split(",").map(Number));
+            let matrizB = document.getElementById("matrizB").value.trim().split("[").filter(val => val).map(row => row.replace("]", "").split(",").map(Number));
+
+            let filasA = matrizA.length;
+            let columnasA = matrizA[0].length;
+            let filasB = matrizB.length;
+            let columnasB = matrizB[0].length;
+
+            if (columnasA !== filasB) {
+                document.getElementById("resultado").innerHTML = "<p style='color: red;'>El número de columnas de A debe ser igual al número de filas de B.</p>";
+                return;
+            }
+
+            let resultado = new Array(filasA).fill(0).map(() => new Array(columnasB).fill(0));
+
+            for (let i = 0; i < filasA; i++) {
+                for (let j = 0; j < columnasB; j++) {
+                    for (let k = 0; k < columnasA; k++) {
+                        resultado[i][j] += matrizA[i][k] * matrizB[k][j];
+                    }
+                }
+            }
+
+            let resultadoHTML = "<p>Resultado de la multiplicación:</p><div class='matrix-display'><div><span>𝐴 × 𝐵 =</span>";
+            resultado.forEach(row => {
+                resultadoHTML += `<pre>[ ${row.join(", ")} ]</pre>`;
+            });
+            resultadoHTML += "</div></div>";
+
+            document.getElementById("resultado").innerHTML = resultadoHTML;
+        }
+    </script>
+</body>
+</html>
