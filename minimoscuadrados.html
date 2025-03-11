@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moda</title>
+    <title>Ajuste por Mínimos Cuadrados</title>
     <link rel="stylesheet" href="styleform.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.3.2/math.min.js"></script>
     <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
@@ -52,14 +52,62 @@
                 <a href="matrices.html">Matrices</a>
             </nav>
             <nav>
-                <a href="sumamatiz.html">suma matriz</a>
-                <a href="restamatriz.html">resta matriz</a>
-                <a href="multiplicacionmatriz.html">multiplicacion matriz</a>
-                <a href="divisionmatriz.html">division matriz</a>
-                <a href="minimoscuadrados.html">Minimos cuadrados</a>
+                <a href="sumamatiz.html">Suma Matriz</a>
+                <a href="restamatriz.html">Resta Matriz</a>
+                <a href="multiplicacionmatriz.html">Multiplicación Matriz</a>
+                <a href="divisionmatriz.html">División Matriz</a>
+                <a href="minimoscuadrados.html">Mínimos Cuadrados</a>
             </nav>
             <main class="contenedor">
                 <h1>Ajuste por Mínimos Cuadrados</h1>
+                <p>
+                    El <strong>método de mínimos cuadrados</strong> es una técnica matemática utilizada para encontrar la mejor aproximación lineal a un conjunto de datos experimentales. 
+                    El objetivo es minimizar la suma de los cuadrados de las diferencias entre los valores observados y los valores predichos por el modelo lineal.
+                </p>
+                <p>
+                    En términos de matrices, el ajuste por mínimos cuadrados puede resolverse de la siguiente manera:
+                </p>
+                <h2>Formulación del problema</h2>
+                <p>
+                    Supongamos que tenemos un conjunto de datos \( (x_1, y_1), (x_2, y_2), ..., (x_n, y_n) \), y queremos ajustar una recta de la forma:
+                    \[
+                    y = mx + b
+                    \]
+                    donde \( m \) es la pendiente y \( b \) es la intersección con el eje \( y \). Esto puede escribirse en forma de matriz:
+                    \[
+                    \mathbf{A} \mathbf{p} = \mathbf{b}
+                    \]
+                    donde:
+                    \[
+                    \mathbf{A} = \begin{pmatrix} 
+                    x_1 & 1 \\ 
+                    x_2 & 1 \\
+                    \vdots & \vdots \\
+                    x_n & 1
+                    \end{pmatrix}, \quad 
+                    \mathbf{p} = \begin{pmatrix} 
+                    m \\ 
+                    b
+                    \end{pmatrix}, \quad
+                    \mathbf{b} = \begin{pmatrix} 
+                    y_1 \\ 
+                    y_2 \\
+                    \vdots \\
+                    y_n
+                    \end{pmatrix}
+                    \]
+                </p>
+                <h2>Solución utilizando matrices</h2>
+                <p>
+                    Para encontrar los valores de \( m \) y \( b \), debemos resolver el sistema de ecuaciones lineales. La solución más común en el método de mínimos cuadrados es la siguiente:
+                    \[
+                    \mathbf{p} = (\mathbf{A}^T \mathbf{A})^{-1} \mathbf{A}^T \mathbf{b}
+                    \]
+                    Este es el procedimiento estándar para encontrar la solución de los parámetros de la recta ajustada.
+                </p>
+                <p>
+                    Este método utiliza la transpuesta de la matriz \( \mathbf{A} \), multiplicada por la matriz \( \mathbf{A} \) original, seguida de la inversión de esa matriz producto, y finalmente multiplicando por la transpuesta de \( \mathbf{A} \) y el vector \( \mathbf{b} \).
+                </p>
                 <label for="file-input">Cargar archivo Excel:</label>
                 <input type="file" id="file-input" />
                 <table id="data-table" border="1">
@@ -116,10 +164,10 @@
             let data = [];
             rows.forEach(row => {
                 let cells = row.querySelectorAll('td');
-                data.push([parseFloat(cells[0].innerText), parseFloat(cells[1].innerText)]);
+                data.push([parseFloat(cells[0].innerText), parseFloat(cells[1].innerText)]); 
             });
 
-            // Cálculo de la regresión lineal
+            // Cálculo de la regresión lineal usando el método de mínimos cuadrados
             let n = data.length;
             let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
             data.forEach(point => {
@@ -155,15 +203,6 @@
                 ]
             };
             myChart.setOption(option);
-
-            // Agregar puntos a la gráfica
-            data.forEach(point => {
-                myChart.dispatchAction({
-                    type: 'highlight',
-                    seriesIndex: 0,
-                    dataIndex: data.indexOf(point)
-                });
-            });
         }
     </script>
 </body>
