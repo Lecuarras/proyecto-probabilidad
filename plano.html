@@ -136,21 +136,38 @@
         function agregarDato() {
             let x = document.getElementById('input-x').value;
             let y = document.getElementById('input-y').value;
-            if (x !== "" && y !== "") {
-                let tbody = document.querySelector('#data-table tbody');
-                let tr = document.createElement('tr');
-                tr.innerHTML = `<td>${parseFloat(x)}</td><td>${parseFloat(y)}</td>`;
-                tbody.appendChild(tr);
+            let z = document.getElementById('input-z').value; // Obtener el valor de Z
+
+            if (x === "" || y === "" || z === "") {
+                alert("Por favor, ingresa valores para X, Y y Z.");
+                return;
             }
+
+            let table = document.getElementById('data-table').getElementsByTagName('tbody')[0];
+            let newRow = document.createElement('tr');
+
+            newRow.innerHTML = `<td>${x}</td><td>${y}</td><td>${z}</td>`; // Añadir la columna de Z
+            document.getElementById('data-table').getElementsByTagName('tbody')[0].appendChild(newRow);
         }
-        
+
         function calcularRegresion() {
             let rows = document.querySelectorAll('#data-table tbody tr');
             let data = [];
+
             rows.forEach(row => {
                 let cells = row.querySelectorAll('td');
-                data.push([parseFloat(cells[0].innerText), parseFloat(cells[1].innerText)]); 
+                data.push([
+                    parseFloat(cells[0].innerText), 
+                    parseFloat(cells[1].innerText), 
+                    parseFloat(cells[2].innerText)  // Asegurar que Z también se tome en cuenta
+                ]);
             });
+
+            console.log(data); // Depuración: ver si la matriz incluye la columna Z
+
+            // Aquí deberás modificar la regresión para trabajar con la variable Z.
+        }
+
 
             // Cálculo de la regresión lineal usando el método de mínimos cuadrados
             let n = data.length;
@@ -188,7 +205,7 @@
                 ]
             };
             myChart.setOption(option);
-        }
+        
     </script>
 </body>
 </html>
