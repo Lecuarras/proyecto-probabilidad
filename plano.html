@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajuste por Mínimos Cuadrados</title>
+    <link rel="stylesheet" href="styleform.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.3.2/math.min.js"></script>
+    <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts-stat/dist/ecStat.min.js"></script>
+    <style>
+        textarea {
+            font-size: 18px;
+            padding: 10px;
+            width: 100%;
+            height: 100px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+        }
+      
+        #resultado, #formula {
+            font-size: 20px;
+        }
+        #chart {
+            width: 100%;
+            height: 400px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body class="pagina-ayuda">
+    <div class="img-fondo">
+        <div class="velo-negro">
+            <header class="header"></header>
+            <nav>
+                <a href="index.html">Inicio</a>
+                <a href="datos.html">Estadística Descriptiva</a>
+                <a href="contactanos.html">Radiación</a>
+                <a href="matrices.html">Matrices</a>
+            </nav>
+            <nav>
+                <a href="sumamatiz.html">Suma Matriz</a>
+                <a href="restamatriz.html">Resta Matriz</a>
+                <a href="multiplicacionmatriz.html">Multiplicación Matriz</a>
+                <a href="divisionmatriz.html">División Matriz</a>
+                <a href="plano.html">plano</a>
+            </nav>
+            <main class="contenedor">
+                <h1>Ajuste de Plano por Mínimos Cuadrados</h1>
+                <p>
+                    El <strong>método de mínimos cuadrados</strong> se puede extender para ajustar un plano a un conjunto de puntos en un espacio tridimensional.
+                    En este caso, buscamos encontrar un plano de la forma:
+                </p>
+                    [
+                    z = ax + by + c
+                    ]
+                <h2>Formulación del Problema</h2>
+                <p>
+                    Dado un conjunto de datos en 3D: \((x_1, y_1, z_1), (x_2, y_2, z_2), \dots, (x_n, y_n, z_n)\),
+                    queremos encontrar un plano de la forma:
+                </p>
+                    \[
+                    z = ax + by + c
+                    \]
+                <p>
+                    Esto se puede expresar en forma matricial como:
+                </p>
+                    \[
+                    \mathbf{A} \mathbf{p} = \mathbf{b}
+                    \]
+                    donde:
+                    \[
+                    \mathbf{A} = \begin{bmatrix} x_1 & y_1 & 1 \\ x_2 & y_2 & 1 \\ \vdots & \vdots & \vdots \\ x_n & y_n & 1 \end{bmatrix}, 
+                    \quad
+                    \mathbf{p} = \begin{bmatrix} a \\ b \\ c \end{bmatrix}, \quad
+                    \mathbf{b} = \begin{bmatrix} z_1 \\ z_2 \\ \vdots \\ z_n \end{bmatrix}
+                    \]
+                <p>
+                    Donde \( A \) es una matriz de tamaño \( n \times 3 \), que contiene las coordenadas de entrada, 
+                    \( p \) es el vector de parámetros desconocidos \( (a, b, c) \) y \(b\) es el vector de valores de \( z \).
+                </p>
+                <h2>Solución utilizando Mínimos Cuadrados</h2>
+                <p>
+                    Para encontrar los valores óptimos de \(a, b, c\), utilizamos la ecuación:
+                </p>
+                    \[
+                    \mathbf{p} = (\mathbf{A}^T \mathbf{A})^{-1} \mathbf{A}^T \mathbf{b}
+                    \]
+                <p>
+                    Esta ecuación nos da los coeficientes del plano óptimo que minimiza la suma de los errores cuadrados entre los valores reales \( z_i \)
+                    y los valores predichos \( a x_i + b y_i + c \).
+                </p>
+                <label for="file-input">Cargar archivo Excel:</label>
+                <input type="file" id="file-input" />
+                <input type="file" id="file-input" />
+                <table id="data-table" border="1">
+                    <thead>
+                        <tr><th>X</th><th>Y</th><th>Z</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <input type="number" id="input-x" placeholder="Ingrese X">
+                <input type="number" id="input-y" placeholder="Ingrese Y">
+                <input type="number" id="input-z" placeholder="Ingrese Z">
+                <button onclick="agregarDato()">Agregar Dato</button>
+                <button onclick="calcularRegresion()">Calcular Ajuste</button>
+                <div id="resultado"></div>
+                <div id="formula"></div>
+                <div id="chart"></div>
+            </main>
+        </div>
+    </div>
+    <script>
+        document.getElementById('file-input').addEventListener('change', function(event) {
+            let file = event.target.files[0];
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                let data = new Uint8Array(e.target.result);
+                let workbook = XLSX.read(data, { type: 'array' });
+                let sheet = workbook.Sheets[workbook.SheetNames[0]];
+                let json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                let tbody = document.querySelector('#data-table tbody');
+                tbody.innerHTML = '';
+                json.forEach(row => {
+                    if (row.length >= 2) {
+                        let tr = document.createElement('tr');
+                        tr.innerHTML = `<td>${row[0]}</td><td>${row[1]}</td>`;
+                        tbody.appendChild(tr);
+                    }
+                });
+            };
+            reader.readAsArrayBuffer(file);
+        });
+        
+        function agregarDato() {
+            let x = document.getElementById('input-x').value;
+            let y = document.getElementById('input-y').value;
+            if (x !== "" && y !== "") {
+                let tbody = document.querySelector('#data-table tbody');
+                let tr = document.createElement('tr');
+                tr.innerHTML = `<td>${parseFloat(x)}</td><td>${parseFloat(y)}</td>`;
+                tbody.appendChild(tr);
+            }
+        }
+        
+        function calcularRegresion() {
+            let rows = document.querySelectorAll('#data-table tbody tr');
+            let data = [];
+            rows.forEach(row => {
+                let cells = row.querySelectorAll('td');
+                data.push([parseFloat(cells[0].innerText), parseFloat(cells[1].innerText)]); 
+            });
+
+            // Cálculo de la regresión lineal usando el método de mínimos cuadrados
+            let n = data.length;
+            let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+            data.forEach(point => {
+                sumX += point[0];
+                sumY += point[1];
+                sumXY += point[0] * point[1];
+                sumX2 += point[0] * point[0];
+            });
+
+            let m = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+            let b = (sumY - m * sumX) / n;
+
+            // Mostrar los resultados
+            let formulaDiv = document.getElementById('formula');
+            formulaDiv.innerHTML = `
+                Ecuación de la recta: y = ${m.toFixed(2)}x + ${b.toFixed(2)}<br>
+                Operaciones:<br>
+                m = (nΣXY - ΣXΣY) / (nΣX² - (ΣX)²) = (${n} * ${sumXY.toFixed(2)} - ${sumX.toFixed(2)} * ${sumY.toFixed(2)}) / (${n} * ${sumX2.toFixed(2)} - ${sumX.toFixed(2)}²) = ${m.toFixed(2)}<br>
+                b = (ΣY - mΣX) / n = (${sumY.toFixed(2)} - ${m.toFixed(2)} * ${sumX.toFixed(2)}) / ${n} = ${b.toFixed(2)}
+            `;
+
+            // Mostrar la gráfica
+            let myChart = echarts.init(document.getElementById('chart'));
+            echarts.registerTransform(ecStat.transform.regression);
+            let option = {
+                dataset: [{ source: data }, { transform: { type: 'ecStat:regression', config: { method: 'linear' } } }],
+                title: { text: 'Ajuste por Mínimos Cuadrados', left: 'center' },
+                xAxis: { splitLine: { lineStyle: { type: 'dashed' } } },
+                yAxis: { splitLine: { lineStyle: { type: 'dashed' } } },
+                series: [
+                    { name: 'Datos', type: 'scatter', datasetIndex: 0 },
+                    { name: 'Ajuste', type: 'line', smooth: true, datasetIndex: 1 }
+                ]
+            };
+            myChart.setOption(option);
+        }
+    </script>
+</body>
+</html>
