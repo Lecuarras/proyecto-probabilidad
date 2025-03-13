@@ -151,36 +151,32 @@
         }
 
         function calcularRegresion() {
-            let rows = document.querySelectorAll('#data-table tbody tr');
-            let data = [];
-
-            rows.forEach(row => {
-                let cells = row.querySelectorAll('td');
-                data.push([
-                    parseFloat(cells[0].innerText), 
-                    parseFloat(cells[1].innerText), 
-                    parseFloat(cells[2].innerText)  // Asegurar que Z también se tome en cuenta
-                ]);
-            });
-
-            console.log(data); // Depuración: ver si la matriz incluye la columna Z
-
-            // Aquí deberás modificar la regresión para trabajar con la variable Z.
-        }
-
-
-            // Cálculo de la regresión lineal usando el método de mínimos cuadrados
-            let n = data.length;
-            let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
-            data.forEach(point => {
-                sumX += point[0];
-                sumY += point[1];
-                sumXY += point[0] * point[1];
-                sumX2 += point[0] * point[0];
-            });
-
-            let m = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
-            let b = (sumY - m * sumX) / n;
+        let rows = document.querySelectorAll('#data-table tbody tr');
+        let data = [];
+        
+        rows.forEach(row => {
+            let cells = row.querySelectorAll('td');
+            data.push([parseFloat(cells[0].innerText), parseFloat(cells[1].innerText), parseFloat(cells[2].innerText)]);
+        });
+        
+        let X = [], Y = [];
+        data.forEach(row => {
+            let [x, y, z] = row;
+            X.push([1, x, y]);
+            Y.push([z]);
+        });
+        
+        let A = math.matrix(X);
+        let B = math.matrix(Y);
+        let At = math.transpose(A);
+        let AtA = math.multiply(math.transpose(X), X);
+        let AtB = math.multiply(math.transpose(X), Y);
+        let params = math.lusolve(AtA, AtB);
+        
+        let a = params[1][0], b = params[0][0], c = params[2][0];
+        
+        document.getElementById('resultado').innerHTML = `Ecuación del plano: z = ${a.toFixed(4)}x + ${b.toFixed(4)}y + ${c.toFixed(2)}`;
+    }
 
             // Mostrar los resultados
             let formulaDiv = document.getElementById('formula');
