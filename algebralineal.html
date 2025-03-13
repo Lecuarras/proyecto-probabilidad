@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algebra Lineal</title>
+    <link rel="stylesheet" href="styleform.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.3.2/math.min.js"></script>
+    <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <style>
+        textarea {
+            font-size: 18px;
+            padding: 10px;
+            width: 100%;
+            height: 100px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+        }
+    
+        #resultado, #formula {
+            font-size: 20px;
+        }
+        .pagina-ayuda {
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .img-fondo {
+            background-image: url('fondo.jpg');
+            background-size: cover;
+            padding: 20px;
+        }
+      
+        .header {
+            background-color: #353130;
+            padding: 10px;
+            text-align: center;
+            color: white;
+        }
+        nav a {
+            color: white;
+            padding: 10px;
+            text-decoration: none;
+        }
+        .contenedor {
+            margin: 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .titulo {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+        #file-input {
+            padding: 10px;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body class="pagina-ayuda">
+    <div class="img-fondo">
+        <div class="velo-negro">
+            <header class="header"></header>
+            <nav>
+                <a href="index.html">Inicio</a>
+                <a href="datos.html">Estadística Descriptiva</a>
+                <a href="contactanos.html">Radiación</a>
+                <a href="matrices.html">Matrices</a>
+                <a href="algebralineal.html">Algebra Lineal</a>
+            </nav>
+            <nav>
+                <a href="minimoscuadrados.html">minimos cuadrados</a>
+                <a href="plano.html">plano</a>
+            </nav>
+            
+            <main class="contenedor">
+                <h1 class="titulo">Matrices en Ingeniería</h1>
+                
+                <section>
+                    <h2>¿Qué son las Matrices?</h2>
+                    <p>
+                        Una matriz es una disposición rectangular de números, símbolos o expresiones dispuestas en filas y columnas. Se utilizan ampliamente en matemáticas y en diversas disciplinas de ingeniería para representar sistemas de ecuaciones, transformar coordenadas y modelar fenómenos físicos.
+                    </p>
+                </section>
+                
+                <section>
+                    <h2>¿Cómo se utilizan las Matrices en Ingeniería?</h2>
+                    <p>
+                        En ingeniería, las matrices son herramientas esenciales para resolver problemas complejos. Se aplican en diversas áreas, como:
+                    </p>
+                    <ul>
+                        <li><strong>Análisis de estructuras:</strong> Se usan para calcular fuerzas y desplazamientos en estructuras como puentes y edificios.</li>
+                        <li><strong>Sistemas eléctricos:</strong> Permiten resolver circuitos eléctricos mediante el uso de ecuaciones de malla y nodo.</li>
+                        <li><strong>Procesamiento de señales:</strong> Son fundamentales en la manipulación de señales digitales, como el audio e imágenes.</li>
+                        <li><strong>Dinámica de sistemas:</strong> En robótica y control automático, las matrices ayudan a modelar y simular el comportamiento de sistemas dinámicos.</li>
+                    </ul>
+                </section>
+                
+                <section>
+                    <h2>Ejemplos de Aplicaciones de Matrices</h2>
+                    <p>
+                        Algunos ejemplos concretos de cómo se usan las matrices en la ingeniería incluyen:
+                    </p>
+                    <ul>
+                        <li>El uso de matrices de transformación en gráficos por computadora para manipular imágenes y objetos en 3D.</li>
+                        <li>El empleo de matrices de coeficientes para resolver sistemas de ecuaciones lineales en mecánica estructural.</li>
+                        <li>El análisis de estabilidad de sistemas de control mediante la matriz de estado.</li>
+                    </ul>
+                </section>
+                
+                <section>
+                    <p>
+                        Las matrices son una herramienta poderosa en ingeniería, proporcionando soluciones eficientes para problemas complejos en diversas disciplinas. Su uso en el análisis estructural, sistemas eléctricos, procesamiento de señales y control automático demuestra su versatilidad y relevancia en el mundo tecnológico moderno.
+                    </p>
+                </section>
+            </main>
+        </div>
+    </div>
+</body>
+</html>
