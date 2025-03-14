@@ -7,6 +7,7 @@
     <title>Ajuste de Parábola por Mínimos Cuadrados</title>
     <link rel="stylesheet" href="styleform.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.3.2/math.min.js"></script>
+    <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
     <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
@@ -62,8 +63,42 @@ Donde:
 [A] es la matriz de los valores de x,
 [C] es el vector de coeficientes (a, b, c),
 [B] es el vector de los valores de y.</pre>
-                    <p>Este sistema se resuelve usando la ecuación <strong>(Aᵀ A)C = Aᵀ B</strong>, obteniendo así los
-                        coeficientes de la parábola ajustada.</p>
+                    <h2>Formulación del Problema</h2>
+                    <p>
+                        Dado un conjunto de datos en 2D: \((x_1, y_1), (x_2, y_2), \dots, (x_n, y_n)\),
+                        queremos encontrar una parábola de la forma:
+                    </p>
+                    \[
+                    y = ax^2 + bx + c
+                    \]
+                    <p>
+                        Esto se puede expresar en forma matricial como:
+                    </p>
+                    \[
+                    \mathbf{A} \mathbf{p} = \mathbf{b}
+                    \]
+                    donde:
+                    \[
+                    \mathbf{A} = \begin{bmatrix} x_1^2 & x_1 & 1 \\ x_2^2 & x_2 & 1 \\ \vdots & \vdots & \vdots \\ x_n^2 & x_n & 1 \end{bmatrix}, 
+                    \quad
+                    \mathbf{p} = \begin{bmatrix} a \\ b \\ c \end{bmatrix}, \quad
+                    \mathbf{b} = \begin{bmatrix} y_1 \\ y_2 \\ \vdots \\ y_n \end{bmatrix}
+                    \]
+                    <p>
+                        Donde \( \mathbf{A} \) es una matriz de tamaño \( n \times 3 \), que contiene los valores de \( x_i^2 \), \( x_i \) y \( 1 \),
+                        \( \mathbf{p} \) es el vector de parámetros desconocidos \( (a, b, c) \), y \( \mathbf{b} \) es el vector de valores de \( y \).
+                    </p>
+                    <h2>Solución utilizando Mínimos Cuadrados</h2>
+                    <p>
+                        Para encontrar los valores óptimos de \( a, b, c \), utilizamos la ecuación:
+                    </p>
+                    \[
+                    \mathbf{p} = (\mathbf{A}^T \mathbf{A})^{-1} \mathbf{A}^T \mathbf{b}
+                    \]
+                    <p>
+                        Esta ecuación nos da los coeficientes de la parábola óptima que minimiza la suma de los errores cuadrados entre los valores reales \( y_i \)
+                        y los valores predichos \( a x_i^2 + b x_i + c \).
+                    </p>
                     <h1>Ajuste de Parábola por Mínimos Cuadrados</h1>
                     <p>Ingrese puntos manualmente o cargue un archivo Excel (.xlsx).</p>
                     <input type="file" id="fileInput" accept=".xlsx" onchange="cargarDesdeExcel(event)">
