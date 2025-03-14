@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajuste de Parábola por Mínimos Cuadrados</title>
+    <link rel="stylesheet" href="styleform.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.3.2/math.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        textarea {
+            font-size: 18px;
+            padding: 10px;
+            width: 100%;
+            height: 100px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+        }
+
+        #resultado,
+        #formula {
+            font-size: 20px;
+        }
+
+        #chart {
+            width: 100%;
+            height: 400px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body class="pagina-ayuda">
+    <div class="img-fondo">
+        <div class="velo-negro">
+            <header class="header"></header>
+            <nav>
+                <a href="index.html">Inicio</a>
+                <a href="datos.html">Estadística Descriptiva</a>
+                <a href="contactanos.html">Radiación</a>
+                <a href="matrices.html">Matrices</a>
+            </nav>
+            <nav>
+                <a href="minimoscuadrados.html">minimos cuadrados</a>
+                <a href="parabola.html">ajuste parabola</a>
+                <a href="plano.html">plano</a>
+            </nav>
+            <main class="contenedor">
+                <h1>Ajuste de Parábola por Mínimos Cuadrados</h1>
+                <section>
+                    <h2>¿Qué es el ajuste de parábolas?</h2>
+                    <p>El ajuste de parábolas por mínimos cuadrados es un método que permite encontrar la mejor ecuación
+                        cuadrática <strong>y = ax² + bx + c</strong> que se ajuste a un conjunto de datos.</p>
+                    <p>Para calcular los coeficientes <strong>a, b, c</strong>, se utiliza un sistema de ecuaciones
+                        basado en matrices:</p>
+                    <pre>
+[A] * [C] = [B]
+
+Donde:
+[A] es la matriz de los valores de x,
+[C] es el vector de coeficientes (a, b, c),
+[B] es el vector de los valores de y.</pre>
+                    <p>Este sistema se resuelve usando la ecuación <strong>(Aᵀ A)C = Aᵀ B</strong>, obteniendo así los
+                        coeficientes de la parábola ajustada.</p>
+                    <h1>Ajuste de Parábola por Mínimos Cuadrados</h1>
+                    <p>Ingrese puntos manualmente o cargue un archivo Excel (.xlsx).</p>
+                    <input type="file" id="fileInput" accept=".xlsx" onchange="cargarDesdeExcel(event)">
+                    <br>
+                    <input type="number" id="input-x" placeholder="Ingrese X">
+                    <input type="number" id="input-y" placeholder="Ingrese Y">
+                    <button onclick="agregarDato()">Agregar Dato</button>
+                    <button onclick="calcularAjusteParabola()">Calcular Ajuste</button>
+                    <table id="data-table" border="1">
+                        <thead>
+                            <tr>
+                                <th>X</th>
+                                <th>Y</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <div id="formula"></div>
+                    <div id="chart"></div>
+            </main>
+        </div>
+    </div>
+    <script>
+        function agregarDato() {
+            let x = parseFloat(document.getElementById('input-x').value);
+            let y = parseFloat(document.getElementById('input-y').value);
+            if (!isNaN(x) && !isNaN(y)) {
+                let tbody = document.querySelector('#data-table tbody');
+                let tr = document.createElement('tr');
+                tr.innerHTML = `<td>${x}</td><td>${y}</td>`;
+                tbody.appendChild(tr);
+            }
+        }
+
+        function cargarDesdeExcel(event) {
+            let file = event.target.files[0];
+            if (!file) return;
+            let reader = new FileReader();
+            reader.onload = function (e) {
+                let data = new Uint8Array(e.target.result);
+                let workbook = XLSX.read(data, { type: 'array' });
+                let sheet = workbook.Sheets[workbook.SheetNames[0]];
+                let jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                let tbody = document.querySelector('#data-table tbody');
+                tbody.innerHTML = '';
+                jsonData.forEach(row => {
+                    if (row.length >= 2 && !isNaN(row[0]) && !isNaN(row[1])) {
+                        let tr = document.createElement('tr');
+                        tr.innerHTML = `<td>${row[0]}</td><td>${row[1]}</td>`;
+                        tbody.appendChild(tr);
+                    }
+                });
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function calcularAjusteParabola() {
+            let rows = document.querySelectorAll('#data-table tbody tr');
+            let data = [];
+            rows.forEach(row => {
+                let cells = row.querySelectorAll('td');
+                data.push([parseFloat(cells[0].innerText), parseFloat(cells[1].innerText)]);
+            });
+            let n = data.length;
+            if (n < 3) {
+                alert('Se requieren al menos 3 puntos para ajustar una parábola.');
+                return;
+            }
+            let A = [], B = [];
+            data.forEach(point => {
+                let [x, y] = point;
+                A.push([x * x, x, 1]);
+                B.push(y);
+            });
+            let AT = math.transpose(A);
+            let ATA = math.multiply(AT, A);
+            let ATB = math.multiply(AT, B);
+            let coef = math.lusolve(ATA, ATB);
+            let a = coef[0][0], b = coef[1][0], c = coef[2][0];
+            document.getElementById('formula').innerHTML = `Ecuación ajustada: y = ${a.toFixed(4)}x² + ${b.toFixed(4)}x + ${c.toFixed(4)}`;
+            let myChart = echarts.init(document.getElementById('chart'));
+            let xValues = data.map(p => p[0]);
+            let xMin = Math.min(...xValues) - 1, xMax = Math.max(...xValues) + 1;
+            let xFit = [], yFit = [];
+            for (let x = xMin; x <= xMax; x += 0.1) {
+                xFit.push(x);
+                yFit.push(a * x * x + b * x + c);
+            }
+            myChart.setOption({
+                title: { text: 'Ajuste de Parábola', left: 'center' },
+                xAxis: { type: 'value' },
+                yAxis: { type: 'value' },
+                series: [
+                    { name: 'Datos', type: 'scatter', data: data },
+                    { name: 'Ajuste', type: 'line', data: xFit.map((x, i) => [x, yFit[i]]) }
+                ]
+            });
+        }
+    </script>
+</body>
+
+</html>
