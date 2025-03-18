@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ajuste por Mínimos Cuadrados</title>
+    <title>Ajuste de Plano por Mínimos Cuadrados</title>
     <link rel="stylesheet" href="styleform.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.3.2/math.min.js"></script>
-    <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts-gl@2/dist/echarts-gl.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/echarts-stat/dist/ecStat.min.js"></script>
+    <script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
     <style>
         textarea {
             font-size: 18px;
@@ -19,17 +21,32 @@
             border: 2px solid #ccc;
             border-radius: 8px;
         }
-      
-        #resultado, #formula {
+
+        #resultado,
+        #formula {
             font-size: 20px;
         }
+
         #chart {
             width: 100%;
             height: 400px;
             margin-top: 20px;
         }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 5px;
+            text-align: center;
+        }
     </style>
 </head>
+
 <body class="pagina-ayuda">
     <div class="img-fondo">
         <div class="velo-negro">
@@ -39,169 +56,190 @@
                 <a href="datos.html">Estadística Descriptiva</a>
                 <a href="contactanos.html">Radiación</a>
                 <a href="matrices.html">Matrices</a>
-                <a href="algebralineal.html">Algebra Lineal</a>
+                <a href="algebralineal.html">Álgebra Lineal</a>
             </nav>
             <nav>
-                <a href="minimoscuadrados.html">minimos cuadrados</a>
-                <a href="parabola.html">ajuste parabola</a>
-                <a href="plano.html">plano</a>
+                <a href="minimoscuadrados.html">Mínimos Cuadrados</a>
+                <a href="parabola.html">Ajuste Parábola</a>
+                <a href="plano.html">Plano</a>
             </nav>
             <main class="contenedor">
                 <h1>Ajuste de Plano por Mínimos Cuadrados</h1>
                 <p>
-                    El <strong>método de mínimos cuadrados</strong> se puede extender para ajustar un plano a un conjunto de puntos en un espacio tridimensional.
-                    En este caso, buscamos encontrar un plano de la forma:
+                    El <strong>método de mínimos cuadrados</strong> es una técnica utilizada para ajustar un plano a un conjunto de puntos en un espacio tridimensional. Este método permite encontrar la mejor ecuación de un plano de la forma:
                 </p>
-                    [
-                    z = ax + by + c
-                    ]
+                \[
+                z = ax + by + c
+                \]
+                <p>
+                    Donde \( a \), \( b \) y \( c \) son los coeficientes que definen el plano.
+                </p>
+
                 <h2>Formulación del Problema</h2>
                 <p>
-                    Dado un conjunto de datos en 3D: \((x_1, y_1, z_1), (x_2, y_2, z_2), \dots, (x_n, y_n, z_n)\),
-                    queremos encontrar un plano de la forma:
+                    Dado un conjunto de datos en 3D: \((x_1, y_1, z_1), (x_2, y_2, z_2), \dots, (x_n, y_n, z_n)\), queremos encontrar un plano que minimice la suma de los errores cuadrados entre los valores reales \( z_i \) y los valores predichos por el plano.
                 </p>
-                    \[
-                    z = ax + by + c
-                    \]
                 <p>
                     Esto se puede expresar en forma matricial como:
                 </p>
-                    \[
-                    \mathbf{A} \mathbf{p} = \mathbf{b}
-                    \]
-                    donde:
-                    \[
-                    \mathbf{A} = \begin{bmatrix} x_1 & y_1 & 1 \\ x_2 & y_2 & 1 \\ \vdots & \vdots & \vdots \\ x_n & y_n & 1 \end{bmatrix}, 
-                    \quad
-                    \mathbf{p} = \begin{bmatrix} a \\ b \\ c \end{bmatrix}, \quad
-                    \mathbf{b} = \begin{bmatrix} z_1 \\ z_2 \\ \vdots \\ z_n \end{bmatrix}
-                    \]
+                \[
+                \mathbf{A} \mathbf{p} = \mathbf{b}
+                \]
                 <p>
-                    Donde \( A \) es una matriz de tamaño \( n \times 3 \), que contiene las coordenadas de entrada, 
-                    \( p \) es el vector de parámetros desconocidos \( (a, b, c) \) y \(b\) es el vector de valores de \( z \).
+                    Donde:
                 </p>
+                \[
+                \mathbf{A} = \begin{bmatrix} 
+                    x_1 & y_1 & 1 \\ 
+                    x_2 & y_2 & 1 \\ 
+                    \vdots & \vdots & \vdots \\ 
+                    x_n & y_n & 1 
+                \end{bmatrix}, 
+                \quad
+                \mathbf{p} = \begin{bmatrix} 
+                    a \\ 
+                    b \\ 
+                    c 
+                \end{bmatrix}, 
+                \quad
+                \mathbf{b} = \begin{bmatrix} 
+                    z_1 \\ 
+                    z_2 \\ 
+                    \vdots \\ 
+                    z_n 
+                \end{bmatrix}
+                \]
+                <p>
+                    Aquí, \( \mathbf{A} \) es una matriz de tamaño \( n \times 3 \) que contiene las coordenadas de entrada, \( \mathbf{p} \) es el vector de parámetros desconocidos \( (a, b, c) \), y \( \mathbf{b} \) es el vector de valores de \( z \).
+                </p>
+
                 <h2>Solución utilizando Mínimos Cuadrados</h2>
                 <p>
-                    Para encontrar los valores óptimos de \(a, b, c\), utilizamos la ecuación:
+                    Para encontrar los valores óptimos de \( a \), \( b \) y \( c \), utilizamos la ecuación:
                 </p>
-                    \[
-                    \mathbf{p} = (\mathbf{A}^T \mathbf{A})^{-1} \mathbf{A}^T \mathbf{b}
-                    \]
+                \[
+                \mathbf{p} = (\mathbf{A}^T \mathbf{A})^{-1} \mathbf{A}^T \mathbf{b}
+                \]
                 <p>
-                    Esta ecuación nos da los coeficientes del plano óptimo que minimiza la suma de los errores cuadrados entre los valores reales \( z_i \)
-                    y los valores predichos \( a x_i + b y_i + c \).
+                    Esta ecuación nos proporciona los coeficientes del plano óptimo que minimiza la suma de los errores cuadrados entre los valores reales \( z_i \) y los valores predichos \( a x_i + b y_i + c \).
                 </p>
+
                 <label for="file-input">Cargar archivo Excel:</label>
                 <input type="file" id="file-input" />
-                <input type="file" id="file-input" />
-                <table id="data-table" border="1">
+                <table id="xyzTable">
                     <thead>
-                        <tr><th>X</th><th>Y</th><th>Z</th></tr>
+                        <tr>
+                            <th>X</th>
+                            <th>Y</th>
+                            <th>Z</th>
+                        </tr>
                     </thead>
                     <tbody></tbody>
                 </table>
-                <input type="number" id="input-x" placeholder="Ingrese X">
-                <input type="number" id="input-y" placeholder="Ingrese Y">
-                <input type="number" id="input-z" placeholder="Ingrese Z">
-                <button onclick="agregarDato()">Agregar Dato</button>
-                <button onclick="calcularRegresion()">Calcular Ajuste</button>
+                <button onclick="addRow()">Agregar Fila</button>
+                <button onclick="calculatePlane()">Calcular Ajuste de Plano</button>
+
                 <div id="resultado"></div>
                 <div id="formula"></div>
-                <div id="chart"></div>
+                <div id="chart" style="width: 600px; height: 400px;"></div>
             </main>
         </div>
     </div>
+
     <script>
-        document.getElementById('file-input').addEventListener('change', function(event) {
+        // Función para cargar los datos de un archivo Excel
+        document.getElementById('file-input').addEventListener('change', function (event) {
             let file = event.target.files[0];
             let reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 let data = new Uint8Array(e.target.result);
                 let workbook = XLSX.read(data, { type: 'array' });
                 let sheet = workbook.Sheets[workbook.SheetNames[0]];
                 let json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-                let tbody = document.querySelector('#data-table tbody');
-                tbody.innerHTML = '';
+                let tbody = document.querySelector('#xyzTable tbody');
+                tbody.innerHTML = ''; // Limpiar tabla antes de agregar nuevos datos
                 json.forEach(row => {
-                    if (row.length >= 2) {
+                    if (row.length >= 3) {
                         let tr = document.createElement('tr');
-                        tr.innerHTML = `<td>${row[0]}</td><td>${row[1]}</td>`;
+                        tr.innerHTML = `<td><input type="number" value="${row[0]}"></td>
+                                        <td><input type="number" value="${row[1]}"></td>
+                                        <td><input type="number" value="${row[2]}"></td>`;
                         tbody.appendChild(tr);
                     }
                 });
             };
             reader.readAsArrayBuffer(file);
         });
-        
-        function agregarDato() {
-            let x = document.getElementById('input-x').value;
-            let y = document.getElementById('input-y').value;
-            let z = document.getElementById('input-z').value; // Obtener el valor de Z
 
-            if (x === "" || y === "" || z === "") {
-                alert("Por favor, ingresa valores para X, Y y Z.");
-                return;
+        // Función para agregar una nueva fila a la tabla
+        function addRow() {
+            let table = document.getElementById("xyzTable").getElementsByTagName("tbody")[0];
+            let row = table.insertRow();
+            for (let i = 0; i < 3; i++) {
+                let cell = row.insertCell();
+                let input = document.createElement("input");
+                input.type = "number";
+                cell.appendChild(input);
             }
-
-            let table = document.getElementById('data-table').getElementsByTagName('tbody')[0];
-            let newRow = document.createElement('tr');
-
-            newRow.innerHTML = `<td>${x}</td><td>${y}</td><td>${z}</td>`; // Añadir la columna de Z
-            document.getElementById('data-table').getElementsByTagName('tbody')[0].appendChild(newRow);
         }
 
-        function calcularRegresion() {
-        let rows = document.querySelectorAll('#data-table tbody tr');
-        let data = [];
-        
-        rows.forEach(row => {
-            let cells = row.querySelectorAll('td');
-            data.push([parseFloat(cells[0].innerText), parseFloat(cells[1].innerText), parseFloat(cells[2].innerText)]);
-        });
-        
-        let X = [], Y = [];
-        data.forEach(row => {
-            let [x, y, z] = row;
-            X.push([1, x, y]);
-            Y.push([z]);
-        });
-        
-        let A = math.matrix(X);
-        let B = math.matrix(Y);
-        let At = math.transpose(A);
-        let AtA = math.multiply(math.transpose(X), X);
-        let AtB = math.multiply(math.transpose(X), Y);
-        let params = math.lusolve(AtA, AtB);
-        
-        let a = params[1][0], b = params[0][0], c = params[2][0];
-        
-        document.getElementById('resultado').innerHTML = `Ecuación del plano: z = ${a.toFixed(4)}x + ${b.toFixed(4)}y + ${c.toFixed(2)}`;
-    }
+        // Función para calcular el ajuste de plano
+        function calculatePlane() {
+            let table = document.getElementById("xyzTable");
+            let x = [], y = [], z = [];
 
-            // Mostrar los resultados
-            let formulaDiv = document.getElementById('formula');
-            formulaDiv.innerHTML = `
-                Ecuación de la recta: y = ${m.toFixed(2)}x + ${b.toFixed(2)}<br>
-                Operaciones:<br>
-                m = (nΣXY - ΣXΣY) / (nΣX² - (ΣX)²) = (${n} * ${sumXY.toFixed(2)} - ${sumX.toFixed(2)} * ${sumY.toFixed(2)}) / (${n} * ${sumX2.toFixed(2)} - ${sumX.toFixed(2)}²) = ${m.toFixed(2)}<br>
-                b = (ΣY - mΣX) / n = (${sumY.toFixed(2)} - ${m.toFixed(2)} * ${sumX.toFixed(2)}) / ${n} = ${b.toFixed(2)}
-            `;
+            // Obtener los valores de las celdas de la tabla
+            for (let i = 1; i < table.rows.length; i++) {
+                let cells = table.rows[i].cells;
+                x.push(parseFloat(cells[0].children[0].value) || 0);
+                y.push(parseFloat(cells[1].children[0].value) || 0);
+                z.push(parseFloat(cells[2].children[0].value) || 0);
+            }
 
-            // Mostrar la gráfica
-            let myChart = echarts.init(document.getElementById('chart'));
-            echarts.registerTransform(ecStat.transform.regression);
+            let A = [], B = [];
+            for (let i = 0; i < x.length; i++) {
+                A.push([x[i], y[i], 1]);
+                B.push(z[i]);
+            }
+
+            let AT = math.transpose(A);
+            let ATA = math.multiply(AT, A);
+            let ATB = math.multiply(AT, B);
+            let coeffs = math.lusolve(ATA, ATB).flat();
+
+            document.getElementById('resultado').innerHTML =
+                `Ecuación del plano: z = ${coeffs[0].toFixed(4)}x + ${coeffs[1].toFixed(4)}y + ${coeffs[2].toFixed(4)}`;
+
+            plotPlane(coeffs);
+        }
+
+        // Función para graficar el plano ajustado
+        function plotPlane(coeffs) {
+            var chartDom = document.getElementById('chart');
+            var myChart = echarts.init(chartDom);
+
             let option = {
-                dataset: [{ source: data }, { transform: { type: 'ecStat:regression', config: { method: 'linear' } } }],
-                title: { text: 'Ajuste por Mínimos Cuadrados', left: 'center' },
-                xAxis: { splitLine: { lineStyle: { type: 'dashed' } } },
-                yAxis: { splitLine: { lineStyle: { type: 'dashed' } } },
-                series: [
-                    { name: 'Datos', type: 'scatter', datasetIndex: 0 },
-                    { name: 'Ajuste', type: 'line', smooth: true, datasetIndex: 1 }
-                ]
+                tooltip: {},
+                backgroundColor: '#fff',
+                visualMap: { show: false, dimension: 2, min: -1, max: 1, inRange: { color: ['#313695', '#d73027'] } },
+                xAxis3D: { type: 'value' },
+                yAxis3D: { type: 'value' },
+                zAxis3D: { type: 'value' },
+                grid3D: { viewControl: {} },
+                series: [{
+                    type: 'surface',
+                    wireframe: {},
+                    equation: {
+                        x: { step: 0.05 },
+                        y: { step: 0.05 },
+                        z: function (x, y) { return coeffs[0] * x + coeffs[1] * y + coeffs[2]; }
+                    }
+                }]
             };
+
             myChart.setOption(option);
-        
+        }
     </script>
 </body>
+
 </html>
