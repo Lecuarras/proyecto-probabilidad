@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Pronóstico de Series de Tiempo</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+    <style>
+        .matriz-container {
+            margin-top: 20px;
+            font-family: monospace;
+            white-space: pre;
+            background: #f9f9f9;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        .matriz-title {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Pronóstico de Series de Tiempo</h2>
+    <input type="file" id="fileInput" accept=".csv,.xlsx">
+    <label for="stepsInput">Pasos adelante:</label>
+    <input type="number" id="stepsInput" value="5" min="1" max="20">
+    <table id="dataTable" border="1">
+        <thead><tr><th>Tiempo</th><th>Demanda</th></tr></thead>
+        <tbody></tbody>
+    </table>
+    <button onclick="calcularPronostico()">Calcular Pronóstico</button>
+    <div id="chart" style="width: 600px; height: 400px;"></div>
+    <div id="matrices" class="matriz-container"></div>
+
+    <script>
+        let datosTiempo = [];
+        let datosDemanda = [];
+
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                    cargarTabla(jsonData);
+                };
+                reader.readAsArrayBuffer(file);
+            }
+        });
+
+        function cargarTabla(data) {
+            let tbody = document.querySelector('#dataTable tbody');
+            tbody.innerHTML = '';
+            datosTiempo = [];
+            datosDemanda = [];
+            data.forEach((row, index) => {
+                if (index > 0 && row.length >= 2) {
+                    datosTiempo.push(row[0]);
+                    datosDemanda.push(parseFloat(row[1]));
+                    let tr = `<tr><td>${row[0]}</td><td>${row[1]}</td></tr>`;
+                    tbody.innerHTML += tr;
+                }
+            });
+        }
+
+        function calcularPronostico() {
+            let pasos = parseInt(document.getElementById('stepsInput').value);
+            if (datosDemanda.length < 5) {
+                alert("Se necesitan al menos 5 datos para hacer el pronóstico.");
+                return;
+            }
+
+            // Preparar matrices X y Y
+            let X = [], Y = [];
+            for (let i = 4; i < datosDemanda.length; i++) {
+                X.push([ 
+                    datosDemanda[i - 4], 
+                    datosDemanda[i - 3], 
+                    datosDemanda[i - 2], 
+                    datosDemanda[i - 1]
+                ]);
+                Y.push([datosDemanda[i]]);
+            }
+
+            // Calcular transpuesta de X
+            let Xt = transpose(X);
+
+            // XtX = Xt * X
+            let XtX = multiplyMatrices(Xt, X);
+
+            // XtY = Xt * Y
+            let XtY = multiplyMatrices(Xt, Y);
+
+            // Inversa de XtX
+            let XtX_inv = inverseMatrix(XtX);
+
+            // Coeficientes A = (XtX)^-1 * XtY
+            let A = multiplyMatrices(XtX_inv, XtY);
+
+            // Mostrar matrices en pantalla
+            mostrarMatrices(X, Y, Xt, XtX, XtX_inv, XtY, A);
+
+            // Usar A para pronosticar
+            let pronostico = [...datosDemanda];
+            let nuevosTiempos = [];
+
+            for (let i = 0; i < pasos; i++) {
+                let v = A[0][0] * pronostico[pronostico.length - 4] +
+                        A[1][0] * pronostico[pronostico.length - 3] +
+                        A[2][0] * pronostico[pronostico.length - 2] +
+                        A[3][0] * pronostico[pronostico.length - 1];
+                pronostico.push(v);
+                nuevosTiempos.push(`Paso ${i + 1}`);
+            }
+
+            graficarResultados(pronostico, nuevosTiempos);
+        }
+
+        function graficarResultados(pronostico, nuevosTiempos) {
+            let chartDom = document.getElementById('chart');
+            let myChart = echarts.init(chartDom);
+            let corte = datosDemanda.length;
+            let tiempoTotal = [...datosTiempo, ...nuevosTiempos];
+            
+            let option = {
+                title: { text: 'Demanda Eléctrica y Pronóstico' },
+                tooltip: { trigger: 'axis' },
+                xAxis: { type: 'category', data: tiempoTotal },
+                yAxis: { type: 'value' },
+                series: [{
+                    name: 'Demanda',
+                    type: 'line',
+                    data: pronostico,
+                    lineStyle: { color: 'blue' },
+                    markLine: {
+                        data: [{ xAxis: corte - 1 }],
+                        lineStyle: { color: 'red', type: 'dashed' }
+                    },
+                    itemStyle: {
+                        color: function(params) {
+                            return params.dataIndex < corte ? 'blue' : 'green';
+                        }
+                    },
+                    areaStyle: {
+                        color: function(params) {
+                            return params.dataIndex < corte ? 'rgba(0, 0, 255, 0.2)' : 'rgba(255, 0, 0, 0.3)';
+                        }
+                    }
+                }]
+            };
+            myChart.setOption(option);
+        }
+
+        // Funciones auxiliares para matrices
+        function transpose(matrix) {
+            return matrix[0].map((_, colIndex) => matrix.map(row => row[colIndex]));
+        }
+
+        function multiplyMatrices(a, b) {
+            let result = new Array(a.length).fill(0).map(() => new Array(b[0].length).fill(0));
+            for (let i = 0; i < a.length; i++) {
+                for (let j = 0; j < b[0].length; j++) {
+                    for (let k = 0; k < b.length; k++) {
+                        result[i][j] += a[i][k] * b[k][j];
+                    }
+                }
+            }
+            return result;
+        }
+
+        function inverseMatrix(matrix) {
+            let size = matrix.length;
+            let I = identityMatrix(size);
+            let M = matrix.map(row => row.slice());
+
+            for (let i = 0; i < size; i++) {
+                let factor = M[i][i];
+                for (let j = 0; j < size; j++) {
+                    M[i][j] /= factor;
+                    I[i][j] /= factor;
+                }
+                for (let k = 0; k < size; k++) {
+                    if (k !== i) {
+                        let factor2 = M[k][i];
+                        for (let j = 0; j < size; j++) {
+                            M[k][j] -= factor2 * M[i][j];
+                            I[k][j] -= factor2 * I[i][j];
+                        }
+                    }
+                }
+            }
+            return I;
+        }
+
+        function identityMatrix(n) {
+            return Array.from({ length: n }, (_, i) =>
+                Array.from({ length: n }, (_, j) => (i === j ? 1 : 0))
+            );
+        }
+
+        function mostrarMatrices(X, Y, Xt, XtX, XtX_inv, XtY, A) {
+            let contenedor = document.getElementById('matrices');
+            contenedor.innerHTML = `
+                <div class="matriz-title">Matriz X:</div>${formatearMatriz(X)}
+                <div class="matriz-title">Vector Y:</div>${formatearMatriz(Y)}
+                <div class="matriz-title">Transpuesta Xᵗ:</div>${formatearMatriz(Xt)}
+                <div class="matriz-title">Producto Xᵗ * X:</div>${formatearMatriz(XtX)}
+                <div class="matriz-title">Inversa (Xᵗ * X)⁻¹:</div>${formatearMatriz(XtX_inv)}
+                <div class="matriz-title">Producto (Xᵗ * Y):</div>${formatearMatriz(XtY)}
+                <div class="matriz-title">Solución A:</div>${formatearMatriz(A)}
+            `;
+        }
+
+        function formatearMatriz(matrix) {
+            return matrix.map(row =>
+                '[ ' + row.map(num => num.toFixed(3).padStart(7)).join(' ') + ' ]'
+            ).join('\n');
+        }
+    </script>
+</body>
+</html>
