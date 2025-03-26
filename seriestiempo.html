@@ -8,39 +8,9 @@
     <link rel="stylesheet" href="styleform.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.3.2/math.min.js"></script>
     <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <style>
-        textarea {
-            font-size: 18px;
-            padding: 10px;
-            width: 100%;
-            height: 100px;
-            border: 2px solid #ccc;
-            border-radius: 8px;
-        }
-        .matriz-container {
-            margin-top: 20px;
-            font-family: monospace;
-            white-space: pre;
-            background: #f9f9f9;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .matriz-title {
-            font-weight: bold;
-            margin-top: 10px;
-            color: #333;
-        }
-        .matriz-content {
-            margin-top: 10px;
-            font-family: monospace;
-            font-size: 16px;
-            line-height: 1.5;
-        }
-        #resultado, #formula {
-            font-size: 20px;
+        body {
+            font-family: Arial, sans-serif;
         }
         .pagina-ayuda {
             background-color: #f4f4f4;
@@ -61,22 +31,43 @@
             color: white;
             padding: 10px;
             text-decoration: none;
+            display: inline-block;
         }
         .contenedor {
-            margin: 20px;
+            margin: 20px auto;
             padding: 20px;
+            max-width: 900px;
             background-color: white;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         .titulo {
             font-size: 32px;
+            text-align: center;
             margin-bottom: 20px;
         }
-        #file-input {
-            padding: 10px;
-            font-size: 16px;
-            margin-top: 10px;
+        h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 18px;
+            line-height: 1.5;
+            text-align: justify;
+        }
+        ul {
+            font-size: 18px;
+            margin-left: 20px;
+        }
+        .matriz-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        img {
+            width: 80%;
+            max-width: 600px;
+            display: block;
+            margin: 0 auto;
         }
     </style>
 </head>
@@ -89,218 +80,50 @@
                 <a href="datos.html">Estadística Descriptiva</a>
                 <a href="contactanos.html">Radiación</a>
                 <a href="matrices.html">Matrices</a>
-                <a href="algebralineal.html">Algebra Lineal</a>
-                <a href="seriestiempo.html">Pronostico de series en el tiempo</a>
-
+                <a href="algebralineal.html">Álgebra Lineal</a>
+                <a href="seriestiempo.html">Pronóstico de Series de Tiempo</a>
             </nav>
             <nav>
-                <a href="mexicoserie.html">Mexico</a>
+                <a href="mexicoserie.html">México</a>
                 <a href="texasserie.html">Texas</a>
                 <a href="californiaserie.html">California</a>
             </nav>
             
             <main class="contenedor">
-                <h1 class="titulo">Estadística Descriptiva</h1>
-                <h2>Pronóstico de Series de Tiempo</h2>
-                <input type="file" id="fileInput" accept=".csv,.xlsx">
-                <label for="stepsInput">Pasos adelante:</label>
-                <input type="number" id="stepsInput" value="5" min="1" max="20">
-                <table id="dataTable" border="1">
-                    <thead><tr><th>Tiempo</th><th>Demanda</th></tr></thead>
-                    <tbody></tbody>
-                </table>
-                <button onclick="calcularPronostico()">Calcular Pronóstico</button>
-                <div id="chart" style="width: 600px; height: 400px;"></div>
-                <div id="matrices" class="matriz-container"></div>
-            
-                <script>
-                    let datosTiempo = [];
-                    let datosDemanda = [];
-            
-                    document.getElementById('fileInput').addEventListener('change', function(event) {
-                        const file = event.target.files[0];
-                        if (file) {
-                            const reader = new FileReader();
-                            reader.onload = function(e) {
-                                const data = new Uint8Array(e.target.result);
-                                const workbook = XLSX.read(data, { type: 'array' });
-                                const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                                const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-                                cargarTabla(jsonData);
-                            };
-                            reader.readAsArrayBuffer(file);
-                        }
-                    });
-            
-                    function cargarTabla(data) {
-                        let tbody = document.querySelector('#dataTable tbody');
-                        tbody.innerHTML = '';
-                        datosTiempo = [];
-                        datosDemanda = [];
-                        data.forEach((row, index) => {
-                            if (index > 0 && row.length >= 2) {
-                                datosTiempo.push(row[0]);
-                                datosDemanda.push(parseFloat(row[1]));
-                                let tr = `<tr><td>${row[0]}</td><td>${row[1]}</td></tr>`;
-                                tbody.innerHTML += tr;
-                            }
-                        });
-                    }
-            
-                    function calcularPronostico() {
-                        let pasos = parseInt(document.getElementById('stepsInput').value);
-                        if (datosDemanda.length < 5) {
-                            alert("Se necesitan al menos 5 datos para hacer el pronóstico.");
-                            return;
-                        }
-            
-                        // Preparar matrices X y Y
-                        let X = [], Y = [];
-                        for (let i = 4; i < datosDemanda.length; i++) {
-                            X.push([ 
-                                datosDemanda[i - 4], 
-                                datosDemanda[i - 3], 
-                                datosDemanda[i - 2], 
-                                datosDemanda[i - 1]
-                            ]);
-                            Y.push([datosDemanda[i]]);
-                        }
-            
-                        // Calcular transpuesta de X
-                        let Xt = transpose(X);
-            
-                        // XtX = Xt * X
-                        let XtX = multiplyMatrices(Xt, X);
-            
-                        // XtY = Xt * Y
-                        let XtY = multiplyMatrices(Xt, Y);
-            
-                        // Inversa de XtX
-                        let XtX_inv = inverseMatrix(XtX);
-            
-                        // Coeficientes A = (XtX)^-1 * XtY
-                        let A = multiplyMatrices(XtX_inv, XtY);
-            
-                        // Mostrar matrices en pantalla
-                        mostrarMatrices(X, Y, Xt, XtX, XtX_inv, XtY, A);
-            
-                        // Usar A para pronosticar
-                        let pronostico = [...datosDemanda];
-                        let nuevosTiempos = [];
-            
-                        for (let i = 0; i < pasos; i++) {
-                            let v = A[0][0] * pronostico[pronostico.length - 4] +
-                                    A[1][0] * pronostico[pronostico.length - 3] +
-                                    A[2][0] * pronostico[pronostico.length - 2] +
-                                    A[3][0] * pronostico[pronostico.length - 1];
-                            pronostico.push(v);
-                            nuevosTiempos.push(`Paso ${i + 1}`);
-                        }
-            
-                        graficarResultados(pronostico, nuevosTiempos);
-                    }
-            
-                    function graficarResultados(pronostico, nuevosTiempos) {
-                        let chartDom = document.getElementById('chart');
-                        let myChart = echarts.init(chartDom);
-                        let corte = datosDemanda.length;
-                        let tiempoTotal = [...datosTiempo, ...nuevosTiempos];
-                        
-                        let option = {
-                            title: { text: 'Demanda Eléctrica y Pronóstico' },
-                            tooltip: { trigger: 'axis' },
-                            xAxis: { type: 'category', data: tiempoTotal },
-                            yAxis: { type: 'value' },
-                            series: [{
-                                name: 'Demanda',
-                                type: 'line',
-                                data: pronostico,
-                                lineStyle: { color: 'blue' },
-                                markLine: {
-                                    data: [{ xAxis: corte - 1 }],
-                                    lineStyle: { color: 'red', type: 'dashed' }
-                                },
-                                itemStyle: {
-                                    color: function(params) {
-                                        return params.dataIndex < corte ? 'blue' : 'green';
-                                    }
-                                },
-                                areaStyle: {
-                                    color: function(params) {
-                                        return params.dataIndex < corte ? 'rgba(0, 0, 255, 0.2)' : 'rgba(255, 0, 0, 0.3)';
-                                    }
-                                }
-                            }]
-                        };
-                        myChart.setOption(option);
-                    }
-            
-                    // Funciones auxiliares para matrices
-                    function transpose(matrix) {
-                        return matrix[0].map((_, colIndex) => matrix.map(row => row[colIndex]));
-                    }
-            
-                    function multiplyMatrices(a, b) {
-                        let result = new Array(a.length).fill(0).map(() => new Array(b[0].length).fill(0));
-                        for (let i = 0; i < a.length; i++) {
-                            for (let j = 0; j < b[0].length; j++) {
-                                for (let k = 0; k < b.length; k++) {
-                                    result[i][j] += a[i][k] * b[k][j];
-                                }
-                            }
-                        }
-                        return result;
-                    }
-            
-                    function inverseMatrix(matrix) {
-                        let size = matrix.length;
-                        let I = identityMatrix(size);
-                        let M = matrix.map(row => row.slice());
-            
-                        for (let i = 0; i < size; i++) {
-                            let factor = M[i][i];
-                            for (let j = 0; j < size; j++) {
-                                M[i][j] /= factor;
-                                I[i][j] /= factor;
-                            }
-                            for (let k = 0; k < size; k++) {
-                                if (k !== i) {
-                                    let factor2 = M[k][i];
-                                    for (let j = 0; j < size; j++) {
-                                        M[k][j] -= factor2 * M[i][j];
-                                        I[k][j] -= factor2 * I[i][j];
-                                    }
-                                }
-                            }
-                        }
-                        return I;
-                    }
-            
-                    function identityMatrix(n) {
-                        return Array.from({ length: n }, (_, i) =>
-                            Array.from({ length: n }, (_, j) => (i === j ? 1 : 0))
-                        );
-                    }
-            
-                    function mostrarMatrices(X, Y, Xt, XtX, XtX_inv, XtY, A) {
-                        let contenedor = document.getElementById('matrices');
-                        contenedor.innerHTML = `  
-                            <div class="matriz-title">Matriz X:</div><div class="matriz-content">${formatearMatriz(X)}</div>
-                            <div class="matriz-title">Vector Y:</div><div class="matriz-content">${formatearMatriz(Y)}</div>
-                            <div class="matriz-title">Transpuesta Xᵗ:</div><div class="matriz-content">${formatearMatriz(Xt)}</div>
-                            <div class="matriz-title">Producto Xᵗ * X:</div><div class="matriz-content">${formatearMatriz(XtX)}</div>
-                            <div class="matriz-title">Inversa (Xᵗ * X)⁻¹:</div><div class="matriz-content">${formatearMatriz(XtX_inv)}</div>
-                            <div class="matriz-title">Producto (Xᵗ * Y):</div><div class="matriz-content">${formatearMatriz(XtY)}</div>
-                            <div class="matriz-title">Solución A:</div><div class="matriz-content">${formatearMatriz(A)}</div>
-                        `;
-                    }
-            
-                    function formatearMatriz(matrix) {
-                        return matrix.map(row =>
-                            '[ ' + row.map(num => num.toFixed(3).padStart(7)).join(' ') + ' ]'
-                        ).join('\n');
-                    }
-                </script>
+                <h1 class="titulo">Pronóstico de Series de Tiempo</h1>
+                
+                <h2>¿Qué es una serie de tiempo?</h2>
+                <p>Una <strong>serie de tiempo</strong> es un conjunto de observaciones de una variable registradas en intervalos regulares. Se utiliza para analizar patrones, tendencias y relaciones temporales en datos. Algunos ejemplos incluyen:</p>
+                <ul>
+                    <li>Demanda eléctrica</li>
+                    <li>Temperatura</li>
+                    <li>Precios de acciones</li>
+                    <li>Tráfico en redes</li>
+                </ul>
+                
+                <h2>¿Para qué se utiliza?</h2>
+                <p>Las series de tiempo tienen múltiples aplicaciones, tales como:</p>
+                <ul>
+                    <li><strong>Pronósticos:</strong> Predicción de valores futuros (ej. clima, demanda energética).</li>
+                    <li><strong>Detección de patrones:</strong> Identificación de tendencias y estacionalidades.</li>
+                    <li><strong>Análisis de variabilidad:</strong> Medición de fluctuaciones y anomalías.</li>
+                    <li><strong>Modelado de procesos:</strong> Comprensión de la evolución de un sistema a lo largo del tiempo.</li>
+                </ul>
+                
+                <h2>¿Cómo funcionan con matrices?</h2>
+                <p>Las series de tiempo pueden representarse mediante <strong>matrices</strong> para aplicar modelos matemáticos y computacionales. Algunas formas de hacerlo incluyen:</p>
+                <ul>
+                    <li><strong>Matriz de observaciones:</strong> Cada fila representa un instante en el tiempo y cada columna una característica.</li>
+                    <li><strong>Métodos de pronóstico:</strong> Uso de ecuaciones matriciales en modelos como ARIMA y regresión lineal.</li>
+                    <li><strong>Redes neuronales:</strong> Transformaciones matriciales para predicciones más precisas.</li>
+                    <li><strong>Descomposición de series:</strong> Técnicas como SVD para extraer tendencias y componentes principales.</li>
+                </ul>
+                
+                <div class="matriz-container">
+                    <h2>Ejemplo de Matriz de Observaciones</h2>
+                    <img src="IMG/matrizimagen.png" alt="Matriz Series de Tiempo">
+                    <br><br><br>
+                </div>
             </main>
         </div>
     </div>
