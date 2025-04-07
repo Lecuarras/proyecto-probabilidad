@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Pronóstico de Demanda Eléctrica en México</title>
@@ -18,6 +19,7 @@
             border: 2px solid #ccc;
             border-radius: 8px;
         }
+
         .matriz-container {
             margin-top: 20px;
             font-family: monospace;
@@ -28,67 +30,73 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+
         .matriz-title {
             font-weight: bold;
             margin-top: 10px;
             color: #333;
         }
+
         .matriz-content {
             margin-top: 10px;
             font-family: monospace;
             font-size: 16px;
             line-height: 1.5;
         }
-        #resultado, #formula {
+
+        #resultado,
+        #formula {
             font-size: 20px;
         }
+
         .pagina-ayuda {
             background-color: #f4f4f4;
             padding: 20px;
         }
+
         .img-fondo {
             background-image: url('fondo.jpg');
             background-size: cover;
             padding: 20px;
         }
+
         .header {
             background-color: #333;
             padding: 10px;
             text-align: center;
             color: white;
         }
+
         nav a {
             color: white;
             padding: 10px;
             text-decoration: none;
         }
-        .contenedor {
-            margin: 20px;
-            padding: 20px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
+
         .titulo {
             font-size: 32px;
             margin-bottom: 20px;
         }
+
         #file-input {
             padding: 10px;
             font-size: 16px;
             margin-top: 10px;
         }
+
         .control-group {
             margin: 15px 0;
             padding: 10px;
             background: #f0f8ff;
             border-radius: 8px;
         }
+
         .control-group label {
             display: inline-block;
             width: 200px;
             font-weight: bold;
         }
+
         button {
             padding: 10px 15px;
             background: #4CAF50;
@@ -98,9 +106,11 @@
             cursor: pointer;
             margin: 5px;
         }
+
         button:hover {
             background: #45a049;
         }
+
         #loading {
             display: none;
             margin: 10px;
@@ -109,28 +119,37 @@
             border: 1px solid #ffd700;
             border-radius: 4px;
         }
+
         .data-info {
             font-size: 14px;
             color: #666;
             margin-top: 10px;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin: 15px 0;
         }
-        table, th, td {
+
+        table,
+        th,
+        td {
             border: 1px solid #ddd;
         }
-        th, td {
+
+        th,
+        td {
             padding: 8px;
             text-align: left;
         }
+
         th {
             background-color: #f2f2f2;
         }
     </style>
 </head>
+
 <body class="pagina-ayuda">
     <div class="img-fondo">
         <div class="velo-negro">
@@ -150,10 +169,10 @@
                 <a href="texasserie.html">Texas</a>
                 <a href="californiaserie.html">California</a>
             </nav>
-            
+
             <main class="contenedor">
                 <h1 class="titulo">Pronóstico de Demanda Eléctrica en México</h1>
-                
+
                 <div class="control-group">
                     <h2>Obtener datos históricos</h2>
                     <label for="monthSelect">Mes y año:</label>
@@ -162,101 +181,124 @@
                     <div id="loading">Recopilando datos...</div>
                     <div id="dataInfo" class="data-info"></div>
                 </div>
-                
+
                 <div class="control-group">
                     <h2>Pronóstico personalizado</h2>
                     <label for="forecastDate">Fecha y hora para pronóstico:</label>
                     <input type="datetime-local" id="forecastDate">
                     <button onclick="calcularPronosticoPersonalizado()">Calcular pronóstico</button>
                 </div>
-                
-                <div class="control-group">
-                    <h2>Datos actuales</h2>
-                    <input type="file" id="fileInput" accept=".csv,.xlsx">
-                    <label for="stepsInput">Pasos adelante:</label>
-                    <input type="number" id="stepsInput" value="5" min="1" max="20">
-                    <button onclick="calcularPronostico()">Calcular Pronóstico</button>
-                </div>
-                
+
                 <table id="dataTable" border="1">
-                    <thead><tr><th>Tiempo</th><th>Demanda (MW)</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th>Tiempo</th>
+                            <th>Demanda (MW)</th>
+                        </tr>
+                    </thead>
                     <tbody></tbody>
                 </table>
-                
+
                 <div id="chart" style="width: 100%; height: 500px; margin-top: 20px;"></div>
                 <div id="matrices" class="matriz-container"></div>
-                <div id="forecastResult" style="margin-top: 20px; padding: 15px; background: #e6f7ff; border-radius: 8px;"></div>
-            
+                <div id="forecastResult"
+                    style="margin-top: 20px; padding: 15px; background: #e6f7ff; border-radius: 8px;"></div>
+                <div id="evaluationMetrics" class="evaluation-metrics" style="display: none;">
+                </div>
+
                 <script>
                     // Configuración inicial
                     let datosTiempo = [];
                     let datosDemanda = [];
-                    
+
                     // Inicializar el máximo del selector de fecha
                     document.getElementById('monthSelect').max = new Date().toISOString().slice(0, 7);
                     document.getElementById('forecastDate').min = new Date().toISOString().slice(0, 16);
-                    
-                    // Función para generar datos realistas para México
+
+                    // Función mejorada para generar datos realistas para México
                     async function generarDatosMexicoRealistas(monthYear) {
                         return new Promise(resolve => {
                             setTimeout(() => {
                                 const [year, month] = monthYear.split('-');
                                 const daysInMonth = new Date(year, month, 0).getDate();
                                 const data = [];
-                                
-                                // Valores base para México (en MW) - basados en datos de CENACE
-                                const variacionHoraria = [
-                                    25000, 24000, 23000, 22500, 23000,  // 12am-4am
-                                    25000, 30000, 35000, 38000, 40000,   // 5am-9am
-                                    42000, 45000, 48000, 47000, 46000,    // 10am-2pm
-                                    45000, 46000, 48000, 46000, 43000,   // 3pm-7pm
-                                    40000, 37000, 32000, 28000           // 8pm-11pm
+
+                                // Patrón horario típico de demanda en México (basado en datos reales de CENACE)
+                                const patronHorario = [
+                                    0.85, 0.82, 0.80, 0.79, 0.80,  // 0-4h (noche/madrugada)
+                                    0.85, 0.95, 1.10, 1.20, 1.25,   // 5-9h (mañana)
+                                    1.30, 1.35, 1.40, 1.38, 1.35,    // 10-14h (medio día)
+                                    1.32, 1.35, 1.40, 1.35, 1.25,    // 15-19h (tarde)
+                                    1.15, 1.05, 0.95, 0.88           // 20-23h (noche)
                                 ];
-                                
-                                // Factores estacionales para México
-                                const factorEstacional = {
-                                    '01': 1.0, '02': 1.0, '03': 0.95, '04': 0.95,
-                                    '05': 1.0, '06': 1.1, '07': 1.2, '08': 1.2,
-                                    '09': 1.1, '10': 1.0, '11': 0.95, '12': 1.0
+
+                                // Factores estacionales mensuales para México
+                                const factoresMensuales = {
+                                    '01': 1.05, '02': 1.03, '03': 1.00, '04': 0.98,
+                                    '05': 0.96, '06': 1.00, '07': 1.10, '08': 1.12,
+                                    '09': 1.08, '10': 1.02, '11': 1.00, '12': 1.04
                                 };
-                                
-                                const factorMes = factorEstacional[month] || 1.0;
-                                
+
+                                // Demanda base promedio en México (MW)
+                                const demandaBase = 38000;
+
+                                const factorMes = factoresMensuales[month] || 1.0;
+
                                 for (let day = 1; day <= daysInMonth; day++) {
                                     const dateStr = `${year}-${month.padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-                                    const date = new Date(year, month-1, day);
+                                    const date = new Date(year, month - 1, day);
                                     const dayOfWeek = date.getDay();
-                                    
-                                    // Variación diaria (±5%)
-                                    const variacionDiaria = 1 + (Math.random() - 0.5) * 0.05;
-                                    
-                                    // Diferencia entre días laborales y fines de semana
-                                    const factorDia = (dayOfWeek >= 1 && dayOfWeek <= 5) ? 1.15 : 0.9;
-                                    
+
+                                    // Variación por día de la semana (laboral vs fin de semana)
+                                    const factorDiaSemana = (dayOfWeek >= 1 && dayOfWeek <= 5) ? 1.10 : 0.92;
+
+                                    // Variación aleatoria diaria (±3%)
+                                    const variacionDiaria = 1 + (Math.random() - 0.5) * 0.03;
+
                                     for (let hour = 0; hour < 24; hour++) {
-                                        // Obtener valor base según la hora
-                                        const horaIndex = Math.min(Math.floor(hour), variacionHoraria.length - 1);
-                                        let demanda = variacionHoraria[horaIndex];
-                                        
-                                        // Aplicar variaciones
-                                        demanda *= variacionDiaria * factorDia * factorMes;
-                                        
-                                        // Pequeña variación aleatoria (±2%)
+                                        // Obtener índice del patrón horario
+                                        const horaIndex = Math.min(Math.floor(hour), patronHorario.length - 1);
+
+                                        // Calcular demanda base con todos los factores
+                                        let demanda = demandaBase *
+                                            patronHorario[horaIndex] *
+                                            factorMes *
+                                            factorDiaSemana *
+                                            variacionDiaria;
+
+                                        // Añadir ruido aleatorio (±2%)
                                         demanda *= 1 + (Math.random() - 0.5) * 0.02;
-                                        
-                                        // Redondear a múltiplo de 100
-                                        demanda = Math.round(demanda / 100) * 100;
-                                        
+
+                                        // Redondear a múltiplo de 10
+                                        demanda = Math.round(demanda / 10) * 10;
+
                                         data.push({
                                             timestamp: `${dateStr} ${hour.toString().padStart(2, '0')}:00:00`,
                                             demand: demanda
                                         });
                                     }
                                 }
-                                
+
                                 resolve(data);
                             }, 500);
                         });
+                    }
+
+                    // Función para generar datos de ejemplo (simplificados)
+                    function generarDatosEjemplo(monthYear) {
+                        const [year, month] = monthYear.split('-');
+                        const data = [];
+
+                        for (let day = 1; day <= 5; day++) {
+                            for (let hour = 0; hour < 24; hour += 3) {
+                                const demand = 30000 + Math.sin(hour / 24 * Math.PI * 2) * 15000 + Math.random() * 2000;
+                                data.push({
+                                    timestamp: `${year}-${month.padStart(2, '0')}-${day.toString().padStart(2, '0')} ${hour.toString().padStart(2, '0')}:00:00`,
+                                    demand: Math.round(demand)
+                                });
+                            }
+                        }
+                        return data;
                     }
 
                     // Función para obtener datos realistas
@@ -266,24 +308,27 @@
                             alert("Por favor selecciona un mes y año");
                             return;
                         }
-                        
+
                         document.getElementById('loading').style.display = 'block';
                         document.getElementById('dataInfo').textContent = '';
-                        
+
                         try {
                             // Generar datos con el patrón de México
                             const datosSimulados = await generarDatosMexicoRealistas(monthYear);
-                            
+
                             // Procesar los datos
                             procesarDatosCENACE(datosSimulados);
-                            
+
                             // Mostrar información sobre los datos
                             const demandaMin = Math.min(...datosSimulados.map(d => d.demand));
                             const demandaMax = Math.max(...datosSimulados.map(d => d.demand));
+                            const demandaProm = Math.round(datosSimulados.reduce((a, b) => a + b.demand, 0) / datosSimulados.length);
+
                             document.getElementById('dataInfo').innerHTML = `
                                 Datos generados para <strong>${monthYear}</strong> | 
                                 Mínimo: <strong>${demandaMin.toLocaleString()} MW</strong> | 
                                 Máximo: <strong>${demandaMax.toLocaleString()} MW</strong> |
+                                Promedio: <strong>${demandaProm.toLocaleString()} MW</strong> |
                                 Patrón típico de demanda en México
                             `;
                         } catch (error) {
@@ -296,46 +341,26 @@
                         }
                     }
 
-                    // Función para generar datos de ejemplo (simplificados)
-                    function generarDatosEjemplo(monthYear) {
-                        const [year, month] = monthYear.split('-');
-                        const data = [];
-                        
-                        for (let day = 1; day <= 5; day++) {
-                            for (let hour = 0; hour < 24; hour += 3) {
-                                const demand = 30000 + Math.sin(hour/24 * Math.PI * 2) * 15000 + Math.random() * 2000;
-                                data.push({
-                                    timestamp: `${year}-${month.padStart(2, '0')}-${day.toString().padStart(2, '0')} ${hour.toString().padStart(2, '0')}:00:00`,
-                                    demand: Math.round(demand)
-                                });
-                            }
-                        }
-                        return data;
-                    }
-
                     // Procesar datos y cargarlos en la tabla
                     function procesarDatosCENACE(data) {
                         datosTiempo = [];
                         datosDemanda = [];
                         let tbody = document.querySelector('#dataTable tbody');
                         tbody.innerHTML = '';
-                        
+
                         data.forEach(item => {
                             datosTiempo.push(item.timestamp);
                             datosDemanda.push(item.demand);
-                            
+
                             let tr = `<tr><td>${item.timestamp}</td><td>${item.demand.toLocaleString()}</td></tr>`;
                             tbody.innerHTML += tr;
                         });
-                        
+
                         if (datosTiempo.length > 0) {
                             graficarResultados(datosDemanda, datosTiempo, []);
                         }
                     }
 
-                    // [Todas las demás funciones (calcularPronostico, graficarResultados, etc.) permanecen iguales]
-                    // ... [Resto del código JavaScript igual que en la versión de Texas]
-                    
                     // Función para calcular pronóstico para una fecha específica
                     function calcularPronosticoPersonalizado() {
                         const forecastDateTime = document.getElementById('forecastDate').value;
@@ -343,89 +368,220 @@
                             alert("Por favor selecciona una fecha y hora para el pronóstico");
                             return;
                         }
-                        
-                        if (datosDemanda.length < 10) {
-                            alert("Se necesitan suficientes datos históricos para hacer el pronóstico");
+
+                        if (datosDemanda.length < 24) {
+                            alert("Se necesitan al menos 24 puntos de datos (1 día completo) para hacer el pronóstico");
                             return;
                         }
-                        
+
                         const now = new Date();
                         const forecastDate = new Date(forecastDateTime);
                         const diffHours = Math.round((forecastDate - now) / (1000 * 60 * 60));
-                        
+
                         if (diffHours <= 0) {
                             alert("La fecha de pronóstico debe ser en el futuro");
                             return;
                         }
-                        
+
                         const pronostico = calcularModeloPronostico(datosDemanda, diffHours);
-                        
+
                         const forecastResult = document.getElementById('forecastResult');
                         forecastResult.innerHTML = `
-                            <h3>Resultado del Pronóstico</h3>
-                            <p>Fecha solicitada: ${forecastDate.toLocaleString()}</p>
-                            <p>Horas en el futuro: ${diffHours}</p>
-                            <p>Demanda pronosticada: <strong>${Math.round(pronostico[pronostico.length - 1]).toLocaleString()} MW</strong></p>
-                        `;
-                        
+        <h3>Resultado del Pronóstico</h3>
+        <p>Fecha solicitada: ${forecastDate.toLocaleString()}</p>
+        <p>Horas en el futuro: ${diffHours}</p>
+        <p>Demanda pronosticada: <strong>${Math.round(pronostico[pronostico.length - 1]).toLocaleString()} MW</strong></p>
+    `;
+
                         const nuevosTiempos = [];
                         for (let i = 1; i <= diffHours; i++) {
-                            nuevosTiempos.push(`Paso ${i}`);
+                            const fechaPronostico = new Date(now.getTime() + i * 60 * 60 * 1000);
+                            nuevosTiempos.push(fechaPronostico.toLocaleString());
                         }
+
                         graficarResultados(datosDemanda.concat(pronostico), datosTiempo.concat(nuevosTiempos), diffHours);
+
+                        // Mostrar flecha y desplazarse después de un breve retraso
+                        setTimeout(() => {
+                            const flecha = document.getElementById('flechaAbajo');
+                            flecha.classList.add('mostrar');
+
+                            // Configurar el clic de la flecha
+                            flecha.addEventListener('click', () => {
+                                document.getElementById('chart').scrollIntoView({
+                                    behavior: 'smooth'
+                                });
+                            });
+
+                            // Desplazamiento automático a la gráfica
+                            document.getElementById('chart').scrollIntoView({
+                                behavior: 'smooth'
+                            });
+                        }, 500);
+
+                        // Evaluar calidad del pronóstico
+                        if (datosDemanda.length > diffHours) {
+                            const datosValidacion = datosDemanda.slice(-diffHours);
+                            evaluarCalidadPronostico(datosValidacion, pronostico);
+                        }
                     }
-                    
-                    // Función principal para calcular pronóstico
+
+                    // Función principal para calcular pronóstico (MEJORADA)
                     function calcularPronostico() {
                         let pasos = parseInt(document.getElementById('stepsInput').value);
-                        if (datosDemanda.length < 10) {
-                            alert("Se necesitan al menos 10 datos para hacer un pronóstico preciso.");
+                        if (datosDemanda.length < 24) {
+                            alert("Se necesitan al menos 24 puntos de datos (1 día completo) para hacer un pronóstico preciso.");
                             return;
                         }
-                        
+
                         const pronostico = calcularModeloPronostico(datosDemanda, pasos);
-                        
+
                         const nuevosTiempos = [];
+                        const now = new Date();
                         for (let i = 1; i <= pasos; i++) {
-                            nuevosTiempos.push(`Paso ${i}`);
+                            const fechaPronostico = new Date(now.getTime() + i * 60 * 60 * 1000);
+                            nuevosTiempos.push(fechaPronostico.toLocaleString());
                         }
-                        
+
                         graficarResultados(datosDemanda.concat(pronostico), datosTiempo.concat(nuevosTiempos), pasos);
+
+                        // Evaluar calidad del pronóstico (usando los últimos datos conocidos para validación)
+                        if (datosDemanda.length > pasos) {
+                            const datosValidacion = datosDemanda.slice(-pasos);
+                            evaluarCalidadPronostico(datosValidacion, pronostico);
+                        }
                     }
-                    
-                    // Función que implementa el modelo de pronóstico AR(4)
+
+                    // Función que implementa un modelo de pronóstico mejorado (ARIMA-like)
                     function calcularModeloPronostico(data, steps) {
-                        const orden = 4;
-                        if (data.length < orden) {
-                            alert(`Se necesitan al menos ${orden} puntos para este modelo`);
+                        const ordenAR = 24; // Usar 24 puntos (horas) para capturar patrones diarios
+                        if (data.length < ordenAR) {
+                            alert(`Se necesitan al menos ${ordenAR} puntos para este modelo`);
                             return [];
                         }
-                        
+
+                        // 1. Calcular estadísticas clave
+                        const mediaHistorica = math.mean(data);
+                        const desviacionStd = math.std(data);
+                        const maxHistorico = math.max(data);
+                        const minHistorico = math.min(data);
+
+                        // 2. Calcular componentes
+                        const tendencia = calcularTendencia(data);
+                        const estacionalidad = calcularEstacionalidadDiaria(data);
+
+                        // 3. Preparar datos para regresión
                         let X = [], Y = [];
-                        for (let i = orden; i < data.length; i++) {
-                            X.push(data.slice(i - orden, i));
+                        for (let i = ordenAR; i < data.length; i++) {
+                            // Incluir valores anteriores, tendencia y componente estacional
+                            let features = data.slice(i - ordenAR, i);
+                            features.push(tendencia[i]);
+                            features.push(estacionalidad[i % 24]);
+                            X.push(features);
                             Y.push([data[i]]);
                         }
-                        
+
                         const coeficientes = calcularCoeficientesAR(X, Y);
-                        
+
                         let pronostico = [];
-                        let ultimosValores = data.slice(-orden);
-                        
+                        let ultimosValores = data.slice(-ordenAR);
+                        let ultimaTendencia = tendencia[tendencia.length - 1];
+
                         for (let i = 0; i < steps; i++) {
+                            // Componente autoregresivo (usando las últimas 24 horas)
                             let prediccion = 0;
-                            for (let j = 0; j < orden; j++) {
+                            for (let j = 0; j < ordenAR; j++) {
                                 prediccion += coeficientes[j] * ultimosValores[ultimosValores.length - 1 - j];
                             }
-                            
+
+                            // Componente de tendencia (limitado)
+                            const factorTendencia = coeficientes[ordenAR] * (ultimaTendencia + i * 0.1);
+                            prediccion += math.min(factorTendencia, desviacionStd * 0.5); // Limitar la influencia de la tendencia
+
+                            // Componente estacional (fuerte)
+                            const horaActual = (data.length + i) % 24;
+                            const factorEstacional = coeficientes[ordenAR + 1] * estacionalidad[horaActual];
+                            prediccion += factorEstacional * 1.2; // Reforzar el patrón estacional
+
+                            // Mean Reversion: acercar la predicción hacia la media histórica
+                            const distanciaMedia = mediaHistorica - prediccion;
+                            prediccion += distanciaMedia * 0.1; // Factor suave de mean reversion
+
+                            // Asegurar que esté dentro de rangos históricos razonables
+                            prediccion = math.max(minHistorico * 0.9, math.min(maxHistorico * 1.1, prediccion));
+
+                            // Redondear a múltiplo de 10 (como los datos reales)
+                            prediccion = Math.round(prediccion / 10) * 10;
+
                             pronostico.push(prediccion);
+
+                            // Actualizar valores para siguiente paso
                             ultimosValores.shift();
                             ultimosValores.push(prediccion);
                         }
-                        
+
+                        // Aplicar suavizado al pronóstico
+                        if (pronostico.length > 1) {
+                            for (let i = 1; i < pronostico.length; i++) {
+                                // Suavizado exponencial (alpha = 0.3)
+                                pronostico[i] = 0.7 * pronostico[i] + 0.3 * pronostico[i - 1];
+                            }
+                        }
+
                         return pronostico;
                     }
-                    
+
+                    // Función mejorada para calcular estacionalidad diaria
+                    function calcularEstacionalidadDiaria(data) {
+                        // Agrupar por hora del día
+                        const horas = Array(24).fill().map(() => []);
+
+                        for (let i = 0; i < data.length; i++) {
+                            const hora = i % 24;
+                            horas[hora].push(data[i]);
+                        }
+
+                        // Calcular percentiles para cada hora
+                        const estacionalidad = horas.map(horaData => {
+                            if (horaData.length === 0) return 0;
+
+                            // Ordenar datos para percentiles
+                            horaData.sort((a, b) => a - b);
+
+                            // Usar percentil 50 (mediana) para evitar outliers
+                            const mediana = horaData[Math.floor(horaData.length / 2)];
+
+                            // Calcular desviación respecto a la media general
+                            const mediaGeneral = math.mean(data);
+                            return mediana - mediaGeneral;
+                        });
+
+                        return estacionalidad;
+                    }
+
+                    // Función para calcular la tendencia lineal
+                    function calcularTendencia(data) {
+                        const n = data.length;
+                        let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
+
+                        for (let i = 0; i < n; i++) {
+                            sumX += i;
+                            sumY += data[i];
+                            sumXY += i * data[i];
+                            sumXX += i * i;
+                        }
+
+                        const pendiente = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+                        const intercepto = (sumY - pendiente * sumX) / n;
+
+                        let tendencia = [];
+                        for (let i = 0; i < n; i++) {
+                            tendencia.push(intercepto + pendiente * i);
+                        }
+
+                        return tendencia;
+                    }
+
                     // Función para calcular coeficientes AR
                     function calcularCoeficientesAR(X, Y) {
                         let XtX = math.zeros(X[0].length, X[0].length);
@@ -437,7 +593,7 @@
                                 }
                             }
                         }
-                        
+
                         let XtY = math.zeros(X[0].length, 1);
                         for (let i = 0; i < X.length; i++) {
                             let xi = X[i];
@@ -445,45 +601,51 @@
                                 XtY.set([j, 0], XtY.get([j, 0]) + xi[j] * Y[i][0]);
                             }
                         }
-                        
+
                         let XtX_inv;
                         try {
                             XtX_inv = math.inv(XtX);
                         } catch (e) {
                             XtX_inv = math.pinv(XtX);
                         }
-                        
+
                         const coeficientes = math.multiply(XtX_inv, XtY);
-                        
+
                         return coeficientes.toArray().map(item => item[0]);
                     }
-                    
-                    // Función para graficar resultados
+
+                    // Función mejorada para graficar resultados
                     function graficarResultados(data, tiempos, pasos) {
                         let chartDom = document.getElementById('chart');
                         let myChart = echarts.init(chartDom);
-                        
+
                         let corte = datosDemanda ? datosDemanda.length : data.length - pasos;
                         let option = {
-                            title: { 
+                            title: {
                                 text: 'Demanda Eléctrica y Pronóstico',
-                                subtext: 'Datos históricos en azul, pronóstico en verde'
+                                subtext: 'Datos históricos en azul, pronóstico en naranja',
+                                left: 'center'
                             },
                             tooltip: {
                                 trigger: 'axis',
-                                formatter: function(params) {
+                                formatter: function (params) {
                                     let date = params[0].axisValue;
                                     let value = params[0].data;
-                                    return `${date}<br/>Demanda: ${value.toLocaleString()} MW`;
+                                    let seriesName = params[0].seriesName;
+                                    let marker = params[0].marker;
+                                    return `${date}<br/>${marker} ${seriesName}: ${value.toLocaleString()} MW`;
                                 }
                             },
-                            legend: { data: ['Demanda'] },
-                            xAxis: { 
+                            legend: {
+                                data: ['Demanda Real', 'Pronóstico'],
+                                bottom: 10
+                            },
+                            xAxis: {
                                 type: 'category',
                                 data: tiempos,
                                 axisLabel: {
                                     rotate: 45,
-                                    formatter: function(value) {
+                                    formatter: function (value) {
                                         if (value.length > 10) {
                                             return value.split(' ')[0] + '\n' + value.split(' ')[1];
                                         }
@@ -491,79 +653,126 @@
                                     }
                                 }
                             },
-                            yAxis: { 
+                            yAxis: {
                                 type: 'value',
                                 name: 'MW',
                                 axisLabel: {
-                                    formatter: function(value) {
+                                    formatter: function (value) {
                                         return value.toLocaleString();
                                     }
                                 }
                             },
-                            series: [{
-                                name: 'Demanda',
-                                type: 'line',
-                                data: data,
-                                lineStyle: { 
-                                    color: function(params) {
-                                        return params.dataIndex < corte ? '#3498db' : '#2ecc71';
-                                    },
-                                    width: 3
-                                },
-                                itemStyle: {
-                                    color: function(params) {
-                                        return params.dataIndex < corte ? '#3498db' : '#2ecc71';
-                                    }
-                                },
-                                markLine: {
-                                    silent: true,
-                                    data: [{
-                                        xAxis: corte - 0.5,
-                                        label: { show: false }
-                                    }],
+                            series: [
+                                {
+                                    name: 'Demanda Real',
+                                    type: 'line',
+                                    data: data.slice(0, corte),
+                                    smooth: true,
                                     lineStyle: {
-                                        color: '#e74c3c',
-                                        type: 'dashed',
+                                        color: '#3498db',
                                         width: 2
+                                    },
+                                    itemStyle: {
+                                        color: '#3498db'
+                                    },
+                                    areaStyle: {
+                                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                            { offset: 0, color: 'rgba(52, 152, 219, 0.5)' },
+                                            { offset: 1, color: 'rgba(52, 152, 219, 0.1)' }
+                                        ])
                                     }
                                 },
-                                areaStyle: {
-                                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                                        { offset: 0, color: 'rgba(52, 152, 219, 0.3)' },
-                                        { offset: 1, color: 'rgba(52, 152, 219, 0.1)' }
-                                    ])
+                                {
+                                    name: 'Pronóstico',
+                                    type: 'line',
+                                    data: [...Array(corte).fill(null), ...data.slice(corte)],
+                                    smooth: true,
+                                    lineStyle: {
+                                        color: '#e67e22',
+                                        width: 3,
+                                        type: 'dashed'
+                                    },
+                                    itemStyle: {
+                                        color: '#e67e22'
+                                    },
+                                    symbol: 'diamond',
+                                    symbolSize: 8
                                 }
-                            }],
-                            dataZoom: [{
-                                type: 'inside',
-                                start: 0,
-                                end: 100
-                            }, {
-                                start: 0,
-                                end: 100
-                            }],
+                            ],
+                            dataZoom: [
+                                {
+                                    type: 'inside',
+                                    start: Math.max(0, 100 - (2000 / data.length * 100)),
+                                    end: 100
+                                },
+                                {
+                                    start: Math.max(0, 100 - (2000 / data.length * 100)),
+                                    end: 100
+                                }
+                            ],
                             toolbox: {
                                 feature: {
                                     dataZoom: { yAxisIndex: 'none' },
                                     restore: {},
-                                    saveAsImage: {}
-                                }
+                                    saveAsImage: {},
+                                    magicType: { type: ['line', 'bar'] }
+                                },
+                                right: 20
+                            },
+                            grid: {
+                                left: '3%',
+                                right: '4%',
+                                bottom: '15%',
+                                top: '15%',
+                                containLabel: true
                             }
                         };
-                        
+
                         myChart.setOption(option);
-                        
-                        window.addEventListener('resize', function() {
+
+                        window.addEventListener('resize', function () {
                             myChart.resize();
                         });
                     }
-                    
+
+                    // Función para evaluar qué tan bien coincide el pronóstico con los datos históricos
+                    function evaluarCalidadPronostico(real, pronostico) {
+                        if (real.length !== pronostico.length) {
+                            console.error("Los datos reales y de pronóstico deben tener la misma longitud");
+                            return null;
+                        }
+
+                        // Calcular errores
+                        let sumErrorCuad = 0;
+                        let sumErrorAbs = 0;
+                        let sumReal = 0;
+
+                        for (let i = 0; i < real.length; i++) {
+                            const error = pronostico[i] - real[i];
+                            sumErrorCuad += error * error;
+                            sumErrorAbs += Math.abs(error);
+                            sumReal += real[i];
+                        }
+
+                        const mse = sumErrorCuad / real.length; // Error cuadrático medio
+                        const mae = sumErrorAbs / real.length; // Error absoluto medio
+                        const mape = (sumErrorAbs / sumReal) * 100; // Porcentaje de error
+
+                        // Mostrar resultados en la interfaz
+                        document.getElementById('evaluationMetrics').style.display = 'block';
+                        document.getElementById('mseValue').textContent = mse.toFixed(2);
+                        document.getElementById('maeValue').textContent = mae.toFixed(2);
+                        document.getElementById('mapeValue').textContent = mape.toFixed(2) + '%';
+
+                        return { mse, mae, mape };
+                    }
+
                     // Manejo de archivos
-                    document.getElementById('fileInput').addEventListener('change', function(event) {
+                    document.getElementById('fileInput').addEventListener('change', function (event) {
                         const file = event.target.files[0];
                         if (file) {
                             const reader = new FileReader();
-                            reader.onload = function(e) {
+                            reader.onload = function (e) {
                                 const data = new Uint8Array(e.target.result);
                                 const workbook = XLSX.read(data, { type: 'array' });
                                 const sheet = workbook.Sheets[workbook.SheetNames[0]];
@@ -573,13 +782,13 @@
                             reader.readAsArrayBuffer(file);
                         }
                     });
-                    
+
                     function cargarTabla(data) {
                         let tbody = document.querySelector('#dataTable tbody');
                         tbody.innerHTML = '';
                         datosTiempo = [];
                         datosDemanda = [];
-                        
+
                         data.forEach((row, index) => {
                             if (index > 0 && row.length >= 2) {
                                 datosTiempo.push(row[0]);
@@ -588,14 +797,26 @@
                                 tbody.innerHTML += tr;
                             }
                         });
-                        
+
                         if (datosTiempo.length > 0) {
                             graficarResultados(datosDemanda, datosTiempo, []);
                         }
                     }
+                    window.addEventListener('scroll', function () {
+                        const flecha = document.getElementById('flechaAbajo');
+                        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {
+                            flecha.classList.remove('mostrar');
+                        } else {
+                            flecha.classList.add('mostrar');
+                        }
+                    });
                 </script>
             </main>
         </div>
     </div>
+    <div class="flecha-desplazamiento" id="flechaAbajo" title="Ir a la gráfica">
+        ↓
+    </div>
 </body>
+
 </html>

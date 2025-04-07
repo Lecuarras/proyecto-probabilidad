@@ -22,10 +22,6 @@ img {
     background-color:#d6c496 ;
 }
 
-.contenedor {
-    max-width: 120rem;
-    margin: 0 auto;
-}
 
 .header {
     display: flex;
@@ -303,12 +299,13 @@ p {
 }
 
 .contenedor {
-    background-color: #ffffdd; /* Fondo blanco para el contenido */
+    background-color: #f5f5ec; /* Fondo blanco-amarillento */
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
     padding: 20px;
-    margin: 20px auto; /* Margen gris alrededor del contenedor */
-    max-width: 1200px; /* Ancho máximo del contenido */
+    margin: 20px auto; /* Centrado vertical y horizontal */
+    max-width: 1200px; /* o 120rem (equivalente a 1200px si 1rem = 10px) */
+    width: 90%; /* Para que no toque los bordes en pantallas pequeñas */
 }
 
 /* Estilos para los títulos y secciones */
@@ -355,5 +352,33 @@ textarea {
     font-size: 16px;
     margin-top: 10px;
 }
+.flecha-desplazamiento {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 50px;
+    font-size: 24px;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
 
+.flecha-desplazamiento.mostrar {
+    opacity: 1;
+    visibility: visible;
+}
+
+.flecha-desplazamiento:hover {
+    background-color: #45a049;
+    transform: translateY(-3px);
+}
 /* Estilos para la gráfica
