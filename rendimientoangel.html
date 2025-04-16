@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Solar Residencial</title>
+    <link rel="stylesheet" href="styleform.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .contenedor {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .panel-config {
+            border: 1px solid #ddd;
+            padding: 20px;
+            background-color: #f9f9f9;
+            width: 80%;
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .resultados {
+            border: 1px solid #ddd;
+            padding: 20px;
+            background-color: #f9f9f9;
+            width: 80%;
+            max-width: 800px;
+            margin: 20px auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin: 20px auto;
+        }
+        select, input, button {
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        button {
+            background-color: #353130;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 10px 15px;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #4a4543;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .consumo-custom {
+            display: none;
+            margin-top: 10px;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #f1f1f1;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+        }
+        .tab.active {
+            background-color: #353130;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .info-text {
+            background-color: #e7f3fe;
+            border-left: 6px solid #2196F3;
+            padding: 10px 15px;
+            margin: 15px 0;
+        }
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+        }
+        .result-item {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #2196F3;
+        }
+    </style>
+</head>
+<body>
+    <nav class="pagina-ayuda">
+        <a href="index.html">Inicio</a>
+        <a href="datos.html">Estadística descriptiva</a>
+        <a href="contactanos.html">Radiación</a>
+        <a href="matrices.html">Matrices</a>
+        <a href="algebralineal.html">Álgebra Lineal</a>
+    </nav>
+
+    <div class="loading" id="loading">Calculando...</div>
+
+    <h1>Sistema Solar Residencial - Dimensionamiento</h1>
+    
+    <div class="panel-config">
+        <h2>Configuración del Sistema</h2>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="changeTab('config-tab')">Configuración</div>
+            <div class="tab" onclick="changeTab('results-tab')">Resultados</div>
+            <div class="tab" onclick="changeTab('analysis-tab')">Análisis</div>
+            <div class="tab" onclick="changeTab('recommendations-tab')">Recomendaciones</div>
+        </div>
+        
+        <div id="config-tab" class="tab-content active">
+            <div class="form-group">
+                <label for="ciudad">Ciudad:</label>
+                <select id="ciudad" onchange="updateCityInfo()">
+                    <option value="morelia">Morelia</option>
+                    <option value="ciudad_mexico">Ciudad de México</option>
+                    <option value="guadalajara">Guadalajara</option>
+                    <option value="monterrey">Monterrey</option>
+                    <option value="custom">Personalizada</option>
+                </select>
+                <p id="city-info"></p>
+            </div>
+
+            <div class="form-group">
+                <label for="mes">Mes del año:</label>
+                <select id="mes">
+                    <option value="1">Enero</option>
+                    <option value="2">Febrero</option>
+                    <option value="3">Marzo</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Mayo</option>
+                    <option value="6">Junio</option>
+                    <option value="7">Julio</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Septiembre</option>
+                    <option value="10">Octubre</option>
+                    <option value="11">Noviembre</option>
+                    <option value="12">Diciembre</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="consumo">Consumo diario promedio:</label>
+                <select id="consumo" onchange="toggleCustomConsumo()">
+                    <option value="5">5 kWh/día (pequeña casa)</option>
+                    <option value="10">10 kWh/día (casa mediana)</option>
+                    <option value="15">15 kWh/día (casa grande)</option>
+                    <option value="20">20 kWh/día (casa muy grande)</option>
+                    <option value="custom">Personalizado</option>
+                </select>
+                <div id="custom-consumo" class="consumo-custom">
+                    <input type="number" id="consumo-custom-value" placeholder="Ingresa kWh/día" min="1" step="0.1">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="panel-potencia">Potencia del panel solar (W):</label>
+                <input type="number" id="panel-potencia" value="450" min="100" step="10">
+            </div>
+
+            <div class="form-group">
+                <label for="panel-eficiencia">Eficiencia del panel (%):</label>
+                <input type="number" id="panel-eficiencia" value="20" min="5" max="30" step="0.1">
+            </div>
+
+            <div class="form-group">
+                <label for="confianza">Nivel de confianza deseado (%):</label>
+                <input type="number" id="confianza" value="95" min="50" max="99" step="1">
+            </div>
+
+            <button onclick="calcularSistema()">Calcular Sistema</button>
+        </div>
+
+        <div id="results-tab" class="tab-content">
+            <div class="info-text" id="results-placeholder">
+                <p>Los resultados se mostrarán aquí después de realizar los cálculos. Por favor, complete la configuración y haga clic en "Calcular Sistema".</p>
+            </div>
+            
+            <div id="resultados-container" style="display: none;">
+                <h3>Resultados del Dimensionamiento</h3>
+                <div class="result-item">
+                    <p><strong>Paneles requeridos:</strong> <span id="paneles-requeridos" class="highlight"></span></p>
+                </div>
+                <div class="result-item">
+                    <p><strong>Generación diaria promedio:</strong> <span id="generacion-promedio" class="highlight"></span> kWh</p>
+                </div>
+                <div class="result-item">
+                    <p><strong>Cobertura del consumo:</strong> <span id="cobertura-consumo" class="highlight"></span>%</p>
+                </div>
+                <div class="result-item">
+                    <p><strong>Días con déficit energético:</strong> <span id="dias-deficit"></span> días</p>
+                </div>
+                <div class="result-item">
+                    <p><strong>Máximo déficit energético:</strong> <span id="max-deficit"></span> kWh</p>
+                </div>
+                
+                <div class="chart-container" id="generacion-chart"></div>
+                <div class="chart-container" id="consumo-chart"></div>
+            </div>
+        </div>
+
+        <div id="analysis-tab" class="tab-content">
+            <div class="info-text" id="analysis-placeholder">
+                <p>El análisis detallado se mostrará aquí después de realizar los cálculos. Por favor, complete la configuración y haga clic en "Calcular Sistema".</p>
+            </div>
+            
+            <div id="analisis-container" style="display: none;">
+                <h3>Análisis Probabilístico</h3>
+                <p>Este análisis muestra la probabilidad de cubrir el consumo energético basado en la radiación solar histórica y el número de paneles seleccionados.</p>
+                
+                <div class="form-group">
+                    <label for="num-paneles">Número de paneles para simular (1-20):</label>
+                    <input type="range" id="num-paneles" min="1" max="20" value="5" oninput="updatePanelSimulation()">
+                    <span id="num-paneles-value">5</span>
+                </div>
+                
+                <div class="chart-container" id="probabilidad-chart"></div>
+                <div class="chart-container" id="histograma-chart"></div>
+                <div class="chart-container" id="deficit-consecutivo-chart"></div>
+            </div>
+        </div>
+        
+        <div id="recommendations-tab" class="tab-content">
+            <div class="info-text" id="recommendations-placeholder">
+                <p>Las recomendaciones se mostrarán aquí después de realizar los cálculos. Por favor, complete la configuración y haga clic en "Calcular Sistema".</p>
+            </div>
+            
+            <div id="recommendations-container" style="display: none;">
+                <h3>Recomendaciones para tu Sistema Solar</h3>
+                <div id="recommendations-list"></div>
+                
+                <h4>Consideraciones adicionales:</h4>
+                <ul id="considerations-list"></ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel-config" id="datos-radiacion">
+        <h2>Datos de Radiación Solar</h2>
+        <p id="location-info"></p>
+        <p id="ghi">GHI: Cargando...</p>
+        <p id="dni">DNI: Cargando...</p>
+        <p id="dhi">DHI: Cargando...</p>
+        <div class="chart-container" id="radiacion-chart"></div>
+        <div class="chart-container" id="histograma-radiacion"></div>
+    </div>
+
+    <script>
+        // Variables globales
+        let radiacionData = [];
+        let consumoData = [];
+        let resultados = {};
+        let currentTab = 'config-tab';
+        let currentParams = {};
+        
+        // Datos históricos de radiación por ciudad (simulados)
+        const historicoRadiacion = {
+            morelia: {
+                anual: 5.5,
+                meses: [5.2, 5.6, 6.0, 6.2, 6.1, 5.8, 5.5, 5.6, 5.4, 5.3, 5.1, 5.0]
+            },
+            ciudad_mexico: {
+                anual: 5.3,
+                meses: [5.0, 5.4, 5.8, 6.0, 5.9, 5.6, 5.3, 5.4, 5.2, 5.1, 4.9, 4.8]
+            },
+            guadalajara: {
+                anual: 5.8,
+                meses: [5.5, 5.9, 6.3, 6.5, 6.4, 6.1, 5.8, 5.9, 5.7, 5.6, 5.4, 5.3]
+            },
+            monterrey: {
+                anual: 5.7,
+                meses: [5.4, 5.8, 6.2, 6.4, 6.3, 6.0, 5.7, 5.8, 5.6, 5.5, 5.3, 5.2]
+            }
+        };
+        
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            // Obtener parámetros de la URL
+            currentParams = obtenerParametrosURL();
+            
+            // Configurar valores iniciales
+            if (currentParams.ciudad) {
+                document.getElementById('ciudad').value = Object.keys(historicoRadiacion).includes(currentParams.ciudad.toLowerCase()) 
+                    ? currentParams.ciudad.toLowerCase() 
+                    : 'custom';
+            }
+            
+            updateCityInfo();
+            mostrarDatosRadiacion();
+            
+            // Configurar mes actual por defecto
+            const mesActual = new Date().getMonth() + 1;
+            document.getElementById('mes').value = mesActual;
+        });
+        
+        // Obtener parámetros de la URL
+        function obtenerParametrosURL() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                ghi: parseFloat(params.get("ghi")) || 0,
+                dni: parseFloat(params.get("dni")) || 0,
+                dhi: parseFloat(params.get("dhi")) || 0,
+                lat: parseFloat(params.get("lat")) || 0,
+                lon: parseFloat(params.get("lon")) || 0,
+                ciudad: params.get("ciudad") || "custom"
+            };
+        }
+        
+        // Actualizar información de la ciudad
+        function updateCityInfo() {
+            const ciudad = document.getElementById('ciudad').value;
+            const infoElement = document.getElementById('city-info');
+            
+            if (ciudad === 'custom') {
+                infoElement.textContent = `Ubicación personalizada (Lat: ${currentParams.lat.toFixed(4)}, Lon: ${currentParams.lon.toFixed(4)})`;
+            } else {
+                const promedioAnual = historicoRadiacion[ciudad].anual;
+                infoElement.textContent = `Promedio anual de radiación: ${promedioAnual} kWh/m²/día`;
+            }
+        }
+        
+        // Mostrar/ocultar consumo personalizado
+        function toggleCustomConsumo() {
+            const consumoSelect = document.getElementById('consumo');
+            const customConsumo = document.getElementById('custom-consumo');
+            
+            if (consumoSelect.value === 'custom') {
+                customConsumo.style.display = 'block';
+            } else {
+                customConsumo.style.display = 'none';
+            }
+        }
+        
+        // Cambiar pestañas
+        function changeTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabId).classList.add('active');
+            document.querySelector(`.tab[onclick="changeTab('${tabId}')"]`).classList.add('active');
+            currentTab = tabId;
+            
+            if (tabId === 'results-tab' && resultados.generacionPromedio) {
+                mostrarResultados();
+            } else if (tabId === 'analysis-tab' && resultados.generacionPromedio) {
+                mostrarAnalisis();
+            } else if (tabId === 'recommendations-tab' && resultados.generacionPromedio) {
+                mostrarRecomendaciones();
+            }
+        }
+        
+        // Mostrar datos de radiación
+        function mostrarDatosRadiacion() {
+            const ciudad = document.getElementById('ciudad').value;
+            
+            if (ciudad === 'custom') {
+                document.getElementById('ghi').textContent = `GHI: ${currentParams.ghi} W/m²`;
+                document.getElementById('dni').textContent = `DNI: ${currentParams.dni} W/m²`;
+                document.getElementById('dhi').textContent = `DHI: ${currentParams.dhi} W/m²`;
+                document.getElementById('location-info').textContent = `Ubicación personalizada (${currentParams.ciudad}) - Lat: ${currentParams.lat.toFixed(4)}, Lon: ${currentParams.lon.toFixed(4)}`;
+            } else {
+                const mes = parseInt(document.getElementById('mes').value) - 1;
+                const promedioMensual = historicoRadiacion[ciudad].meses[mes];
+                
+                document.getElementById('ghi').textContent = `GHI promedio histórico: ${promedioMensual.toFixed(2)} kWh/m²/día`;
+                document.getElementById('dni').textContent = `DNI promedio histórico: ${(promedioMensual * 0.7).toFixed(2)} kWh/m²/día`;
+                document.getElementById('dhi').textContent = `DHI promedio histórico: ${(promedioMensual * 0.3).toFixed(2)} kWh/m²/día`;
+                document.getElementById('location-info').textContent = `Ciudad: ${document.getElementById('ciudad').options[document.getElementById('ciudad').selectedIndex].text}`;
+            }
+            
+            // Simular datos de radiación para el mes seleccionado
+            const mes = parseInt(document.getElementById('mes').value);
+            radiacionData = simularDatosRadiacion(mes, ciudad);
+            
+            // Mostrar gráficos
+            mostrarGraficoRadiacion();
+            mostrarHistogramaRadiacion();
+        }
+        
+        // Simular datos de radiación solar
+        function simularDatosRadiacion(mes, ciudad) {
+            const diasEnMes = new Date(2023, mes, 0).getDate();
+            const datos = [];
+            
+            // Obtener promedio según ciudad o datos personalizados
+            let promedio, variabilidad;
+            
+            if (ciudad === 'custom') {
+                promedio = currentParams.ghi / 1000; // Convertir W/m² a kWh/m²
+                variabilidad = 0.5;
+            } else {
+                promedio = historicoRadiacion[ciudad].meses[mes - 1];
+                variabilidad = 0.3;
+            }
+            
+            for (let i = 1; i <= diasEnMes; i++) {
+                // Variación estacional (simplificado)
+                const estacional = 1 + 0.3 * Math.sin((mes - 6) * Math.PI / 6);
+                
+                // Variación diaria aleatoria
+                const aleatorio = 1 + (Math.random() - 0.5) * variabilidad;
+                
+                // Valor final con algo de ruido
+                const valor = promedio * estacional * aleatorio * (0.9 + Math.random() * 0.2);
+                
+                datos.push({
+                    dia: i,
+                    radiacion: valor,
+                    ghi: valor * (0.8 + Math.random() * 0.4),
+                    dni: valor * (0.6 + Math.random() * 0.3),
+                    dhi: valor * (0.2 + Math.random() * 0.2)
+                });
+            }
+            
+            return datos;
+        }
+        
+        // Mostrar gráfico de radiación
+        function mostrarGraficoRadiacion() {
+            const chart = echarts.init(document.getElementById('radiacion-chart'));
+            
+            const option = {
+                title: {
+                    text: 'Radiación Solar Diaria Simulada',
+                    left: 'center'
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                xAxis: {
+                    type: 'category',
+                    data: radiacionData.map(dia => `Día ${dia.dia}`)
+                },
+                yAxis: {
+                    type: 'value',
+                    name: 'kWh/m²/día'
+                },
+                series: [
+                    {
+                        name: 'Radiación Global',
+                        type: 'line',
+                        data: radiacionData.map(dia => dia.radiacion.toFixed(2)),
+                        smooth: true,
+                        lineStyle: {
+                            color: '#ff9800',
+                            width: 3
+                        },
+                        itemStyle: {
+                            color: '#ff9800'
+                        }
+                    }
+                ]
+            };
+            
+            chart.setOption(option);
+        }
+        
+        // Mostrar histograma de radiación
+        function mostrarHistogramaRadiacion() {
+            const chart = echarts.init(document.getElementById('histograma-radiacion'));
+            
+            // Calcular bins para el histograma
+            const valores = radiacionData.map(d => d.radiacion);
+            const min = Math.min(...valores);
+            const max = Math.max(...valores);
+            const binSize = (max - min) / 10;
+            
+            const bins = Array.from({length: 11}, (_, i) => min + i * binSize);
+            const histData = bins.map((bin, i) => {
+                if (i === bins.length - 1) return 0;
+                return valores.filter(v => v >= bin && v < bins[i+1]).length;
+            });
+            
+            const option = {
+                title: { 
+                    text: 'Distribución de Radiación Solar', 
+                    left: 'center' 
+                },
+                tooltip: { 
+                    trigger: 'axis' 
+                },
+                xAxis: {
+                    type: 'category',
+                    data: bins.map((b, i) => i === bins.length - 1 ? `>${b.toFixed(1)}` : `${b.toFixed(1)}-${bins[i+1].toFixed(1)}`),
+                    name: 'Radiación (kWh/m²)'
+                },
+                yAxis: { 
+                    type: 'value', 
+                    name: 'Días' 
+                },
+                series: [{
+                    name: 'Días',
+                    type: 'bar',
+                    data: histData,
+                    itemStyle: { 
+                        color: '#FF9800' 
+                    }
+                }]
+            };
+            
+            chart.setOption(option);
+        }
+        
+        // Simular consumo eléctrico detallado
+        function simularConsumo(promedioKWh) {
+            const datos = [];
+            const diasEnMes = radiacionData.length;
+            
+            for (let i = 0; i < diasEnMes; i++) {
+                // Patrón diario (mañana, tarde, noche)
+                const hora = i % 24;
+                let factorHora = 1.0;
+                
+                if (hora >= 7 && hora <= 9) factorHora = 1.4; // Mañana
+                else if (hora >= 18 && hora <= 22) factorHora = 1.6; // Noche
+                else if (hora >= 12 && hora <= 14) factorHora = 1.2; // Mediodía
+                else factorHora = 0.8; // Madrugada
+                
+                // Variación por día de semana
+                const diaSemana = (i % 7);
+                const factorFinSemana = (diaSemana >= 5) ? 1.3 : 1.0;
+                
+                // Variación aleatoria
+                const variacion = 0.9 + Math.random() * 0.2;
+                
+                datos.push(promedioKWh * factorHora * factorFinSemana * variacion / 24);
+            }
+            
+            return datos;
+        }
+        
+        // Calcular generación de energía
+        function calcularGeneracion(paneles) {
+            const potenciaPanel = parseFloat(document.getElementById('panel-potencia').value);
+            const eficienciaPanel = parseFloat(document.getElementById('panel-eficiencia').value) / 100;
+            const areaPanel = 1.6; // m² para un panel típico
+            const perdidas = 0.85; // Pérdidas por temperatura, suciedad, etc.
+            
+            return radiacionData.map(dia => {
+                // Energía generada = radiación (kWh/m²) * área (m²) * eficiencia * número de paneles * factor pérdidas
+                return dia.radiacion * areaPanel * eficienciaPanel * paneles * perdidas;
+            });
+        }
+        
+        // Calcular el sistema completo
+        async function calcularSistema() {
+            showLoading();
+            
+            try {
+                // Obtener parámetros de configuración
+                const ciudad = document.getElementById('ciudad').value;
+                const mes = parseInt(document.getElementById('mes').value);
+                let consumoPromedio;
+                
+                if (document.getElementById('consumo').value === 'custom') {
+                    consumoPromedio = parseFloat(document.getElementById('consumo-custom-value').value);
+                } else {
+                    consumoPromedio = parseFloat(document.getElementById('consumo').value);
+                }
+                
+                const confianza = parseFloat(document.getElementById('confianza').value) / 100;
+                
+                // Simular consumo
+                consumoData = simularConsumo(consumoPromedio);
+                
+                // Calcular número óptimo de paneles
+                let panelesRequeridos = 1;
+                let cobertura = 0;
+                let generacionOptima = [];
+                
+                while (panelesRequeridos <= 50 && cobertura < confianza) {
+                    const generacion = calcularGeneracion(panelesRequeridos);
+                    let diasCubiertos = 0;
+                    let maxDeficit = 0;
+                    let deficitTotal = 0;
+                    
+                    for (let i = 0; i < generacion.length; i++) {
+                        if (generacion[i] >= consumoData[i]) {
+                            diasCubiertos++;
+                        } else {
+                            const deficit = consumoData[i] - generacion[i];
+                            deficitTotal += deficit;
+                            if (deficit > maxDeficit) {
+                                maxDeficit = deficit;
+                            }
+                        }
+                    }
+                    
+                    cobertura = diasCubiertos / generacion.length;
+                    
+                    if (cobertura < confianza) {
+                        panelesRequeridos++;
+                    } else {
+                        generacionOptima = generacion;
+                        // Guardar resultados
+                        resultados = {
+                            panelesRequeridos: panelesRequeridos,
+                            generacionPromedio: generacion.reduce((a, b) => a + b, 0) / generacion.length,
+                            cobertura: cobertura * 100,
+                            diasDeficit: generacion.length - diasCubiertos,
+                            maxDeficit: maxDeficit,
+                            deficitTotal: deficitTotal,
+                            generacionData: generacion,
+                            consumoData: consumoData
+                        };
+                    }
+                }
+                
+                // Realizar análisis probabilístico
+                resultados.analisisProbabilistico = analisisProbabilistico();
+                
+                // Mostrar resultados
+                mostrarResultados();
+                mostrarAnalisis();
+                mostrarRecomendaciones();
+                
+                // Cambiar a la pestaña de resultados
+                changeTab('results-tab');
+                
+            } catch (error) {
+                console.error('Error en el cálculo:', error);
+                alert('Ocurrió un error al calcular el sistema. Por favor intenta nuevamente.');
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // Análisis probabilístico
+        function analisisProbabilistico() {
+            const numSimulaciones = 500;
+            const resultados = [];
+            
+            for (let p = 1; p <= 20; p++) {
+                let cubiertoTotal = 0;
+                let maxDeficitConsecutivo = 0;
+                let deficits = [];
+                
+                for (let sim = 0; sim < numSimulaciones; sim++) {
+                    let deficitActual = 0;
+                    let maxDeficit = 0;
+                    
+                    const generacion = calcularGeneracion(p);
+                    
+                    for (let i = 0; i < generacion.length; i++) {
+                        if (generacion[i] >= consumoData[i]) {
+                            deficitActual = 0;
+                        } else {
+                            const deficit = consumoData[i] - generacion[i];
+                            deficits.push(deficit);
+                            deficitActual++;
+                            if (deficitActual > maxDeficit) {
+                                maxDeficit = deficitActual;
+                            }
+                        }
+                    }
+                    
+                    cubiertoTotal += generacion.filter((gen, i) => gen >= consumoData[i]).length;
+                    
+                    if (maxDeficit > maxDeficitConsecutivo) {
+                        maxDeficitConsecutivo = maxDeficit;
+                    }
+                }
+                
+                resultados.push({
+                    paneles: p,
+                    probabilidad: (cubiertoTotal / (numSimulaciones * consumoData.length)) * 100,
+                    maxDiasDeficit: maxDeficitConsecutivo,
+                    deficitPromedio: deficits.reduce((a, b) => a + b, 0) / deficits.length || 0
+                });
+            }
+            
+            return resultados;
+        }
+        
+        // Mostrar resultados principales
+        function mostrarResultados() {
+            document.getElementById('results-placeholder').style.display = 'none';
+            const container = document.getElementById('resultados-container');
+            container.style.display = 'block';
+            
+            document.getElementById('paneles-requeridos').textContent = resultados.panelesRequeridos;
+            document.getElementById('generacion-promedio').textContent = resultados.generacionPromedio.toFixed(2);
+            document.getElementById('cobertura-consumo').textContent = resultados.cobertura.toFixed(1);
+            document.getElementById('dias-deficit').textContent = resultados.diasDeficit;
+            document.getElementById('max-deficit').textContent = resultados.maxDeficit.toFixed(2);
+            
+            // Gráfico de generación vs consumo
+            const chart = echarts.init(document.getElementById('generacion-chart'));
+            
+            const option = {
+                title: {
+                    text: 'Generación vs Consumo Diario',
+                    left: 'center'
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                },
+                legend: {
+                    data: ['Generación Solar', 'Consumo'],
+                    top: 30
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: radiacionData.map(dia => `Día ${dia.dia}`)
+                },
+                yAxis: {
+                    type: 'value',
+                    name: 'Energía (kWh)'
+                },
+                series: [
+                    {
+                        name: 'Generación Solar',
+                        type: 'bar',
+                        data: resultados.generacionData.map(val => val.toFixed(2)),
+                        itemStyle: {
+                            color: '#4CAF50'
+                        }
+                    },
+                    {
+                        name: 'Consumo',
+                        type: 'line',
+                        data: resultados.consumoData.map(val => val.toFixed(2)),
+                        symbol: 'circle',
+                        symbolSize: 8,
+                        lineStyle: {
+                            color: '#2196F3',
+                            width: 3
+                        },
+                        itemStyle: {
+                            color: '#2196F3'
+                        }
+                    }
+                ]
+            };
+            
+            chart.setOption(option);
+            
+            // Gráfico de consumo horario
+            const consumoChart = echarts.init(document.getElementById('consumo-chart'));
+            
+            const consumoOption = {
+                title: {
+                    text: 'Patrón de Consumo Horario',
+                    left: 'center'
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                xAxis: {
+                    type: 'category',
+                    data: Array.from({length: 24}, (_, i) => `${i}:00`)
+                },
+                yAxis: {
+                    type: 'value',
+                    name: 'Consumo (kWh)'
+                },
+                series: [{
+                    name: 'Consumo',
+                    type: 'line',
+                    data: Array.from({length: 24}, (_, hora) => {
+                        const consumosHora = [];
+                        for (let dia = 0; dia < Math.floor(resultados.consumoData.length / 24); dia++) {
+                            consumosHora.push(resultados.consumoData[hora + dia * 24]);
+                        }
+                        return (consumosHora.reduce((a, b) => a + b, 0) / consumosHora.length).toFixed(2);
+                    }),
+                    smooth: true,
+                    lineStyle: {
+                        color: '#2196F3',
+                        width: 3
+                    },
+                    itemStyle: {
+                        color: '#2196F3'
+                    }
+                }]
+            };
+            
+            consumoChart.setOption(consumoOption);
+        }
+        
+        // Mostrar análisis probabilístico
+        function mostrarAnalisis() {
+            document.getElementById('analysis-placeholder').style.display = 'none';
+            const container = document.getElementById('analisis-container');
+            container.style.display = 'block';
+            
+            // Actualizar simulación cuando se cambia el número de paneles
+            updatePanelSimulation();
+        }
+        
+        // Actualizar simulación de paneles
+        function updatePanelSimulation() {
+            const numPaneles = parseInt(document.getElementById('num-paneles').value);
+            document.getElementById('num-paneles-value').textContent = numPaneles;
+            
+            // Gráfico de probabilidad
+            const probChart = echarts.init(document.getElementById('probabilidad-chart'));
+            
+            const probOption = {
+                title: {
+                    text: 'Probabilidad de Cubrir el Consumo',
+                    left: 'center'
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                xAxis: {
+                    type: 'category',
+                    data: resultados.analisisProbabilistico.map(item => item.paneles),
+                    name: 'Número de Paneles'
+                },
+                yAxis: {
+                    type: 'value',
+                    name: 'Probabilidad (%)',
+                    max: 100
+                },
+                series: [
+                    {
+                        name: 'Probabilidad',
+                        type: 'line',
+                        data: resultados.analisisProbabilistico.map(item => item.probabilidad.toFixed(1)),
+                        smooth: true,
+                        lineStyle: {
+                            color: '#9C27B0',
+                            width: 3
+                        },
+                        itemStyle: {
+                            color: '#9C27B0'
+                        },
+                        markLine: {
+                            data: [
+                                {
+                                    yAxis: document.getElementById('confianza').value,
+                                    name: 'Confianza deseada',
+                                    lineStyle: {
+                                        color: '#F44336'
+                                    },
+                                    label: {
+                                        formatter: 'Confianza deseada',
+                                        position: 'end'
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            };
+            
+            probChart.setOption(probOption);
+            
+            // Histograma de generación para el número de paneles seleccionado
+            const generacion = calcularGeneracion(numPaneles);
+            const minGen = Math.min(...generacion);
+            const maxGen = Math.max(...generacion);
+            const binSize = (maxGen - minGen) / 10;
+            const bins = Array.from({length: 11}, (_, i) => minGen + i * binSize);
+            
+            const histData = bins.map((bin, i) => {
+                if (i === bins.length - 1) return 0;
+                return generacion.filter(g => g >= lower && g < upper).length;
+            });
+            
+            const histChart = echarts.init(document.getElementById('histograma-chart'));
+            
+            const histOption = {
+                title: {
+                    text: `Distribución de Generación (${numPaneles} paneles)`,
+                    left: 'center'
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                xAxis: {
+                    type: 'category',
+                    data: bins.map((bin, i) => {
+                        if (i === bins.length - 1) return `>${bin.toFixed(1)}`;
+                        return `${bin.toFixed(1)}-${bins[i+1].toFixed(1)}`;
+                    }),
+                    name: 'Generación (kWh)'
+                },
+                yAxis: {
+                    type: 'value',
+                    name: 'Frecuencia'
+                },
+                series: [
+                    {
+                        name: 'Días',
+                        type: 'bar',
+                        data: histData,
+                        itemStyle: {
+                            color: '#3F51B5'
+                        }
+                    }
+                ]
+            };
+            
+            histChart.setOption(histOption);
+            
+            // Gráfico de déficit consecutivo
+            const defChart = echarts.init(document.getElementById('deficit-consecutivo-chart'));
+            
+            const defOption = {
+                title: {
+                    text: 'Máximo Déficit Consecutivo por Número de Paneles',
+                    left: 'center'
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                xAxis: {
+                    type: 'category',
+                    data: resultados.analisisProbabilistico.map(item => item.paneles),
+                    name: 'Número de Paneles'
+                },
+                yAxis: {
+                    type: 'value',
+                    name: 'Días de déficit consecutivo'
+                },
+                series: [
+                    {
+                        name: 'Déficit máximo',
+                        type: 'line',
+                        data: resultados.analisisProbabilistico.map(item => item.maxDiasDeficit),
+                        smooth: true,
+                        lineStyle: {
+                            color: '#F44336',
+                            width: 3
+                        },
+                        itemStyle: {
+                            color: '#F44336'
+                        },
+                        markLine: {
+                            data: [
+                                {
+                                    yAxis: 3,
+                                    name: 'Límite recomendado',
+                                    lineStyle: {
+                                        color: '#FF9800'
+                                    },
+                                    label: {
+                                        formatter: 'Límite recomendado',
+                                        position: 'end'
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            };
+            
+            defChart.setOption(defOption);
+        }
+        
+        // Mostrar recomendaciones
+        function mostrarRecomendaciones() {
+            document.getElementById('recommendations-placeholder').style.display = 'none';
+            const container = document.getElementById('recommendations-container');
+            container.style.display = 'block';
+            
+            const recomendacionesList = document.getElementById('recommendations-list');
+            const consideracionesList = document.getElementById('considerations-list');
+            
+            recomendacionesList.innerHTML = '';
+            consideracionesList.innerHTML = '';
+            
+            // Recomendaciones basadas en resultados
+            const rec1 = document.createElement('div');
+            rec1.className = 'result-item';
+            rec1.innerHTML = `<p>Para cubrir el <span class="highlight">${resultados.cobertura.toFixed(1)}%</span> de tu consumo con un <span class="highlight">${document.getElementById('confianza').value}%</span> de confianza, necesitas <span class="highlight">${resultados.panelesRequeridos}</span> paneles solares de <span class="highlight">${document.getElementById('panel-potencia').value}W</span> cada uno.</p>`;
+            recomendacionesList.appendChild(rec1);
+            
+            const rec2 = document.createElement('div');
+            rec2.className = 'result-item';
+            
+            const areaTotal = (resultados.panelesRequeridos * 1.6).toFixed(1);
+            rec2.innerHTML = `<p>Esto requerirá aproximadamente <span class="highlight">${areaTotal} m²</span> de espacio en tu techo (asumiendo 1.6 m² por panel).</p>`;
+            recomendacionesList.appendChild(rec2);
+            
+            if (resultados.maxDeficit > 2) {
+                const rec3 = document.createElement('div');
+                rec3.className = 'result-item';
+                rec3.innerHTML = `<p>Tu sistema podría experimentar un déficit máximo de <span class="highlight">${resultados.maxDeficit.toFixed(1)} kWh</span> en los días menos soleados. Considera añadir baterías o reducir tu consumo en esos días.</p>`;
+                recomendacionesList.appendChild(rec3);
+            }
+            
+            // Consideraciones adicionales
+            const consideraciones = [
+                "Los cálculos asumen condiciones meteorológicas típicas para el mes seleccionado.",
+                "El rendimiento real puede variar según la orientación e inclinación de los paneles.",
+                "Las pérdidas por sombreado, suciedad y degradación no están incluidas en este cálculo.",
+                "Para una mayor precisión, consulta con un instalador profesional."
+            ];
+            
+            consideraciones.forEach(texto => {
+                const li = document.createElement('li');
+                li.textContent = texto;
+                consideracionesList.appendChild(li);
+            });
+        }
+        
+        // Mostrar/ocultar loading
+        function showLoading(message = "Calculando...") {
+            const loading = document.getElementById('loading');
+            loading.textContent = message;
+            loading.style.display = 'flex';
+        }
+        
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

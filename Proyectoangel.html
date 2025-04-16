@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radiación Solar</title>
+    <link rel="stylesheet" href="styleform.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .contenedor {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            display: inline-block;
+            background-color: #f9f9f9;
+        }
+        #map {
+            height: 400px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        #btn-rendimiento {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #353130;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .info-box {
+            margin: 20px auto;
+            padding: 15px;
+            background-color: #e7f3fe;
+            border-left: 6px solid #2196F3;
+            width: 80%;
+            text-align: left;
+        }
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="header">
+        <a href="index.html">Inicio</a>
+        <a href="datos.html">Estadística descriptiva</a>
+        <a href="contactanos.html">Radiación</a>
+        <a href="matrices.html">Matrices</a>
+        <a href="algebralineal.html">Álgebra Lineal</a>
+    </nav>
+    
+    <div class="loading" id="loading">Cargando datos...</div>
+    
+    <h1>Radiación Solar en Tiempo Real</h1>
+    <h2>Selecciona tu ubicación para ver la radiación solar</h2>
+    
+    <div class="info-box">
+        <p><strong>Nueva funcionalidad:</strong> Ahora puedes calcular el sistema solar necesario para tu hogar basado en la radiación actual.</p>
+        <p>Selecciona una ubicación en el mapa y haz clic en "Calcular Sistema Solar" para analizar cuántos paneles necesitas.</p>
+    </div>
+    
+    <div id="map"></div>
+    <div class="contenedor">
+        <p id="fecha">Cargando datos...</p>
+        <p id="ghi"></p>
+        <p id="dni"></p>
+        <p id="dhi"></p>
+        <p id="ciudad-nombre"></p>
+    </div>
+    
+    <button id="btn-rendimiento" onclick="irARendimiento()">Calcular Sistema Solar</button>
+
+    <script>
+        // Variables globales
+        var map, marker, datosRadiacion = {};
+        var ciudades = {
+            "morelia": { lat: 19.7008, lng: -101.1844, nombre: "Morelia" },
+            "ciudad_mexico": { lat: 19.4326, lng: -99.1332, nombre: "Ciudad de México" },
+            "guadalajara": { lat: 20.6597, lng: -103.3496, nombre: "Guadalajara" },
+            "monterrey": { lat: 25.6866, lng: -100.3161, nombre: "Monterrey" }
+        };
+
+        // Inicializar mapa
+        function initMap() {
+            map = L.map('map').setView([19.7008, -101.1844], 5);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Añadir marcadores para ciudades principales
+            Object.values(ciudades).forEach(ciudad => {
+                L.marker([ciudad.lat, ciudad.lng])
+                    .bindPopup(ciudad.nombre)
+                    .addTo(map);
+            });
+
+            map.on('click', onMapClick);
+            obtenerRadiacionSolar();
+        }
+
+        // Manejar clic en el mapa
+        function onMapClick(e) {
+            if (marker) {
+                marker.setLatLng(e.latlng);
+            } else {
+                marker = L.marker(e.latlng).addTo(map);
+            }
+            obtenerRadiacionSolar(e.latlng.lat, e.latlng.lng);
+        }
+
+        // Obtener datos de radiación solar
+        async function obtenerRadiacionSolar(lat = 19.7008, lon = -101.1844) {
+            showLoading();
+            
+            try {
+                // Obtener nombre de la ciudad (simulado)
+                const ciudad = await obtenerNombreCiudad(lat, lon);
+                document.getElementById('ciudad-nombre').textContent = `Ubicación: ${ciudad}`;
+                
+                // Obtener datos de radiación
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=shortwave_radiation,direct_radiation,diffuse_radiation&timezone=America/Mexico_City`;
+                const respuesta = await fetch(url);
+                const datos = await respuesta.json();
+                
+                if (datos && datos.current) {
+                    document.getElementById('fecha').textContent = `Última actualización: ${new Date().toLocaleString()}`;
+                    document.getElementById('ghi').textContent = `GHI (Radiación Global Horizontal): ${datos.current.shortwave_radiation} W/m²`;
+                    document.getElementById('dni').textContent = `DNI (Radiación Directa Normal): ${datos.current.direct_radiation} W/m²`;
+                    document.getElementById('dhi').textContent = `DHI (Radiación Difusa Horizontal): ${datos.current.diffuse_radiation} W/m²`;
+
+                    datosRadiacion = {
+                        ghi: datos.current.shortwave_radiation,
+                        dni: datos.current.direct_radiation,
+                        dhi: datos.current.diffuse_radiation,
+                        lat: lat,
+                        lon: lon,
+                        ciudad: ciudad
+                    };
+                }
+            } catch (error) {
+                console.error('Error al obtener los datos:', error);
+                alert("Error al obtener datos de radiación. Intenta nuevamente.");
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Redirigir a la página de rendimiento
+        function irARendimiento() {
+            if (datosRadiacion.ghi) {
+                const params = new URLSearchParams();
+                params.append('ghi', datosRadiacion.ghi);
+                params.append('dni', datosRadiacion.dni);
+                params.append('dhi', datosRadiacion.dhi);
+                params.append('lat', datosRadiacion.lat);
+                params.append('lon', datosRadiacion.lon);
+                params.append('ciudad', datosRadiacion.ciudad);
+                
+                window.location.href = `rendimientoangel.html?${params.toString()}`;
+            } else {
+                alert("Primero selecciona una ubicación en el mapa para obtener datos de radiación.");
+            }
+        }
+
+        // Función para obtener el nombre de la ciudad (simulada)
+        async function obtenerNombreCiudad(lat, lon) {
+            // En una implementación real, usarías una API de geocodificación inversa
+            // Aquí simulamos encontrando la ciudad más cercana
+            let ciudadCercana = "Ubicación personalizada";
+            let distanciaMinima = Infinity;
+            
+            Object.values(ciudades).forEach(ciudad => {
+                const distancia = Math.sqrt(Math.pow(lat - ciudad.lat, 2) + Math.pow(lon - ciudad.lng, 2));
+                if (distancia < distanciaMinima) {
+                    distanciaMinima = distancia;
+                    ciudadCercana = ciudad.nombre;
+                }
+            });
+            
+            return distanciaMinima < 0.5 ? ciudadCercana : "Ubicación personalizada";
+        }
+
+        // Mostrar/ocultar loading
+        function showLoading(message = "Cargando datos...") {
+            const loading = document.getElementById('loading');
+            loading.textContent = message;
+            loading.style.display = 'flex';
+        }
+        
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        // Inicializar al cargar la página
+        document.addEventListener('DOMContentLoaded', initMap);
+    </script>
+</body>
+</html>
