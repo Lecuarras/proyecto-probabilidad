@@ -3,39 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radiación Solar</title>
-    <link rel="stylesheet" href="styleform.css">
+    <title>Sistema Solar Residencial</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        .header {
+            background-color: #353130;
+            overflow: hidden;
+            padding: 15px;
+        }
+        .header a {
+            color: white;
             text-align: center;
-            margin: 20px;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 17px;
         }
-        h1 {
-            color: #333;
+        .header a:hover {
+            background-color: #4a4543;
         }
-        .contenedor {
-            margin-top: 20px;
+        .container {
             padding: 20px;
-            border: 1px solid #ddd;
-            display: inline-block;
-            background-color: #f9f9f9;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1, h2 {
+            color: #333;
+            text-align: center;
         }
         #map {
-            height: 400px;
+            height: 500px;
             width: 100%;
-            margin-top: 20px;
-        }
-        #btn-rendimiento {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #353130;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .info-box {
             margin: 20px auto;
@@ -43,7 +51,24 @@
             background-color: #e7f3fe;
             border-left: 6px solid #2196F3;
             width: 80%;
-            text-align: left;
+            border-radius: 4px;
+        }
+        .btn {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #353130;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: center;
+            text-decoration: none;
+        }
+        .btn:hover {
+            background-color: #4a4543;
         }
         .loading {
             display: none;
@@ -52,155 +77,250 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.5);
+            background-color: rgba(0,0,0,0.7);
             z-index: 1000;
             justify-content: center;
             align-items: center;
             color: white;
             font-size: 24px;
         }
+        .data-display {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        .data-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px;
+            width: 250px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin: 30px 0;
+        }
     </style>
 </head>
 <body>
     <nav class="header">
         <a href="index.html">Inicio</a>
-        <a href="datos.html">Estadística descriptiva</a>
-        <a href="contactanos.html">Radiación</a>
-        <a href="matrices.html">Matrices</a>
-        <a href="algebralineal.html">Álgebra Lineal</a>
+        <a href="calculadora.html">Calculadora Solar</a>
+        <a href="datos.html">Datos Históricos</a>
+        <a href="contacto.html">Contacto</a>
     </nav>
+
+    <div class="container">
+        <h1>Sistema de Cálculo de Paneles Solares</h1>
+        <h2>Selecciona tu ubicación para comenzar</h2>
+        
+        <div class="info-box">
+            <p><strong>Nueva funcionalidad:</strong> Calcula el sistema solar necesario para tu hogar basado en datos reales de radiación solar.</p>
+            <p>Selecciona una ubicación en el mapa y haz clic en "Calcular Sistema Solar" para comenzar.</p>
+        </div>
+        
+        <div id="map"></div>
+        
+        <div class="data-display" id="data-display" style="display: none;">
+            <div class="data-card">
+                <h3>Radiación Global (GHI)</h3>
+                <p id="ghi-value">-- W/m²</p>
+            </div>
+            <div class="data-card">
+                <h3>Radiación Directa (DNI)</h3>
+                <p id="dni-value">-- W/m²</p>
+            </div>
+            <div class="data-card">
+                <h3>Radiación Difusa (DHI)</h3>
+                <p id="dhi-value">-- W/m²</p>
+            </div>
+            <div class="data-card">
+                <h3>Ubicación</h3>
+                <p id="location-value">--</p>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <canvas id="radiation-chart"></canvas>
+        </div>
+        
+        <a href="calculadora.html" class="btn" id="calc-btn">Calcular Sistema Solar</a>
+    </div>
     
     <div class="loading" id="loading">Cargando datos...</div>
-    
-    <h1>Radiación Solar en Tiempo Real</h1>
-    <h2>Selecciona tu ubicación para ver la radiación solar</h2>
-    
-    <div class="info-box">
-        <p><strong>Nueva funcionalidad:</strong> Ahora puedes calcular el sistema solar necesario para tu hogar basado en la radiación actual.</p>
-        <p>Selecciona una ubicación en el mapa y haz clic en "Calcular Sistema Solar" para analizar cuántos paneles necesitas.</p>
-    </div>
-    
-    <div id="map"></div>
-    <div class="contenedor">
-        <p id="fecha">Cargando datos...</p>
-        <p id="ghi"></p>
-        <p id="dni"></p>
-        <p id="dhi"></p>
-        <p id="ciudad-nombre"></p>
-    </div>
-    
-    <button id="btn-rendimiento" onclick="irARendimiento()">Calcular Sistema Solar</button>
 
     <script>
         // Variables globales
-        var map, marker, datosRadiacion = {};
-        var ciudades = {
-            "morelia": { lat: 19.7008, lng: -101.1844, nombre: "Morelia" },
-            "ciudad_mexico": { lat: 19.4326, lng: -99.1332, nombre: "Ciudad de México" },
-            "guadalajara": { lat: 20.6597, lng: -103.3496, nombre: "Guadalajara" },
-            "monterrey": { lat: 25.6866, lng: -100.3161, nombre: "Monterrey" }
+        let map, marker;
+        let radiationData = {
+            ghi: null,
+            dni: null,
+            dhi: null,
+            lat: null,
+            lng: null,
+            city: null
         };
-
+        
+        // Ciudades predefinidas
+        const cities = {
+            "morelia": { lat: 19.7008, lng: -101.1844, name: "Morelia" },
+            "mexico": { lat: 19.4326, lng: -99.1332, name: "Ciudad de México" },
+            "guadalajara": { lat: 20.6597, lng: -103.3496, name: "Guadalajara" },
+            "monterrey": { lat: 25.6866, lng: -100.3161, name: "Monterrey" }
+        };
+        
         // Inicializar mapa
         function initMap() {
             map = L.map('map').setView([19.7008, -101.1844], 5);
+            
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors'
             }).addTo(map);
-
+            
             // Añadir marcadores para ciudades principales
-            Object.values(ciudades).forEach(ciudad => {
-                L.marker([ciudad.lat, ciudad.lng])
-                    .bindPopup(ciudad.nombre)
-                    .addTo(map);
+            Object.values(cities).forEach(city => {
+                L.marker([city.lat, city.lng])
+                    .bindPopup(city.name)
+                    .addTo(map)
+                    .on('click', () => {
+                        getSolarData(city.lat, city.lng, city.name);
+                    });
             });
-
-            map.on('click', onMapClick);
-            obtenerRadiacionSolar();
+            
+            // Manejar clic en el mapa
+            map.on('click', function(e) {
+                getSolarData(e.latlng.lat, e.latlng.lng, "Ubicación personalizada");
+            });
+            
+            // Cargar datos iniciales (Morelia por defecto)
+            getSolarData(cities.morelia.lat, cities.morelia.lng, cities.morelia.name);
         }
-
-        // Manejar clic en el mapa
-        function onMapClick(e) {
-            if (marker) {
-                marker.setLatLng(e.latlng);
-            } else {
-                marker = L.marker(e.latlng).addTo(map);
-            }
-            obtenerRadiacionSolar(e.latlng.lat, e.latlng.lng);
-        }
-
+        
         // Obtener datos de radiación solar
-        async function obtenerRadiacionSolar(lat = 19.7008, lon = -101.1844) {
+        async function getSolarData(lat, lng, cityName) {
             showLoading();
             
             try {
-                // Obtener nombre de la ciudad (simulado)
-                const ciudad = await obtenerNombreCiudad(lat, lon);
-                document.getElementById('ciudad-nombre').textContent = `Ubicación: ${ciudad}`;
-                
-                // Obtener datos de radiación
-                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=shortwave_radiation,direct_radiation,diffuse_radiation&timezone=America/Mexico_City`;
-                const respuesta = await fetch(url);
-                const datos = await respuesta.json();
-                
-                if (datos && datos.current) {
-                    document.getElementById('fecha').textContent = `Última actualización: ${new Date().toLocaleString()}`;
-                    document.getElementById('ghi').textContent = `GHI (Radiación Global Horizontal): ${datos.current.shortwave_radiation} W/m²`;
-                    document.getElementById('dni').textContent = `DNI (Radiación Directa Normal): ${datos.current.direct_radiation} W/m²`;
-                    document.getElementById('dhi').textContent = `DHI (Radiación Difusa Horizontal): ${datos.current.diffuse_radiation} W/m²`;
-
-                    datosRadiacion = {
-                        ghi: datos.current.shortwave_radiation,
-                        dni: datos.current.direct_radiation,
-                        dhi: datos.current.diffuse_radiation,
-                        lat: lat,
-                        lon: lon,
-                        ciudad: ciudad
-                    };
+                // Actualizar marcador
+                if (marker) {
+                    marker.setLatLng([lat, lng]);
+                } else {
+                    marker = L.marker([lat, lng]).addTo(map);
                 }
+                
+                // Guardar datos
+                radiationData.lat = lat;
+                radiationData.lng = lng;
+                radiationData.city = cityName;
+                
+                // Mostrar datos de ubicación
+                document.getElementById('location-value').textContent = `${cityName} (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+                
+                // Simular datos de API (en un caso real, usarías una API como Open-Meteo o NASA POWER)
+                simulateAPIData(lat, lng);
+                
+                // Mostrar sección de datos
+                document.getElementById('data-display').style.display = 'flex';
+                
+                // Actualizar gráfico
+                updateRadiationChart();
+                
+                // Habilitar botón de cálculo
+                document.getElementById('calc-btn').href = `calculadora.html?lat=${lat}&lng=${lng}&city=${encodeURIComponent(cityName)}`;
+                
             } catch (error) {
-                console.error('Error al obtener los datos:', error);
+                console.error('Error al obtener datos:', error);
                 alert("Error al obtener datos de radiación. Intenta nuevamente.");
             } finally {
                 hideLoading();
             }
         }
-
-        // Redirigir a la página de rendimiento
-        function irARendimiento() {
-            if (datosRadiacion.ghi) {
-                const params = new URLSearchParams();
-                params.append('ghi', datosRadiacion.ghi);
-                params.append('dni', datosRadiacion.dni);
-                params.append('dhi', datosRadiacion.dhi);
-                params.append('lat', datosRadiacion.lat);
-                params.append('lon', datosRadiacion.lon);
-                params.append('ciudad', datosRadiacion.ciudad);
-                
-                window.location.href = `rendimientoangel.html?${params.toString()}`;
-            } else {
-                alert("Primero selecciona una ubicación en el mapa para obtener datos de radiación.");
-            }
-        }
-
-        // Función para obtener el nombre de la ciudad (simulada)
-        async function obtenerNombreCiudad(lat, lon) {
-            // En una implementación real, usarías una API de geocodificación inversa
-            // Aquí simulamos encontrando la ciudad más cercana
-            let ciudadCercana = "Ubicación personalizada";
-            let distanciaMinima = Infinity;
+        
+        // Simular datos de API (reemplazar con llamada real en producción)
+        function simulateAPIData(lat, lng) {
+            // Valores base con variación según ubicación
+            const baseGHI = 5.5 + (Math.sin(lat * Math.PI / 180) * 0.5);
+            const baseDNI = baseGHI * 0.7;
+            const baseDHI = baseGHI * 0.3;
             
-            Object.values(ciudades).forEach(ciudad => {
-                const distancia = Math.sqrt(Math.pow(lat - ciudad.lat, 2) + Math.pow(lon - ciudad.lng, 2));
-                if (distancia < distanciaMinima) {
-                    distanciaMinima = distancia;
-                    ciudadCercana = ciudad.nombre;
-                }
+            // Variación aleatoria
+            radiationData.ghi = (baseGHI + (Math.random() - 0.5) * 0.3).toFixed(2);
+            radiationData.dni = (baseDNI + (Math.random() - 0.5) * 0.2).toFixed(2);
+            radiationData.dhi = (baseDHI + (Math.random() - 0.5) * 0.1).toFixed(2);
+            
+            // Actualizar UI
+            document.getElementById('ghi-value').textContent = `${radiationData.ghi} kWh/m²/día`;
+            document.getElementById('dni-value').textContent = `${radiationData.dni} kWh/m²/día`;
+            document.getElementById('dhi-value').textContent = `${radiationData.dhi} kWh/m²/día`;
+            
+            // Guardar en localStorage para usar en la calculadora
+            localStorage.setItem('solarData', JSON.stringify(radiationData));
+        }
+        
+        // Actualizar gráfico de radiación
+        function updateRadiationChart() {
+            const ctx = document.getElementById('radiation-chart').getContext('2d');
+            
+            if (window.radiationChart) {
+                window.radiationChart.destroy();
+            }
+            
+            // Datos simulados para el gráfico (12 meses)
+            const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+            const ghiData = months.map((_, i) => {
+                const seasonal = 1 + 0.3 * Math.sin((i - 6) * Math.PI / 6);
+                return (radiationData.ghi * seasonal * (0.9 + Math.random() * 0.2)).toFixed(2);
             });
             
-            return distanciaMinima < 0.5 ? ciudadCercana : "Ubicación personalizada";
+            window.radiationChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'Radiación Solar (GHI) kWh/m²/día',
+                        data: ghiData,
+                        borderColor: '#FF9800',
+                        backgroundColor: 'rgba(255, 152, 0, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `Radiación Solar Mensual - ${radiationData.city}`,
+                            font: {
+                                size: 16
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'kWh/m²/día'
+                            }
+                        }
+                    }
+                }
+            });
         }
-
+        
         // Mostrar/ocultar loading
         function showLoading(message = "Cargando datos...") {
             const loading = document.getElementById('loading');
@@ -211,7 +331,7 @@
         function hideLoading() {
             document.getElementById('loading').style.display = 'none';
         }
-
+        
         // Inicializar al cargar la página
         document.addEventListener('DOMContentLoaded', initMap);
     </script>
