@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distribución Binomial</title>
+    <style>
+         /* Estilos del menú de navegación */
+    .nav-container {
+        background-color: #f5f5f5;
+        border-radius: 10px;
+        padding: 10px 15px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .nav-menu {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .nav-item {
+        position: relative;
+    }
+    
+    .nav-link {
+        display: block;
+        padding: 8px 16px;
+        background-color: #4CAF50;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+    }
+    
+    .nav-link:hover {
+        background-color: #45a049;
+    }
+    
+    .nav-link.active {
+        background-color: #3d8b40;
+    }
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            gap: 2px;
+        }
+        .cell {
+            width: 50px;
+            height: 50px;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        .results-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .chart-wrapper, .table-wrapper {
+            flex: 1;
+        }
+        .chart {
+            width: 100%;
+            height: 300px;
+        }
+        .experiment {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .probability-table {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .sum-row {
+            font-weight: bold;
+            background-color: #f9f9f9;
+        }
+        .range-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .range-control input {
+            width: 60px;
+            padding: 5px;
+        }
+        .color-legend {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        .probability-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .probability-control input {
+            width: 80px;
+        }
+        .formula {
+            background-color: #f0f8ff;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+            text-align: center;
+        }
+        .info {
+            background-color: #e7f3fe;
+            padding: 10px;
+            border-left: 6px solid #2196F3;
+            margin-bottom: 15px;
+        }
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .slider-container input[type="range"] {
+            flex-grow: 1;
+        }
+        .slider-value {
+            min-width: 30px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+              <ul class="nav-menu">
+        <li class="nav-item"><a href="distrubucionBernoulii.html" class="nav-link active">Bernoulli</a></li>
+        <li class="nav-item"><a href="distribucionBinomial.html" class="nav-link">Binomial</a></li>
+        <li class="nav-item"><a href="distribuionuniforme.html" class="nav-link">uniforme</a></li>
+        <li class="nav-item"><a href="juegosAzarDaniel.html" class="nav-link">juego pelotas</a></li>
+    </ul>
+        <h1>Distribución Binomial</h1>
+     
+        
+        <div class="info">
+            <p>La distribución binomial describe el número de éxitos en una secuencia de <strong>n</strong> ensayos independientes con probabilidad <strong>p</strong> de éxito.</p>
+            <div class="formula">
+                P(X = k) = C(n,k) × p<sup>k</sup> × (1-p)<sup>n-k</sup>
+            </div>
+            <p>Donde C(n,k) es el coeficiente binomial (combinaciones de n elementos tomados de a k).</p>
+        </div>
+        
+        <div class="experiment">
+            <h2>Simulador de Distribución Binomial</h2>
+            <div class="range-control">
+                <label for="nTrials">Número de ensayos (n):</label>
+                <input type="number" id="nTrials" min="1" max="50" value="10">
+                
+                <label for="pSuccess">Probabilidad de éxito (p):</label>
+                <input type="number" id="pSuccess" min="0" max="1" step="0.01" value="0.5">
+            </div>
+            
+            <div class="color-legend" id="colorLegend">
+                <!-- Las leyendas de color se generarán dinámicamente -->
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button id="simulate1">Simular 1 vez</button>
+            <button id="simulate10">Simular 10 veces</button>
+            <button id="simulate100">Simular 100 veces</button>
+            <button id="simulate1000">Simular 1000 veces</button>
+            <button id="reset">Reiniciar</button>
+            
+            <div class="slider-container">
+                <label for="speed">Velocidad:</label>
+                <input type="range" id="speed" min="1" max="10" value="5">
+                <span class="slider-value" id="speedValue">5</span>
+            </div>
+        </div>
+        
+        <div>
+            <h3>Resultados</h3>
+            <p>Total de simulaciones: <span id="total">0</span></p>
+            <p>Parámetros: n = <span id="currentN">10</span>, p = <span id="currentP">0.5</span></p>
+            
+            <div class="results-container">
+                <div class="chart-wrapper">
+                    <div class="chart">
+                        <canvas id="frequencyChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="table-wrapper">
+                    <div class="probability-table">
+                        <table id="resultsTable">
+                            <thead>
+                                <tr>
+                                    <th>Éxitos (k)</th>
+                                    <th>Frecuencia</th>
+                                    <th>Frec. Relativa</th>
+                                    <th>Prob. Teórica</th>
+                                    <th>Diferencia</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Las filas de la tabla se generarán dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div>
+            <h3>Cuadrícula de Resultados</h3>
+            <p>Cada celda representa una simulación con su número de éxitos correspondiente</p>
+            <div class="grid-container" id="grid"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Configuración inicial
+        let nTrials = 10;
+        let pSuccess = 0.5;
+        let results = {};
+        let totalSimulations = 0;
+        let gridCells = [];
+        let animationId = null;
+        let simulationSpeed = 5;
+        let colorPalette = [
+            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', 
+            '#FF9F40', '#8AC24A', '#607D8B', '#E91E63', '#9C27B0',
+            '#3F51B5', '#2196F3', '#00BCD4', '#009688', '#4CAF50',
+            '#8BC34A', '#CDDC39', '#FFEB3B', '#FFC107', '#FF9800',
+            '#FF5722', '#795548', '#9E9E9E', '#607D8B', '#000000',
+            '#FF1744', '#F50057', '#D500F9', '#651FFF', '#3D5AFE',
+            '#2979FF', '#00B0FF', '#00E5FF', '#1DE9B6', '#00E676',
+            '#76FF03', '#C6FF00', '#FFEA00', '#FFC400', '#FF9100'
+        ];
+        let valueColors = {};
+
+        // Elementos del DOM
+        const gridContainer = document.getElementById('grid');
+        const totalElement = document.getElementById('total');
+        const nTrialsElement = document.getElementById('nTrials');
+        const pSuccessElement = document.getElementById('pSuccess');
+        const currentNElement = document.getElementById('currentN');
+        const currentPElement = document.getElementById('currentP');
+        const speedControl = document.getElementById('speed');
+        const speedValueElement = document.getElementById('speedValue');
+        const colorLegend = document.getElementById('colorLegend');
+        const resultsTableBody = document.querySelector('#resultsTable tbody');
+        const frequencyCtx = document.getElementById('frequencyChart').getContext('2d');
+        let frequencyChart;
+
+        // Función factorial para cálculos teóricos
+        function factorial(n) {
+            if (n < 0) return NaN;
+            if (n <= 1) return 1;
+            let result = 1;
+            for (let i = 2; i <= n; i++) {
+                result *= i;
+            }
+            return result;
+        }
+
+        // Coeficiente binomial (n choose k)
+        function binomialCoefficient(n, k) {
+            if (k < 0 || k > n) return 0;
+            return factorial(n) / (factorial(k) * factorial(n - k));
+        }
+
+        // Probabilidad teórica binomial
+        function theoreticalBinomialProbability(n, k, p) {
+            if (p < 0 || p > 1 || k < 0 || k > n) return 0;
+            return binomialCoefficient(n, k) * Math.pow(p, k) * Math.pow(1 - p, n - k);
+        }
+
+        // Inicializar la distribución
+        function initializeDistribution() {
+            nTrials = parseInt(nTrialsElement.value);
+            pSuccess = parseFloat(pSuccessElement.value);
+            
+            // Validar los valores
+            if (nTrials < 1) nTrials = 1;
+            if (pSuccess < 0) pSuccess = 0;
+            if (pSuccess > 1) pSuccess = 1;
+            
+            nTrialsElement.value = nTrials;
+            pSuccessElement.value = pSuccess;
+            
+            // Actualizar la visualización de parámetros
+            currentNElement.textContent = nTrials;
+            currentPElement.textContent = pSuccess.toFixed(2);
+            
+            // Reiniciar resultados
+            results = {};
+            for (let k = 0; k <= nTrials; k++) {
+                results[k] = 0;
+            }
+            
+            totalSimulations = 0;
+            gridContainer.innerHTML = '';
+            gridCells = [];
+            
+            // Asignar colores a cada valor
+            valueColors = {};
+            for (let k = 0; k <= nTrials; k++) {
+                valueColors[k] = colorPalette[k % colorPalette.length];
+            }
+            
+            // Actualizar la leyenda de colores
+            updateColorLegend();
+            
+            // Actualizar la tabla de resultados
+            updateResultsTable();
+            
+            // Inicializar o actualizar el gráfico
+            initializeChart();
+            
+            // Actualizar la UI
+            updateUI();
+        }
+
+        // Actualizar la leyenda de colores
+        function updateColorLegend() {
+            colorLegend.innerHTML = '';
+            for (let k = 0; k <= nTrials; k++) {
+                const legendItem = document.createElement('div');
+                legendItem.className = 'legend-item';
+                
+                const colorBox = document.createElement('div');
+                colorBox.className = 'legend-color';
+                colorBox.style.backgroundColor = valueColors[k];
+                
+                const label = document.createElement('span');
+                label.textContent = k;
+                
+                legendItem.appendChild(colorBox);
+                legendItem.appendChild(label);
+                colorLegend.appendChild(legendItem);
+            }
+        }
+
+        // Inicializar el gráfico
+        function initializeChart() {
+            const labels = [];
+            const backgroundColors = [];
+            const theoreticalData = [];
+            
+            for (let k = 0; k <= nTrials; k++) {
+                labels.push(k.toString());
+                backgroundColors.push(valueColors[k]);
+                theoreticalData.push(0); // Se actualizará después
+            }
+            
+            if (frequencyChart) {
+                frequencyChart.destroy();
+            }
+            
+            frequencyChart = new Chart(frequencyCtx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Frecuencia observada',
+                            data: new Array(labels.length).fill(0),
+                            backgroundColor: backgroundColors,
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Distribución teórica',
+                            data: theoreticalData,
+                            type: 'line',
+                            borderColor: '#333',
+                            borderWidth: 2,
+                            pointRadius: 3,
+                            pointBackgroundColor: '#333',
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { 
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Frecuencia'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Número de éxitos (k)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += context.parsed.y;
+                                    if (context.datasetIndex === 1) {
+                                        label += ' (teórico)';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Actualizar datos teóricos
+            updateTheoreticalData();
+        }
+
+        // Actualizar datos teóricos en el gráfico
+        function updateTheoreticalData() {
+            if (!frequencyChart) return;
+            
+            const theoreticalData = [];
+            for (let k = 0; k <= nTrials; k++) {
+                theoreticalData.push(theoreticalBinomialProbability(nTrials, k, pSuccess) * totalSimulations);
+            }
+            
+            frequencyChart.data.datasets[1].data = theoreticalData;
+            frequencyChart.update();
+        }
+
+        // Actualizar la tabla de resultados
+        function updateResultsTable() {
+            resultsTableBody.innerHTML = '';
+            
+            let totalFreq = 0;
+            let totalTheoretical = 0;
+            
+            for (let k = 0; k <= nTrials; k++) {
+                const row = document.createElement('tr');
+                
+                // Valor (k)
+                const valueCell = document.createElement('td');
+                valueCell.textContent = k;
+                
+                // Frecuencia observada
+                const freqCell = document.createElement('td');
+                const freq = results[k] || 0;
+                freqCell.textContent = freq;
+                freqCell.id = `freq-${k}`;
+                
+                // Frecuencia relativa
+                const relFreqCell = document.createElement('td');
+                const relFreq = totalSimulations > 0 ? (freq / totalSimulations).toFixed(4) : '0';
+                relFreqCell.textContent = relFreq;
+                relFreqCell.id = `rel-freq-${k}`;
+                
+                // Probabilidad teórica
+                const theoreticalProb = theoreticalBinomialProbability(nTrials, k, pSuccess);
+                const theoreticalCell = document.createElement('td');
+                theoreticalCell.textContent = theoreticalProb.toFixed(4);
+                theoreticalCell.id = `theoretical-${k}`;
+                
+                // Diferencia
+                const diffCell = document.createElement('td');
+                const diff = totalSimulations > 0 ? Math.abs(relFreq - theoreticalProb).toFixed(4) : '0';
+                diffCell.textContent = diff;
+                diffCell.style.backgroundColor = `rgba(255, 0, 0, ${diff * 5})`;
+                diffCell.id = `diff-${k}`;
+                
+                row.appendChild(valueCell);
+                row.appendChild(freqCell);
+                row.appendChild(relFreqCell);
+                row.appendChild(theoreticalCell);
+                row.appendChild(diffCell);
+                
+                resultsTableBody.appendChild(row);
+                totalFreq += freq;
+                totalTheoretical += theoreticalProb;
+            }
+            
+            // Fila de totales
+            const totalRow = document.createElement('tr');
+            totalRow.className = 'sum-row';
+            
+            const totalLabelCell = document.createElement('td');
+            totalLabelCell.textContent = 'Total';
+            
+            const totalFreqCell = document.createElement('td');
+            totalFreqCell.textContent = totalFreq;
+            totalFreqCell.id = 'totalFreq';
+            
+            const totalRelFreqCell = document.createElement('td');
+            totalRelFreqCell.textContent = '1.0000';
+            
+            const totalTheoreticalCell = document.createElement('td');
+            totalTheoreticalCell.textContent = totalTheoretical.toFixed(4);
+            
+            const totalDiffCell = document.createElement('td');
+            totalDiffCell.textContent = '';
+            
+            totalRow.appendChild(totalLabelCell);
+            totalRow.appendChild(totalFreqCell);
+            totalRow.appendChild(totalRelFreqCell);
+            totalRow.appendChild(totalTheoreticalCell);
+            totalRow.appendChild(totalDiffCell);
+            
+            resultsTableBody.appendChild(totalRow);
+        }
+
+        // Simular un experimento binomial
+        function simulate() {
+            let successes = 0;
+            for (let i = 0; i < nTrials; i++) {
+                if (Math.random() < pSuccess) {
+                    successes++;
+                }
+            }
+            results[successes]++;
+            totalSimulations++;
+            return successes;
+        }
+
+        // Actualizar la UI
+        function updateUI(result) {
+            totalElement.textContent = totalSimulations;
+            
+            // Actualizar datos del gráfico (frecuencias observadas)
+            const data = [];
+            for (let k = 0; k <= nTrials; k++) {
+                data.push(results[k] || 0);
+            }
+            frequencyChart.data.datasets[0].data = data;
+            
+            // Actualizar datos teóricos
+            updateTheoreticalData();
+            
+            // Actualizar tabla de resultados
+            let totalFreq = 0;
+            
+            for (let k = 0; k <= nTrials; k++) {
+                const freq = results[k] || 0;
+                totalFreq += freq;
+                
+                document.getElementById(`freq-${k}`).textContent = freq;
+                
+                const relFreq = totalSimulations > 0 ? (freq / totalSimulations).toFixed(4) : '0';
+                document.getElementById(`rel-freq-${k}`).textContent = relFreq;
+                
+                const theoreticalProb = theoreticalBinomialProbability(nTrials, k, pSuccess);
+                const diff = Math.abs(relFreq - theoreticalProb).toFixed(4);
+                document.getElementById(`diff-${k}`).textContent = diff;
+                document.getElementById(`diff-${k}`).style.backgroundColor = `rgba(255, 0, 0, ${diff * 5})`;
+            }
+            
+            document.getElementById('totalFreq').textContent = totalFreq;
+            
+            if (result !== undefined) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.style.backgroundColor = valueColors[result];
+                cell.textContent = result;
+                cell.title = `Éxitos: ${result} de ${nTrials}`;
+                gridContainer.appendChild(cell);
+                gridCells.push(cell);
+
+                // Limitar a 1000 celdas para no sobrecargar el navegador
+                if (gridCells.length > 1000) {
+                    gridContainer.removeChild(gridCells[0]);
+                    gridCells.shift();
+                }
+            }
+        }
+
+        // Simular múltiples ensayos
+        function simulateMultiple(times, delay = 0) {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                clearTimeout(animationId);
+            }
+
+            let count = 0;
+            let delayTime = (11 - simulationSpeed) * 20;
+
+            function runSimulation() {
+                if (count < times) {
+                    const result = simulate();
+                    updateUI(result);
+                    count++;
+
+                    if (delay > 0) {
+                        animationId = setTimeout(runSimulation, delayTime);
+                    } else {
+                        animationId = requestAnimationFrame(runSimulation);
+                    }
+                } else {
+                    animationId = null;
+                }
+            }
+
+            runSimulation();
+        }
+
+        // Event listeners
+        document.getElementById('simulate1').addEventListener('click', () => {
+            const result = simulate();
+            updateUI(result);
+        });
+
+        document.getElementById('simulate10').addEventListener('click', () => {
+            simulateMultiple(10, 100);
+        });
+
+        document.getElementById('simulate100').addEventListener('click', () => {
+            simulateMultiple(100, 10);
+        });
+
+        document.getElementById('simulate1000').addEventListener('click', () => {
+            simulateMultiple(1000);
+        });
+
+        document.getElementById('reset').addEventListener('click', () => {
+            initializeDistribution();
+        });
+
+        speedControl.addEventListener('input', () => {
+            simulationSpeed = parseInt(speedControl.value);
+            speedValueElement.textContent = simulationSpeed;
+        });
+
+        nTrialsElement.addEventListener('change', () => {
+            initializeDistribution();
+        });
+
+        pSuccessElement.addEventListener('change', () => {
+            initializeDistribution();
+        });
+
+        // Inicializar al cargar la página
+        initializeDistribution();
+    </script>
+</body>
+</html>
