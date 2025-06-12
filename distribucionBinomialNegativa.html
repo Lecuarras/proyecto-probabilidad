@@ -3,47 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Distribución Binomial</title>
+    <title>Distribución Binomial Negativa</title>
     <style>
-         /* Estilos del menú de navegación */
-    .nav-container {
-        background-color: #f5f5f5;
-        border-radius: 10px;
-        padding: 10px 15px;
-        margin-bottom: 20px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    
-    .nav-menu {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-    
-    .nav-item {
-        position: relative;
-    }
-    
-    .nav-link {
-        display: block;
-        padding: 8px 16px;
-        background-color: #4CAF50;
-        color: white;
-        text-decoration: none;
-        border-radius: 4px;
-        transition: background-color 0.3s;
-    }
-    
-    .nav-link:hover {
-        background-color: #45a049;
-    }
-    
-    .nav-link.active {
-        background-color: #3d8b40;
-    }
+        /* Estilos del menú de navegación */
+        .nav-container {
+            background-color: #f5f5f5;
+            border-radius: 10px;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .nav-menu {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .nav-item {
+            position: relative;
+        }
+        
+        .nav-link {
+            display: block;
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-link:hover {
+            background-color: #45a049;
+        }
+        
+        .nav-link.active {
+            background-color: #3d8b40;
+        }
         body {
             font-family: Arial, sans-serif;
             max-width: 1000px;
@@ -223,35 +223,43 @@
 </head>
 <body>
     <div class="container">
-              <ul class="nav-menu">
-        <li class="nav-item"><a href="distrubucionBernoulii.html" class="nav-link active">Bernoulli</a></li>
-        <li class="nav-item"><a href="distribucionBinomial.html" class="nav-link">Binomial</a></li>
-        <li class="nav-item"><a href="distribuionuniforme.html" class="nav-link">uniforme</a></li>
-        <li class="nav-item"><a href="juegosAzarDaniel.html" class="nav-link">juego pelotas</a></li>
-        <li class="nav-item"><a href="distribucionBinomialNegativa.html" class="nav-link">Binomial Negativa</a></li>
-        <li class="nav-item"><a href="distribucionGama.html" class="nav-link">Gama</a></li>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="distrubucionBernoulii.html" class="nav-link">Bernoulli</a></li>
+            <li class="nav-item"><a href="distribucionBinomial.html" class="nav-link">Binomial</a></li>
+            <li class="nav-item"><a href="distribucionBinomialNegativa.html" class="nav-link active">Binomial Negativa</a></li>
+            <li class="nav-item"><a href="distribuionuniforme.html" class="nav-link">Uniforme</a></li>
+            <li class="nav-item"><a href="juegosAzarDaniel.html" class="nav-link">Juego pelotas</a></li>
+            <li class="nav-item"><a href="distribucionGama.html" class="nav-link">Gama</a></li>
+            <li class="nav-item"><a href="distribucionPoisson.html" class="nav-link">Poisson</a></li>
+            <li class="nav-item"><a href="distribucionGeometrica.html" class="nav-link">Geometrica</a></li>
+            <li class="nav-item"><a href="distribucionHipergeometrica.html" class="nav-link">HiperGeometrica</a></li>
 
 
-    </ul>
-        <h1>Distribución Binomial</h1>
-     
+        </ul>
+        
+        <h1>Distribución Binomial Negativa</h1>
         
         <div class="info">
-            <p>La distribución binomial describe el número de éxitos en una secuencia de <strong>n</strong> ensayos independientes con probabilidad <strong>p</strong> de éxito.</p>
+            <p>La distribución binomial negativa describe el número de ensayos necesarios para obtener <strong>r</strong> éxitos, donde cada ensayo tiene una probabilidad <strong>p</strong> de éxito.</p>
             <div class="formula">
-                P(X = k) = C(n,k) × p<sup>k</sup> × (1-p)<sup>n-k</sup>
+                P(X = k) = C(k-1, r-1) × p<sup>r</sup> × (1-p)<sup>k-r</sup>
             </div>
-            <p>Donde C(n,k) es el coeficiente binomial (combinaciones de n elementos tomados de a k).</p>
+            <p>Donde C(k-1, r-1) es el coeficiente binomial (combinaciones de k-1 elementos tomados de a r-1), k ≥ r.</p>
         </div>
         
         <div class="experiment">
-            <h2>Simulador de Distribución Binomial</h2>
+            <h2>Simulador de Distribución Binomial Negativa</h2>
             <div class="range-control">
-                <label for="nTrials">Número de ensayos (n):</label>
-                <input type="number" id="nTrials" min="1" max="50" value="10">
+                <label for="rSuccesses">Número de éxitos requeridos (r):</label>
+                <input type="number" id="rSuccesses" min="1" max="50" value="5">
                 
                 <label for="pSuccess">Probabilidad de éxito (p):</label>
-                <input type="number" id="pSuccess" min="0" max="1" step="0.01" value="0.5">
+                <input type="number" id="pSuccess" min="0.01" max="0.99" step="0.01" value="0.5">
+            </div>
+            
+            <div class="range-control">
+                <label for="maxTrials">Máximo número de ensayos a mostrar:</label>
+                <input type="number" id="maxTrials" min="5" max="200" value="30">
             </div>
             
             <div class="color-legend" id="colorLegend">
@@ -260,24 +268,24 @@
         </div>
         
         <div class="mean-section">
-            <h3>Media y Varianza de la Distribución Binomial</h3>
+            <h3>Media y Varianza de la Distribución Binomial Negativa</h3>
             
             <div class="equation">
                 <p><strong>Fórmula de la media:</strong></p>
-                <p>μ = E[X] = n × p</p>
+                <p>μ = E[X] = r / p</p>
                 <p><strong>Fórmula de la varianza:</strong></p>
-                <p>σ² = Var(X) = n × p × (1 - p)</p>
+                <p>σ² = Var(X) = r × (1 - p) / p²</p>
                 <p>Donde:</p>
                 <ul>
-                    <li>n = número de ensayos</li>
-                    <li>p = probabilidad de éxito</li>
+                    <li>r = número de éxitos requeridos</li>
+                    <li>p = probabilidad de éxito en cada ensayo</li>
                 </ul>
             </div>
             
             <div class="stats-container">
                 <div class="stat-box">
                     <p><strong>Media teórica:</strong></p>
-                    <p id="theoreticalMean">5.0</p>
+                    <p id="theoreticalMean">10.0</p>
                 </div>
                 
                 <div class="stat-box">
@@ -287,7 +295,7 @@
                 
                 <div class="stat-box">
                     <p><strong>Varianza teórica:</strong></p>
-                    <p id="theoreticalVariance">2.5</p>
+                    <p id="theoreticalVariance">10.0</p>
                 </div>
                 
                 <div class="stat-box">
@@ -318,7 +326,7 @@
         <div>
             <h3>Resultados</h3>
             <p>Total de simulaciones: <span id="total">0</span></p>
-            <p>Parámetros: n = <span id="currentN">10</span>, p = <span id="currentP">0.5</span></p>
+            <p>Parámetros: r = <span id="currentR">5</span>, p = <span id="currentP">0.5</span></p>
             
             <div class="results-container">
                 <div class="chart-wrapper">
@@ -332,7 +340,7 @@
                         <table id="resultsTable">
                             <thead>
                                 <tr>
-                                    <th>Éxitos (k)</th>
+                                    <th>Ens. necesarios (k)</th>
                                     <th>Frecuencia</th>
                                     <th>Frec. Relativa</th>
                                     <th>Prob. Teórica</th>
@@ -350,7 +358,7 @@
         
         <div>
             <h3>Cuadrícula de Resultados</h3>
-            <p>Cada celda representa una simulación con su número de éxitos correspondiente</p>
+            <p>Cada celda representa una simulación con el número de ensayos necesarios para obtener r éxitos</p>
             <div class="grid-container" id="grid"></div>
         </div>
     </div>
@@ -358,8 +366,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         // Configuración inicial
-        let nTrials = 10;
+        let rSuccesses = 5;
         let pSuccess = 0.5;
+        let maxTrials = 30;
         let results = {};
         let totalSimulations = 0;
         let gridCells = [];
@@ -381,9 +390,10 @@
         // Elementos del DOM
         const gridContainer = document.getElementById('grid');
         const totalElement = document.getElementById('total');
-        const nTrialsElement = document.getElementById('nTrials');
+        const rSuccessesElement = document.getElementById('rSuccesses');
         const pSuccessElement = document.getElementById('pSuccess');
-        const currentNElement = document.getElementById('currentN');
+        const maxTrialsElement = document.getElementById('maxTrials');
+        const currentRElement = document.getElementById('currentR');
         const currentPElement = document.getElementById('currentP');
         const speedControl = document.getElementById('speed');
         const speedValueElement = document.getElementById('speedValue');
@@ -415,20 +425,20 @@
             return factorial(n) / (factorial(k) * factorial(n - k));
         }
 
-        // Probabilidad teórica binomial
-        function theoreticalBinomialProbability(n, k, p) {
-            if (p < 0 || p > 1 || k < 0 || k > n) return 0;
-            return binomialCoefficient(n, k) * Math.pow(p, k) * Math.pow(1 - p, n - k);
+        // Probabilidad teórica binomial negativa
+        function theoreticalNegativeBinomialProbability(r, k, p) {
+            if (p <= 0 || p >= 1 || k < r) return 0;
+            return binomialCoefficient(k-1, r-1) * Math.pow(p, r) * Math.pow(1 - p, k - r);
         }
 
         // Calcular la media teórica
-        function calculateTheoreticalMean(n, p) {
-            return n * p;
+        function calculateTheoreticalMean(r, p) {
+            return r / p;
         }
 
         // Calcular la varianza teórica
-        function calculateTheoreticalVariance(n, p) {
-            return n * p * (1 - p);
+        function calculateTheoreticalVariance(r, p) {
+            return r * (1 - p) / (p * p);
         }
 
         // Calcular la media de los resultados
@@ -452,33 +462,38 @@
 
         // Inicializar la distribución
         function initializeDistribution() {
-            nTrials = parseInt(nTrialsElement.value);
+            rSuccesses = parseInt(rSuccessesElement.value);
             pSuccess = parseFloat(pSuccessElement.value);
+            maxTrials = parseInt(maxTrialsElement.value);
             
             // Validar los valores
-            if (nTrials < 1) nTrials = 1;
-            if (pSuccess < 0) pSuccess = 0;
-            if (pSuccess > 1) pSuccess = 1;
+            if (rSuccesses < 1) rSuccesses = 1;
+            if (pSuccess <= 0) pSuccess = 0.01;
+            if (pSuccess >= 1) pSuccess = 0.99;
+            if (maxTrials < rSuccesses) maxTrials = rSuccesses + 5;
             
-            nTrialsElement.value = nTrials;
+            rSuccessesElement.value = rSuccesses;
             pSuccessElement.value = pSuccess;
+            maxTrialsElement.value = maxTrials;
             
             // Actualizar la visualización de parámetros
-            currentNElement.textContent = nTrials;
+            currentRElement.textContent = rSuccesses;
             currentPElement.textContent = pSuccess.toFixed(2);
             
             // Calcular propiedades teóricas
-            const theoreticalMean = calculateTheoreticalMean(nTrials, pSuccess);
-            const theoreticalVariance = calculateTheoreticalVariance(nTrials, pSuccess);
+            const theoreticalMean = calculateTheoreticalMean(rSuccesses, pSuccess);
+            const theoreticalVariance = calculateTheoreticalVariance(rSuccesses, pSuccess);
             
             theoreticalMeanElement.textContent = theoreticalMean.toFixed(2);
             theoreticalVarianceElement.textContent = theoreticalVariance.toFixed(2);
             
             // Reiniciar resultados
             results = {};
-            for (let k = 0; k <= nTrials; k++) {
+            for (let k = rSuccesses; k <= maxTrials; k++) {
                 results[k] = 0;
             }
+            // Agregar un bucket para "más de maxTrials"
+            results[maxTrials + 1] = 0;
             
             totalSimulations = 0;
             gridContainer.innerHTML = '';
@@ -487,9 +502,11 @@
             
             // Asignar colores a cada valor
             valueColors = {};
-            for (let k = 0; k <= nTrials; k++) {
-                valueColors[k] = colorPalette[k % colorPalette.length];
+            for (let k = rSuccesses; k <= maxTrials; k++) {
+                valueColors[k] = colorPalette[(k - rSuccesses) % colorPalette.length];
             }
+            // Color para "más de maxTrials"
+            valueColors[maxTrials + 1] = '#000000';
             
             // Actualizar la leyenda de colores
             updateColorLegend();
@@ -507,7 +524,7 @@
         // Actualizar la leyenda de colores
         function updateColorLegend() {
             colorLegend.innerHTML = '';
-            for (let k = 0; k <= nTrials; k++) {
+            for (let k = rSuccesses; k <= maxTrials; k++) {
                 const legendItem = document.createElement('div');
                 legendItem.className = 'legend-item';
                 
@@ -522,6 +539,21 @@
                 legendItem.appendChild(label);
                 colorLegend.appendChild(legendItem);
             }
+            
+            // Leyenda para "más de maxTrials"
+            const legendItem = document.createElement('div');
+            legendItem.className = 'legend-item';
+            
+            const colorBox = document.createElement('div');
+            colorBox.className = 'legend-color';
+            colorBox.style.backgroundColor = valueColors[maxTrials + 1];
+            
+            const label = document.createElement('span');
+            label.textContent = `>${maxTrials}`;
+            
+            legendItem.appendChild(colorBox);
+            legendItem.appendChild(label);
+            colorLegend.appendChild(legendItem);
         }
 
         // Inicializar los gráficos
@@ -530,11 +562,15 @@
             const backgroundColors = [];
             const theoreticalData = [];
             
-            for (let k = 0; k <= nTrials; k++) {
+            for (let k = rSuccesses; k <= maxTrials; k++) {
                 labels.push(k.toString());
                 backgroundColors.push(valueColors[k]);
                 theoreticalData.push(0); // Se actualizará después
             }
+            // Agregar etiqueta para "más de maxTrials"
+            labels.push(`>${maxTrials}`);
+            backgroundColors.push(valueColors[maxTrials + 1]);
+            theoreticalData.push(0);
             
             // Gráfico de frecuencia
             if (frequencyChart) {
@@ -578,7 +614,7 @@
                         x: {
                             title: {
                                 display: true,
-                                text: 'Número de éxitos (k)'
+                                text: 'Número de ensayos necesarios (k)'
                             }
                         }
                     },
@@ -658,9 +694,16 @@
             if (!frequencyChart) return;
             
             const theoreticalData = [];
-            for (let k = 0; k <= nTrials; k++) {
-                theoreticalData.push(theoreticalBinomialProbability(nTrials, k, pSuccess) * totalSimulations);
+            let sumTheoretical = 0;
+            
+            for (let k = rSuccesses; k <= maxTrials; k++) {
+                const prob = theoreticalNegativeBinomialProbability(rSuccesses, k, pSuccess);
+                theoreticalData.push(prob * totalSimulations);
+                sumTheoretical += prob;
             }
+            
+            // Probabilidad de más de maxTrials ensayos
+            theoreticalData.push((1 - sumTheoretical) * totalSimulations);
             
             frequencyChart.data.datasets[1].data = theoreticalData;
             frequencyChart.update();
@@ -673,7 +716,7 @@
             let totalFreq = 0;
             let totalTheoretical = 0;
             
-            for (let k = 0; k <= nTrials; k++) {
+            for (let k = rSuccesses; k <= maxTrials; k++) {
                 const row = document.createElement('tr');
                 
                 // Valor (k)
@@ -693,7 +736,7 @@
                 relFreqCell.id = `rel-freq-${k}`;
                 
                 // Probabilidad teórica
-                const theoreticalProb = theoreticalBinomialProbability(nTrials, k, pSuccess);
+                const theoreticalProb = theoreticalNegativeBinomialProbability(rSuccesses, k, pSuccess);
                 const theoreticalCell = document.createElement('td');
                 theoreticalCell.textContent = theoreticalProb.toFixed(4);
                 theoreticalCell.id = `theoretical-${k}`;
@@ -716,6 +759,43 @@
                 totalTheoretical += theoreticalProb;
             }
             
+            // Fila para "más de maxTrials"
+            const extraRow = document.createElement('tr');
+            
+            const extraValueCell = document.createElement('td');
+            extraValueCell.textContent = `>${maxTrials}`;
+            
+            const extraFreqCell = document.createElement('td');
+            const extraFreq = results[maxTrials + 1] || 0;
+            extraFreqCell.textContent = extraFreq;
+            extraFreqCell.id = `freq-extra`;
+            
+            const extraRelFreqCell = document.createElement('td');
+            const extraRelFreq = totalSimulations > 0 ? (extraFreq / totalSimulations).toFixed(4) : '0';
+            extraRelFreqCell.textContent = extraRelFreq;
+            extraRelFreqCell.id = `rel-freq-extra`;
+            
+            const extraTheoreticalCell = document.createElement('td');
+            const extraTheoreticalProb = 1 - totalTheoretical;
+            extraTheoreticalCell.textContent = extraTheoreticalProb.toFixed(4);
+            extraTheoreticalCell.id = `theoretical-extra`;
+            
+            const extraDiffCell = document.createElement('td');
+            const extraDiff = totalSimulations > 0 ? Math.abs(extraRelFreq - extraTheoreticalProb).toFixed(4) : '0';
+            extraDiffCell.textContent = extraDiff;
+            extraDiffCell.style.backgroundColor = `rgba(255, 0, 0, ${extraDiff * 5})`;
+            extraDiffCell.id = `diff-extra`;
+            
+            extraRow.appendChild(extraValueCell);
+            extraRow.appendChild(extraFreqCell);
+            extraRow.appendChild(extraRelFreqCell);
+            extraRow.appendChild(extraTheoreticalCell);
+            extraRow.appendChild(extraDiffCell);
+            
+            resultsTableBody.appendChild(extraRow);
+            totalFreq += extraFreq;
+            totalTheoretical += extraTheoreticalProb;
+            
             // Fila de totales
             const totalRow = document.createElement('tr');
             totalRow.className = 'sum-row';
@@ -731,7 +811,7 @@
             totalRelFreqCell.textContent = '1.0000';
             
             const totalTheoreticalCell = document.createElement('td');
-            totalTheoreticalCell.textContent = totalTheoretical.toFixed(4);
+            totalTheoreticalCell.textContent = '1.0000';
             
             const totalDiffCell = document.createElement('td');
             totalDiffCell.textContent = '';
@@ -745,17 +825,24 @@
             resultsTableBody.appendChild(totalRow);
         }
 
-        // Simular un experimento binomial
+        // Simular un experimento binomial negativo
         function simulate() {
+            let trials = 0;
             let successes = 0;
-            for (let i = 0; i < nTrials; i++) {
+            
+            while (successes < rSuccesses) {
+                trials++;
                 if (Math.random() < pSuccess) {
                     successes++;
                 }
             }
-            results[successes]++;
+            
+            // Registrar el resultado
+            const result = trials <= maxTrials ? trials : maxTrials + 1;
+            results[result]++;
             totalSimulations++;
-            return successes;
+            
+            return result;
         }
 
         // Actualizar la UI
@@ -764,9 +851,10 @@
             
             // Actualizar datos del gráfico (frecuencias observadas)
             const data = [];
-            for (let k = 0; k <= nTrials; k++) {
+            for (let k = rSuccesses; k <= maxTrials; k++) {
                 data.push(results[k] || 0);
             }
+            data.push(results[maxTrials + 1] || 0);
             frequencyChart.data.datasets[0].data = data;
             
             // Actualizar datos teóricos
@@ -775,7 +863,7 @@
             // Calcular y mostrar media y varianza
             const mean = calculateMean();
             const variance = calculateVariance(mean);
-            const theoreticalMean = calculateTheoreticalMean(nTrials, pSuccess);
+            const theoreticalMean = calculateTheoreticalMean(rSuccesses, pSuccess);
             
             meanValueElement.textContent = mean.toFixed(4);
             varianceValueElement.textContent = variance.toFixed(4);
@@ -790,8 +878,9 @@
             
             // Actualizar tabla de resultados
             let totalFreq = 0;
+            let totalTheoretical = 0;
             
-            for (let k = 0; k <= nTrials; k++) {
+            for (let k = rSuccesses; k <= maxTrials; k++) {
                 const freq = results[k] || 0;
                 totalFreq += freq;
                 
@@ -800,20 +889,47 @@
                 const relFreq = totalSimulations > 0 ? (freq / totalSimulations).toFixed(4) : '0';
                 document.getElementById(`rel-freq-${k}`).textContent = relFreq;
                 
-                const theoreticalProb = theoreticalBinomialProbability(nTrials, k, pSuccess);
+                const theoreticalProb = theoreticalNegativeBinomialProbability(rSuccesses, k, pSuccess);
+                totalTheoretical += theoreticalProb;
                 const diff = Math.abs(relFreq - theoreticalProb).toFixed(4);
                 document.getElementById(`diff-${k}`).textContent = diff;
                 document.getElementById(`diff-${k}`).style.backgroundColor = `rgba(255, 0, 0, ${diff * 5})`;
             }
+            
+            // Actualizar fila de "más de maxTrials"
+            const extraFreq = results[maxTrials + 1] || 0;
+            totalFreq += extraFreq;
+            
+            document.getElementById('freq-extra').textContent = extraFreq;
+            
+            const extraRelFreq = totalSimulations > 0 ? (extraFreq / totalSimulations).toFixed(4) : '0';
+            document.getElementById('rel-freq-extra').textContent = extraRelFreq;
+            
+            const extraTheoreticalProb = 1 - totalTheoretical;
+            document.getElementById('theoretical-extra').textContent = extraTheoreticalProb.toFixed(4);
+            
+            const extraDiff = Math.abs(extraRelFreq - extraTheoreticalProb).toFixed(4);
+            document.getElementById('diff-extra').textContent = extraDiff;
+            document.getElementById('diff-extra').style.backgroundColor = `rgba(255, 0, 0, ${extraDiff * 5})`;
             
             document.getElementById('totalFreq').textContent = totalFreq;
             
             if (result !== undefined) {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
+                
+                // Determinar el valor a mostrar
+                let displayValue = result;
+                let displayTitle = `Ens. necesarios: ${result}`;
+                
+                if (result === maxTrials + 1) {
+                    displayValue = `>${maxTrials}`;
+                    displayTitle = `Ens. necesarios: más de ${maxTrials}`;
+                }
+                
                 cell.style.backgroundColor = valueColors[result];
-                cell.textContent = result;
-                cell.title = `Éxitos: ${result} de ${nTrials}`;
+                cell.textContent = displayValue;
+                cell.title = displayTitle;
                 gridContainer.appendChild(cell);
                 gridCells.push(cell);
 
@@ -881,11 +997,15 @@
             speedValueElement.textContent = simulationSpeed;
         });
 
-        nTrialsElement.addEventListener('change', () => {
+        rSuccessesElement.addEventListener('change', () => {
             initializeDistribution();
         });
 
         pSuccessElement.addEventListener('change', () => {
+            initializeDistribution();
+        });
+
+        maxTrialsElement.addEventListener('change', () => {
             initializeDistribution();
         });
 

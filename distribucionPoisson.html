@@ -3,47 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Distribución Uniforme Discreta</title>
+    <title>Distribución Poisson</title>
     <style>
-         /* Estilos del menú de navegación */
-    .nav-container {
-        background-color: #f5f5f5;
-        border-radius: 10px;
-        padding: 10px 15px;
-        margin-bottom: 20px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    
-    .nav-menu {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-    
-    .nav-item {
-        position: relative;
-    }
-    
-    .nav-link {
-        display: block;
-        padding: 8px 16px;
-        background-color: #4CAF50;
-        color: white;
-        text-decoration: none;
-        border-radius: 4px;
-        transition: background-color 0.3s;
-    }
-    
-    .nav-link:hover {
-        background-color: #45a049;
-    }
-    
-    .nav-link.active {
-        background-color: #3d8b40;
-    }
+        /* Estilos del menú de navegación */
+        .nav-container {
+            background-color: #f5f5f5;
+            border-radius: 10px;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .nav-menu {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .nav-item {
+            position: relative;
+        }
+        
+        .nav-link {
+            display: block;
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-link:hover {
+            background-color: #45a049;
+        }
+        
+        .nav-link.active {
+            background-color: #3d8b40;
+        }
         body {
             font-family: Arial, sans-serif;
             max-width: 1000px;
@@ -202,6 +202,14 @@
             margin-bottom: 20px;
             border-left: 4px solid #2196F3;
         }
+        .k-slider {
+            width: 100%;
+            margin: 15px 0;
+        }
+        .k-value {
+            font-weight: bold;
+            color: #2196F3;
+        }
     </style>
 </head>
 <body>
@@ -209,24 +217,21 @@
             <ul class="nav-menu">
         <li class="nav-item"><a href="distrubucionBernoulii.html" class="nav-link">Bernoulli</a></li>
         <li class="nav-item"><a href="distribucionBinomial.html" class="nav-link">Binomial</a></li>
-        <li class="nav-item"><a href="distribuionuniforme.html" class="nav-link active">uniforme</a></li>
+        <li class="nav-item"><a href="distribuionuniforme.html" class="nav-link">uniforme</a></li>
         <li class="nav-item"><a href="juegosAzarDaniel.html" class="nav-link">juego pelotas</a></li>
         <li class="nav-item"><a href="distribucionBinomialNegativa.html" class="nav-link">Binomial Negativa</a></li>
         <li class="nav-item"><a href="distribucionGama.html" class="nav-link">Gama</a></li>
-
-
+        <li class="nav-item"><a href="distribucionPoisson.html" class="nav-link active">Poisson</a></li>
     </ul>
-        <h1>Distribución Uniforme Discreta</h1>
+        <h1>Distribución Poisson</h1>
        
         <div class="experiment">
-            <h2>Simulación de Distribución Uniforme</h2>
+            <h2>Simulación de Distribución Poisson</h2>
             <div class="range-control">
-                <label for="minValue">Valor mínimo (a):</label>
-                <input type="number" id="minValue" min="0" max="100" value="1">
-                <label for="maxValue">Valor máximo (b):</label>
-                <input type="number" id="maxValue" min="1" max="100" value="6">
+                <label for="lambdaValue">Parámetro λ (lambda):</label>
+                <input type="number" id="lambdaValue" min="0.1" max="20" step="0.1" value="3">
             </div>
-            <p>Una distribución uniforme discreta asigna igual probabilidad a cada valor entero en el rango [a, b]</p>
+            <p>La distribución Poisson modela el número de eventos que ocurren en un intervalo fijo de tiempo o espacio cuando estos eventos ocurren con una tasa promedio conocida (λ) e independientemente del tiempo desde el último evento.</p>
             
             <div class="color-legend" id="colorLegend">
                 <!-- Las leyendas de color se generarán dinámicamente -->
@@ -238,18 +243,17 @@
             
             <div class="equation">
                 <p><strong>Fórmula de la media:</strong></p>
-                <p>μ = E[X] = (a + b) / 2</p>
+                <p>μ = E[X] = λ</p>
                 <p>Donde:</p>
                 <ul>
-                    <li>a = valor mínimo</li>
-                    <li>b = valor máximo</li>
+                    <li>λ = tasa promedio de ocurrencia</li>
                 </ul>
             </div>
             
             <div class="stats-container">
                 <div class="stat-box">
                     <p><strong>Media teórica:</strong></p>
-                    <p id="theoreticalMean">3.5</p>
+                    <p id="theoreticalMean">3.0</p>
                 </div>
                 
                 <div class="stat-box">
@@ -281,25 +285,31 @@
         </div>
 
         <div class="distribution-section">
-            <h3>Propiedades de la Distribución Uniforme Discreta</h3>
+            <h3>Propiedades de la Distribución Poisson</h3>
             
             <div class="equation">
                 <p><strong>Función de masa de probabilidad (PMF):</strong></p>
-                <p>P(X = x) = 1/(b - a + 1) para x ∈ {a, a+1, ..., b}</p>
+                <p>P(X = k) = (e⁻λ * λᵏ) / k! para k ∈ {0, 1, 2, ...}</p>
+                <p>Donde:</p>
+                <ul>
+                    <li>λ = tasa promedio de ocurrencia</li>
+                    <li>k = número de ocurrencias</li>
+                    <li>e = constante de Euler (~2.71828)</li>
+                </ul>
             </div>
             
             <div class="stats-container">
                 <div class="stat-box">
                     <p><strong>Media (Valor esperado):</strong></p>
-                    <p>E[X] = (a + b)/2</p>
-                    <p>Media teórica: <span id="theoreticalMean2">3.5</span></p>
+                    <p>E[X] = λ</p>
+                    <p>Media teórica: <span id="theoreticalMean2">3.0</span></p>
                     <p>Media de la simulación: <span id="meanValue2">0</span></p>
                 </div>
                 
                 <div class="stat-box">
                     <p><strong>Varianza:</strong></p>
-                    <p>Var(X) = [(b - a + 1)² - 1]/12</p>
-                    <p>Varianza teórica: <span id="theoreticalVariance">2.92</span></p>
+                    <p>Var(X) = λ</p>
+                    <p>Varianza teórica: <span id="theoreticalVariance">3.0</span></p>
                     <p>Varianza de la simulación: <span id="varianceValue">0</span></p>
                 </div>
             </div>
@@ -317,7 +327,8 @@
         <div>
             <h3>Resultados</h3>
             <p>Total de simulaciones: <span id="total">0</span></p>
-            <p>Rango: [<span id="currentMin">1</span>, <span id="currentMax">6</span>]</p>
+            <p>Parámetro λ: <span id="currentLambda">3</span></p>
+            <p>Valores posibles: k = 0, 1, 2, ...</p>
             
             <div class="results-container">
                 <div class="chart-wrapper">
@@ -331,7 +342,7 @@
                         <table id="resultsTable">
                             <thead>
                                 <tr>
-                                    <th>Valor</th>
+                                    <th>Valor (k)</th>
                                     <th>Frecuencia</th>
                                     <th>Probabilidad</th>
                                     <th>Probabilidad teórica</th>
@@ -356,8 +367,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         // Configuración inicial
-        let minValue = 1;
-        let maxValue = 6;
+        let lambda = 3;
         let results = {};
         let totalSimulations = 0;
         let gridCells = [];
@@ -371,14 +381,13 @@
         ];
         let valueColors = {};
         let meanHistory = [];
+        let maxKToShow = 15; // Máximo valor de k a mostrar en gráficos/tablas
 
         // Elementos del DOM
         const gridContainer = document.getElementById('grid');
         const totalElement = document.getElementById('total');
-        const minValueElement = document.getElementById('minValue');
-        const maxValueElement = document.getElementById('maxValue');
-        const currentMinElement = document.getElementById('currentMin');
-        const currentMaxElement = document.getElementById('currentMax');
+        const lambdaValueElement = document.getElementById('lambdaValue');
+        const currentLambdaElement = document.getElementById('currentLambda');
         const speedControl = document.getElementById('speed');
         const colorLegend = document.getElementById('colorLegend');
         const resultsTableBody = document.querySelector('#resultsTable tbody');
@@ -396,24 +405,47 @@
         let cdfChart;
         let meanChart;
 
+        // Función factorial para cálculos teóricos
+        function factorial(n) {
+            if (n < 0) return NaN;
+            if (n === 0 || n === 1) return 1;
+            let result = 1;
+            for (let i = 2; i <= n; i++) {
+                result *= i;
+            }
+            return result;
+        }
+
+        // Función de masa de probabilidad Poisson
+        function poissonPMF(k, lambda) {
+            return (Math.exp(-lambda) * Math.pow(lambda, k)) / factorial(k);
+        }
+
+        // Función de distribución acumulativa Poisson
+        function poissonCDF(k, lambda) {
+            let sum = 0;
+            for (let i = 0; i <= k; i++) {
+                sum += poissonPMF(i, lambda);
+            }
+            return sum;
+        }
+
         // Inicializar la distribución
         function initializeDistribution() {
-            minValue = parseInt(minValueElement.value);
-            maxValue = parseInt(maxValueElement.value);
+            lambda = parseFloat(lambdaValueElement.value);
             
-            // Validar los valores
-            if (minValue >= maxValue) {
-                maxValue = minValue + 1;
-                maxValueElement.value = maxValue;
+            // Validar el valor
+            if (lambda <= 0) {
+                lambda = 0.1;
+                lambdaValueElement.value = lambda;
             }
             
-            // Actualizar la visualización del rango
-            currentMinElement.textContent = minValue;
-            currentMaxElement.textContent = maxValue;
+            // Actualizar la visualización del parámetro
+            currentLambdaElement.textContent = lambda;
             
             // Calcular propiedades teóricas
-            const theoreticalMean = (minValue + maxValue) / 2;
-            const theoreticalVariance = (Math.pow(maxValue - minValue + 1, 2) - 1) / 12;
+            const theoreticalMean = lambda;
+            const theoreticalVariance = lambda;
             
             theoreticalMeanElement.textContent = theoreticalMean.toFixed(2);
             theoreticalMeanElement2.textContent = theoreticalMean.toFixed(2);
@@ -421,22 +453,19 @@
             
             // Reiniciar resultados
             results = {};
-            for (let i = minValue; i <= maxValue; i++) {
-                results[i] = 0;
-            }
+            // No inicializamos resultados específicos porque Poisson puede tener infinitos valores
             
             totalSimulations = 0;
             gridContainer.innerHTML = '';
             gridCells = [];
             meanHistory = [];
             
-            // Asignar colores a cada valor
+            // Asignar colores a los primeros valores (hasta maxKToShow)
             valueColors = {};
-            const rangeSize = maxValue - minValue + 1;
-            for (let i = 0; i < rangeSize; i++) {
-                const value = minValue + i;
-                valueColors[value] = colorPalette[i % colorPalette.length];
+            for (let i = 0; i <= maxKToShow; i++) {
+                valueColors[i] = colorPalette[i % colorPalette.length];
             }
+            valueColors["otros"] = '#cccccc'; // Color para valores mayores a maxKToShow
             
             // Actualizar la leyenda de colores
             updateColorLegend();
@@ -454,16 +483,37 @@
         // Actualizar la leyenda de colores
         function updateColorLegend() {
             colorLegend.innerHTML = '';
-            for (let value in valueColors) {
+            
+            // Mostrar leyenda para los primeros valores y "otros"
+            const maxToShow = Math.min(maxKToShow, 10); // Mostrar máximo 10 en la leyenda
+            
+            for (let i = 0; i <= maxToShow; i++) {
                 const legendItem = document.createElement('div');
                 legendItem.className = 'legend-item';
                 
                 const colorBox = document.createElement('div');
                 colorBox.className = 'legend-color';
-                colorBox.style.backgroundColor = valueColors[value];
+                colorBox.style.backgroundColor = valueColors[i];
                 
                 const label = document.createElement('span');
-                label.textContent = value;
+                label.textContent = i;
+                
+                legendItem.appendChild(colorBox);
+                legendItem.appendChild(label);
+                colorLegend.appendChild(legendItem);
+            }
+            
+            // Agregar leyenda para "otros"
+            if (maxKToShow > 10) {
+                const legendItem = document.createElement('div');
+                legendItem.className = 'legend-item';
+                
+                const colorBox = document.createElement('div');
+                colorBox.className = 'legend-color';
+                colorBox.style.backgroundColor = valueColors["otros"];
+                
+                const label = document.createElement('span');
+                label.textContent = `>${maxToShow}`;
                 
                 legendItem.appendChild(colorBox);
                 legendItem.appendChild(label);
@@ -477,10 +527,34 @@
             const backgroundColors = [];
             const theoreticalProbs = [];
             
-            for (let i = minValue; i <= maxValue; i++) {
-                labels.push(i.toString());
-                backgroundColors.push(valueColors[i]);
-                theoreticalProbs.push(1 / (maxValue - minValue + 1));
+            // Calcular hasta qué k mostrar (99.9% de la probabilidad acumulada)
+            let cumulativeProb = 0;
+            let maxKForChart = 0;
+            
+            while (cumulativeProb < 0.999 && maxKForChart < 50) {
+                cumulativeProb += poissonPMF(maxKForChart, lambda);
+                maxKForChart++;
+            }
+            
+            maxKForChart = Math.min(maxKForChart, maxKToShow);
+            
+            for (let k = 0; k <= maxKForChart; k++) {
+                labels.push(k.toString());
+                backgroundColors.push(valueColors[k] || valueColors["otros"]);
+                theoreticalProbs.push(poissonPMF(k, lambda));
+            }
+            
+            // Si hay más valores significativos que maxKToShow, agregar "otros"
+            if (maxKForChart >= maxKToShow) {
+                labels.push(`>${maxKToShow}`);
+                backgroundColors.push(valueColors["otros"]);
+                
+                // Calcular probabilidad total para k > maxKToShow
+                let probOthers = 0;
+                for (let k = maxKToShow + 1; k <= 50; k++) {
+                    probOthers += poissonPMF(k, lambda);
+                }
+                theoreticalProbs.push(probOthers);
             }
             
             // Gráfico de frecuencia
@@ -546,16 +620,23 @@
             const cdfData = [];
             const cdfBackgroundColors = [];
             
-            // Punto antes del mínimo
-            cdfLabels.push(`x < ${minValue}`);
+            // Punto antes del 0
+            cdfLabels.push(`k < 0`);
             cdfData.push(0);
             cdfBackgroundColors.push('#cccccc');
             
             // Puntos intermedios
-            for (let i = minValue; i <= maxValue; i++) {
-                cdfLabels.push(i.toString());
-                cdfData.push((i - minValue + 1) / (maxValue - minValue + 1));
-                cdfBackgroundColors.push(valueColors[i]);
+            for (let k = 0; k <= maxKForChart; k++) {
+                cdfLabels.push(k.toString());
+                cdfData.push(poissonCDF(k, lambda));
+                cdfBackgroundColors.push(valueColors[k] || valueColors["otros"]);
+            }
+            
+            // Si hay más valores significativos que maxKToShow, agregar "otros"
+            if (maxKForChart >= maxKToShow) {
+                cdfLabels.push(`>${maxKToShow}`);
+                cdfData.push(1);
+                cdfBackgroundColors.push(valueColors["otros"]);
             }
             
             const cdfCtx = document.getElementById('cdfChart').getContext('2d');
@@ -637,27 +718,36 @@
         // Actualizar la tabla de resultados
         function updateResultsTable() {
             resultsTableBody.innerHTML = '';
-            const rangeSize = maxValue - minValue + 1;
-            const theoreticalProb = (1 / rangeSize * 100).toFixed(2) + '%';
+            
+            // Obtener todos los valores k que han aparecido (ordenados)
+            const allValues = Object.keys(results).map(Number).sort((a, b) => a - b);
+            
+            // Agrupar valores mayores a maxKToShow en "otros"
+            const valuesToShow = allValues.filter(k => k <= maxKToShow);
+            const hasOthers = allValues.some(k => k > maxKToShow);
             
             let totalFreq = 0;
+            let totalProb = 0;
             
-            for (let i = minValue; i <= maxValue; i++) {
+            // Mostrar valores individuales hasta maxKToShow
+            for (let k of valuesToShow) {
                 const row = document.createElement('tr');
                 
                 const valueCell = document.createElement('td');
-                valueCell.textContent = i;
+                valueCell.textContent = k;
                 
                 const freqCell = document.createElement('td');
-                freqCell.textContent = results[i] || 0;
-                freqCell.id = `freq-${i}`;
+                freqCell.textContent = results[k] || 0;
+                freqCell.id = `freq-${k}`;
                 
                 const probCell = document.createElement('td');
-                probCell.textContent = '0%';
-                probCell.id = `prob-${i}`;
+                const prob = totalSimulations > 0 ? (results[k] / totalSimulations * 100).toFixed(2) : 0;
+                probCell.textContent = prob + '%';
+                probCell.id = `prob-${k}`;
                 
                 const theoreticalCell = document.createElement('td');
-                theoreticalCell.textContent = theoreticalProb;
+                const theoreticalProb = (poissonPMF(k, lambda) )* 100;
+                theoreticalCell.textContent = theoreticalProb.toFixed(2) + '%';
                 
                 row.appendChild(valueCell);
                 row.appendChild(freqCell);
@@ -665,7 +755,45 @@
                 row.appendChild(theoreticalCell);
                 
                 resultsTableBody.appendChild(row);
-                totalFreq += results[i] || 0;
+                
+                totalFreq += results[k] || 0;
+                totalProb += parseFloat(prob);
+            }
+            
+            // Mostrar fila de "otros" si hay valores mayores a maxKToShow
+            if (hasOthers) {
+                const othersFreq = allValues.filter(k => k > maxKToShow).reduce((sum, k) => sum + results[k], 0);
+                
+                const row = document.createElement('tr');
+                
+                const valueCell = document.createElement('td');
+                valueCell.textContent = `>${maxKToShow}`;
+                
+                const freqCell = document.createElement('td');
+                freqCell.textContent = othersFreq;
+                freqCell.id = 'freq-otros';
+                
+                const probCell = document.createElement('td');
+                const prob = totalSimulations > 0 ? (othersFreq / totalSimulations * 100).toFixed(2) : 0;
+                probCell.textContent = prob + '%';
+                probCell.id = 'prob-otros';
+                
+                const theoreticalCell = document.createElement('td');
+                let theoreticalProb = 0;
+                for (let k = maxKToShow + 1; k <= maxKToShow + 50; k++) {
+                    theoreticalProb += poissonPMF(k, lambda);
+                }
+                theoreticalCell.textContent = (theoreticalProb * 100).toFixed(2) + '%';
+                
+                row.appendChild(valueCell);
+                row.appendChild(freqCell);
+                row.appendChild(probCell);
+                row.appendChild(theoreticalCell);
+                
+                resultsTableBody.appendChild(row);
+                
+                totalFreq += othersFreq;
+                totalProb += parseFloat(prob);
             }
             
             // Fila de totales
@@ -693,11 +821,27 @@
             resultsTableBody.appendChild(totalRow);
         }
 
-        // Simular un ensayo
+        // Simular un ensayo Poisson
         function simulate() {
-            const value = Math.floor(Math.random() * (maxValue - minValue + 1)) + minValue;
+            // Algoritmo de Knuth para generar números Poisson
+            const L = Math.exp(-lambda);
+            let k = 0;
+            let p = 1;
+            
+            do {
+                k++;
+                p *= Math.random();
+            } while (p > L);
+            
+            const value = k - 1;
+            
+            // Registrar el resultado
+            if (!results[value]) {
+                results[value] = 0;
+            }
             results[value]++;
             totalSimulations++;
+            
             return value;
         }
 
@@ -724,36 +868,40 @@
         function updateUI(result) {
             totalElement.textContent = totalSimulations;
             
-            // Actualizar datos del gráfico de frecuencia
-            const data = [];
-            for (let i = minValue; i <= maxValue; i++) {
-                data.push(results[i] || 0);
+            // Preparar datos para el gráfico de frecuencia
+            const allValues = Object.keys(results).map(Number).sort((a, b) => a - b);
+            const valuesToShow = allValues.filter(k => k <= maxKToShow);
+            const hasOthers = allValues.some(k => k > maxKToShow);
+            
+            const labels = valuesToShow.map(k => k.toString());
+            if (hasOthers) {
+                labels.push(`>${maxKToShow}`);
             }
+            
+            const data = valuesToShow.map(k => results[k] || 0);
+            if (hasOthers) {
+                const othersFreq = allValues.filter(k => k > maxKToShow).reduce((sum, k) => sum + results[k], 0);
+                data.push(othersFreq);
+            }
+            
+            const backgroundColors = valuesToShow.map(k => valueColors[k] || valueColors["otros"]);
+            if (hasOthers) {
+                backgroundColors.push(valueColors["otros"]);
+            }
+            
+            // Actualizar gráfico de frecuencia
+            frequencyChart.data.labels = labels;
             frequencyChart.data.datasets[0].data = data;
+            frequencyChart.data.datasets[0].backgroundColor = backgroundColors;
             frequencyChart.update();
             
             // Actualizar tabla de resultados
-            const rangeSize = maxValue - minValue + 1;
-            const theoreticalProb = (1 / rangeSize * 100).toFixed(2) + '%';
-            
-            let totalFreq = 0;
-            
-            for (let i = minValue; i <= maxValue; i++) {
-                const freq = results[i] || 0;
-                totalFreq += freq;
-                
-                document.getElementById(`freq-${i}`).textContent = freq;
-                
-                const prob = totalSimulations > 0 ? (freq / totalSimulations * 100).toFixed(2) : 0;
-                document.getElementById(`prob-${i}`).textContent = prob + '%';
-            }
-            
-            document.getElementById('totalFreq').textContent = totalFreq;
+            updateResultsTable();
             
             // Calcular y mostrar media y varianza
             const mean = calculateMean();
             const variance = calculateVariance(mean);
-            const theoreticalMean = (minValue + maxValue) / 2;
+            const theoreticalMean = lambda;
             
             meanValueElement.textContent = mean.toFixed(4);
             meanValueElement2.textContent = mean.toFixed(4);
@@ -774,7 +922,16 @@
             if (result !== undefined) {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
-                cell.style.backgroundColor = valueColors[result];
+                
+                // Determinar el color basado en el valor
+                let color;
+                if (result <= maxKToShow) {
+                    color = valueColors[result] || valueColors["otros"];
+                } else {
+                    color = valueColors["otros"];
+                }
+                
+                cell.style.backgroundColor = color;
                 cell.textContent = result;
                 cell.title = `Valor: ${result}`;
                 gridContainer.appendChild(cell);
@@ -842,11 +999,7 @@
             simulationSpeed = parseInt(speedControl.value);
         });
 
-        minValueElement.addEventListener('change', () => {
-            initializeDistribution();
-        });
-
-        maxValueElement.addEventListener('change', () => {
+        lambdaValueElement.addEventListener('change', () => {
             initializeDistribution();
         });
 
