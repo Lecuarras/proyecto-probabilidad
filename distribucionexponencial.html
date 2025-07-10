@@ -3,47 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Distribución Uniforme Discreta</title>
+    <title>Distribución Exponencial</title>
     <style>
-         /* Estilos del menú de navegación */
-    .nav-container {
-        background-color: #f5f5f5;
-        border-radius: 10px;
-        padding: 10px 15px;
-        margin-bottom: 20px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    
-    .nav-menu {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-    
-    .nav-item {
-        position: relative;
-    }
-    
-    .nav-link {
-        display: block;
-        padding: 8px 16px;
-        background-color: #4CAF50;
-        color: white;
-        text-decoration: none;
-        border-radius: 4px;
-        transition: background-color 0.3s;
-    }
-    
-    .nav-link:hover {
-        background-color: #45a049;
-    }
-    
-    .nav-link.active {
-        background-color: #3d8b40;
-    }
+        /* Estilos del menú de navegación */
+        .nav-container {
+            background-color: #f5f5f5;
+            border-radius: 10px;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .nav-menu {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .nav-item {
+            position: relative;
+        }
+        
+        .nav-link {
+            display: block;
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-link:hover {
+            background-color: #45a049;
+        }
+        
+        .nav-link.active {
+            background-color: #3d8b40;
+        }
         body {
             font-family: Arial, sans-serif;
             max-width: 1000px;
@@ -202,11 +202,33 @@
             margin-bottom: 20px;
             border-left: 4px solid #2196F3;
         }
+        .histogram-bin {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .bin-label {
+            width: 80px;
+        }
+        .bin-bar {
+            height: 20px;
+            background-color: #4CAF50;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 5px;
+            color: white;
+            font-size: 12px;
+        }
+        .bin-count {
+            width: 50px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-      <ul class="nav-menu">
+  <ul class="nav-menu">
     <!-- SECCIÓN VARIABLES CONTINUAS -->
     <li class="nav-section">Variables Aleatorias Continuas</li>
     <li class="nav-item"><a href="distribuionuniforme.html" class="nav-link">Uniforme</a></li>
@@ -233,55 +255,60 @@
     <li class="nav-item"><a href="juegosAzarDaniel.html" class="nav-link">Juego pelotas</a></li>
     <li class="nav-item"><a href="distribucionGama.html" class="nav-link">Gama</a></li>
 </ul>
-        <h1>Distribución Uniforme Discreta</h1>
+        
+        <h1>Distribución Exponencial</h1>
        
         <div class="experiment">
-            <h2>Simulación de Distribución Uniforme</h2>
+            <h2>Simulación de Distribución Exponencial</h2>
             <div class="range-control">
-                <label for="minValue">Valor mínimo (a):</label>
-                <input type="number" id="minValue" min="0" max="100" value="1">
-                <label for="maxValue">Valor máximo (b):</label>
-                <input type="number" id="maxValue" min="1" max="100" value="6">
+                <label for="lambdaValue">Tasa (λ):</label>
+                <input type="number" id="lambdaValue" min="0.1" max="10" step="0.1" value="1">
+                <label for="maxRange">Rango máximo:</label>
+                <input type="number" id="maxRange" min="1" max="20" step="1" value="5">
+                <label for="bins">Número de intervalos:</label>
+                <input type="number" id="bins" min="5" max="30" step="1" value="10">
             </div>
-            <p>Una distribución uniforme discreta asigna igual probabilidad a cada valor entero en el rango [a, b]</p>
-            
-            <div class="color-legend" id="colorLegend">
-                <!-- Las leyendas de color se generarán dinámicamente -->
-            </div>
+            <p>La distribución exponencial modela el tiempo entre eventos en un proceso de Poisson con tasa λ</p>
         </div>
         
         <div class="mean-section">
-            <h3>Media de la Distribución de Probabilidad</h3>
+            <h3>Propiedades de la Distribución Exponencial</h3>
             
             <div class="equation">
-                <p><strong>Fórmula de la media:</strong></p>
-                <p>μ = E[X] = (a + b) / 2</p>
-                <p>Donde:</p>
-                <ul>
-                    <li>a = valor mínimo</li>
-                    <li>b = valor máximo</li>
-                </ul>
+                <p><strong>Función de densidad de probabilidad (PDF):</strong></p>
+                <p>f(x) = λe^(-λx) para x ≥ 0</p>
             </div>
             
             <div class="stats-container">
                 <div class="stat-box">
-                    <p><strong>Media teórica:</strong></p>
-                    <p id="theoreticalMean">3.5</p>
+                    <p><strong>Media (Valor esperado):</strong></p>
+                    <p>E[X] = 1/λ</p>
+                    <p>Media teórica: <span id="theoreticalMean">1.00</span></p>
+                    <p>Media de la simulación: <span id="meanValue">0</span></p>
                 </div>
                 
                 <div class="stat-box">
-                    <p><strong>Media de la simulación:</strong></p>
-                    <p id="meanValue">0</p>
+                    <p><strong>Varianza:</strong></p>
+                    <p>Var(X) = 1/λ²</p>
+                    <p>Varianza teórica: <span id="theoreticalVariance">1.00</span></p>
+                    <p>Varianza de la simulación: <span id="varianceValue">0</span></p>
                 </div>
                 
                 <div class="stat-box">
-                    <p><strong>Diferencia:</strong></p>
-                    <p id="meanDifference">0</p>
+                    <p><strong>Desviación estándar:</strong></p>
+                    <p>σ = 1/λ</p>
+                    <p>Desviación teórica: <span id="theoreticalStdDev">1.00</span></p>
+                    <p>Desviación de la simulación: <span id="stdDevValue">0</span></p>
                 </div>
             </div>
             
-            <div class="distribution-chart">
-                <canvas id="meanChart"></canvas>
+            <div class="distribution-charts">
+                <div class="distribution-chart">
+                    <canvas id="pdfChart"></canvas>
+                </div>
+                <div class="distribution-chart">
+                    <canvas id="cdfChart"></canvas>
+                </div>
             </div>
         </div>
         
@@ -297,49 +324,17 @@
             </div>
         </div>
 
-        <div class="distribution-section">
-            <h3>Propiedades de la Distribución Uniforme Discreta</h3>
-            
-            <div class="equation">
-                <p><strong>Función de masa de probabilidad (PMF):</strong></p>
-                <p>P(X = x) = 1/(b - a + 1) para x ∈ {a, a+1, ..., b}</p>
-            </div>
-            
-            <div class="stats-container">
-                <div class="stat-box">
-                    <p><strong>Media (Valor esperado):</strong></p>
-                    <p>E[X] = (a + b)/2</p>
-                    <p>Media teórica: <span id="theoreticalMean2">3.5</span></p>
-                    <p>Media de la simulación: <span id="meanValue2">0</span></p>
-                </div>
-                
-                <div class="stat-box">
-                    <p><strong>Varianza:</strong></p>
-                    <p>Var(X) = [(b - a + 1)² - 1]/12</p>
-                    <p>Varianza teórica: <span id="theoreticalVariance">2.92</span></p>
-                    <p>Varianza de la simulación: <span id="varianceValue">0</span></p>
-                </div>
-            </div>
-            
-            <div class="distribution-charts">
-                <div class="distribution-chart">
-                    <canvas id="pmfChart"></canvas>
-                </div>
-                <div class="distribution-chart">
-                    <canvas id="cdfChart"></canvas>
-                </div>
-            </div>
-        </div>
-        
         <div>
             <h3>Resultados</h3>
             <p>Total de simulaciones: <span id="total">0</span></p>
-            <p>Rango: [<span id="currentMin">1</span>, <span id="currentMax">6</span>]</p>
+            <p>Tasa (λ): <span id="currentLambda">1</span></p>
+            <p>Rango: [0, <span id="currentMaxRange">5</span>]</p>
+            <p>Intervalos: <span id="currentBins">10</span></p>
             
             <div class="results-container">
                 <div class="chart-wrapper">
                     <div class="chart">
-                        <canvas id="frequencyChart"></canvas>
+                        <canvas id="histogramChart"></canvas>
                     </div>
                 </div>
                 
@@ -348,7 +343,7 @@
                         <table id="resultsTable">
                             <thead>
                                 <tr>
-                                    <th>Valor</th>
+                                    <th>Intervalo</th>
                                     <th>Frecuencia</th>
                                     <th>Probabilidad</th>
                                     <th>Probabilidad teórica</th>
@@ -364,99 +359,72 @@
         </div>
         
         <div>
-            <h3>Cuadrícula de Resultados</h3>
-            <p>Cada celda representa una simulación con su valor correspondiente</p>
-            <div class="grid-container" id="grid"></div>
+            <h3>Histograma de Resultados</h3>
+            <div id="textHistogram"></div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         // Configuración inicial
-        let minValue = 1;
-        let maxValue = 6;
-        let results = {};
+        let lambda = 1;
+        let maxRange = 5;
+        let bins = 10;
+        let binWidth = maxRange / bins;
+        let histogram = new Array(bins).fill(0);
         let totalSimulations = 0;
-        let gridCells = [];
+        let allValues = [];
         let animationId = null;
         let simulationSpeed = 5;
-        let colorPalette = [
-            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', 
-            '#FF9F40', '#8AC24A', '#607D8B', '#E91E63', '#9C27B0',
-            '#3F51B5', '#2196F3', '#00BCD4', '#009688', '#4CAF50',
-            '#8BC34A', '#CDDC39', '#FFEB3B', '#FFC107', '#FF9800'
-        ];
-        let valueColors = {};
-        let meanHistory = [];
-
-        // Elementos del DOM
-        const gridContainer = document.getElementById('grid');
-        const totalElement = document.getElementById('total');
-        const minValueElement = document.getElementById('minValue');
-        const maxValueElement = document.getElementById('maxValue');
-        const currentMinElement = document.getElementById('currentMin');
-        const currentMaxElement = document.getElementById('currentMax');
-        const speedControl = document.getElementById('speed');
-        const colorLegend = document.getElementById('colorLegend');
-        const resultsTableBody = document.querySelector('#resultsTable tbody');
-        const frequencyCtx = document.getElementById('frequencyChart').getContext('2d');
-        const theoreticalMeanElement = document.getElementById('theoreticalMean');
-        const theoreticalMeanElement2 = document.getElementById('theoreticalMean2');
-        const theoreticalVarianceElement = document.getElementById('theoreticalVariance');
-        const meanValueElement = document.getElementById('meanValue');
-        const meanValueElement2 = document.getElementById('meanValue2');
-        const varianceValueElement = document.getElementById('varianceValue');
-        const meanDifferenceElement = document.getElementById('meanDifference');
         
-        let frequencyChart;
-        let pmfChart;
+        // Elementos del DOM
+        const totalElement = document.getElementById('total');
+        const lambdaValueElement = document.getElementById('lambdaValue');
+        const maxRangeElement = document.getElementById('maxRange');
+        const binsElement = document.getElementById('bins');
+        const currentLambdaElement = document.getElementById('currentLambda');
+        const currentMaxRangeElement = document.getElementById('currentMaxRange');
+        const currentBinsElement = document.getElementById('currentBins');
+        const speedControl = document.getElementById('speed');
+        const resultsTableBody = document.querySelector('#resultsTable tbody');
+        const histogramCtx = document.getElementById('histogramChart').getContext('2d');
+        const theoreticalMeanElement = document.getElementById('theoreticalMean');
+        const theoreticalVarianceElement = document.getElementById('theoreticalVariance');
+        const theoreticalStdDevElement = document.getElementById('theoreticalStdDev');
+        const meanValueElement = document.getElementById('meanValue');
+        const varianceValueElement = document.getElementById('varianceValue');
+        const stdDevValueElement = document.getElementById('stdDevValue');
+        const textHistogramElement = document.getElementById('textHistogram');
+        
+        let histogramChart;
+        let pdfChart;
         let cdfChart;
-        let meanChart;
 
         // Inicializar la distribución
         function initializeDistribution() {
-            minValue = parseInt(minValueElement.value);
-            maxValue = parseInt(maxValueElement.value);
+            lambda = parseFloat(lambdaValueElement.value);
+            maxRange = parseFloat(maxRangeElement.value);
+            bins = parseInt(binsElement.value);
+            binWidth = maxRange / bins;
             
-            // Validar los valores
-            if (minValue >= maxValue) {
-                maxValue = minValue + 1;
-                maxValueElement.value = maxValue;
-            }
-            
-            // Actualizar la visualización del rango
-            currentMinElement.textContent = minValue;
-            currentMaxElement.textContent = maxValue;
+            // Actualizar la visualización de parámetros
+            currentLambdaElement.textContent = lambda.toFixed(2);
+            currentMaxRangeElement.textContent = maxRange.toFixed(2);
+            currentBinsElement.textContent = bins;
             
             // Calcular propiedades teóricas
-            const theoreticalMean = (minValue + maxValue) / 2;
-            const theoreticalVariance = (Math.pow(maxValue - minValue + 1, 2) - 1) / 12;
+            const theoreticalMean = 1 / lambda;
+            const theoreticalVariance = 1 / (lambda * lambda);
+            const theoreticalStdDev = 1 / lambda;
             
             theoreticalMeanElement.textContent = theoreticalMean.toFixed(2);
-            theoreticalMeanElement2.textContent = theoreticalMean.toFixed(2);
             theoreticalVarianceElement.textContent = theoreticalVariance.toFixed(2);
+            theoreticalStdDevElement.textContent = theoreticalStdDev.toFixed(2);
             
             // Reiniciar resultados
-            results = {};
-            for (let i = minValue; i <= maxValue; i++) {
-                results[i] = 0;
-            }
-            
+            histogram = new Array(bins).fill(0);
+            allValues = [];
             totalSimulations = 0;
-            gridContainer.innerHTML = '';
-            gridCells = [];
-            meanHistory = [];
-            
-            // Asignar colores a cada valor
-            valueColors = {};
-            const rangeSize = maxValue - minValue + 1;
-            for (let i = 0; i < rangeSize; i++) {
-                const value = minValue + i;
-                valueColors[value] = colorPalette[i % colorPalette.length];
-            }
-            
-            // Actualizar la leyenda de colores
-            updateColorLegend();
             
             // Actualizar la tabla de resultados
             updateResultsTable();
@@ -468,51 +436,26 @@
             updateUI();
         }
 
-        // Actualizar la leyenda de colores
-        function updateColorLegend() {
-            colorLegend.innerHTML = '';
-            for (let value in valueColors) {
-                const legendItem = document.createElement('div');
-                legendItem.className = 'legend-item';
-                
-                const colorBox = document.createElement('div');
-                colorBox.className = 'legend-color';
-                colorBox.style.backgroundColor = valueColors[value];
-                
-                const label = document.createElement('span');
-                label.textContent = value;
-                
-                legendItem.appendChild(colorBox);
-                legendItem.appendChild(label);
-                colorLegend.appendChild(legendItem);
-            }
-        }
-
         // Inicializar los gráficos
         function initializeCharts() {
             const labels = [];
-            const backgroundColors = [];
-            const theoreticalProbs = [];
-            
-            for (let i = minValue; i <= maxValue; i++) {
-                labels.push(i.toString());
-                backgroundColors.push(valueColors[i]);
-                theoreticalProbs.push(1 / (maxValue - minValue + 1));
+            for (let i = 0; i < bins; i++) {
+                labels.push(`${(i * binWidth).toFixed(2)}-${((i + 1) * binWidth).toFixed(2)}`);
             }
             
-            // Gráfico de frecuencia
-            if (frequencyChart) {
-                frequencyChart.destroy();
+            // Gráfico de histograma
+            if (histogramChart) {
+                histogramChart.destroy();
             }
             
-            frequencyChart = new Chart(frequencyCtx, {
+            histogramChart = new Chart(histogramCtx, {
                 type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [{
                         label: 'Frecuencia de resultados',
-                        data: new Array(labels.length).fill(0),
-                        backgroundColor: backgroundColors,
+                        data: new Array(bins).fill(0),
+                        backgroundColor: '#4CAF50',
                         borderWidth: 1
                     }]
                 },
@@ -525,31 +468,33 @@
                 }
             });
             
-            // Gráfico PMF
-            if (pmfChart) {
-                pmfChart.destroy();
+            // Gráfico PDF
+            if (pdfChart) {
+                pdfChart.destroy();
             }
             
-            const pmfCtx = document.getElementById('pmfChart').getContext('2d');
-            pmfChart = new Chart(pmfCtx, {
-                type: 'bar',
+            const pdfLabels = Array.from({length: 100}, (_, i) => i * maxRange / 100);
+            const pdfData = pdfLabels.map(x => lambda * Math.exp(-lambda * x));
+            
+            const pdfCtx = document.getElementById('pdfChart').getContext('2d');
+            pdfChart = new Chart(pdfCtx, {
+                type: 'line',
                 data: {
-                    labels: labels,
+                    labels: pdfLabels.map(x => x.toFixed(2)),
                     datasets: [{
-                        label: 'Función de Masa de Probabilidad (PMF)',
-                        data: theoreticalProbs,
-                        backgroundColor: backgroundColors,
-                        borderWidth: 1
+                        label: 'Función de Densidad de Probabilidad (PDF)',
+                        data: pdfData,
+                        borderColor: '#4CAF50',
+                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                        fill: true,
+                        tension: 0.1
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        y: { 
-                            beginAtZero: true,
-                            max: 1
-                        }
+                        y: { beginAtZero: true }
                     }
                 }
             });
@@ -559,36 +504,21 @@
                 cdfChart.destroy();
             }
             
-            const cdfLabels = [];
-            const cdfData = [];
-            const cdfBackgroundColors = [];
-            
-            // Punto antes del mínimo
-            cdfLabels.push(`x < ${minValue}`);
-            cdfData.push(0);
-            cdfBackgroundColors.push('#cccccc');
-            
-            // Puntos intermedios
-            for (let i = minValue; i <= maxValue; i++) {
-                cdfLabels.push(i.toString());
-                cdfData.push((i - minValue + 1) / (maxValue - minValue + 1));
-                cdfBackgroundColors.push(valueColors[i]);
-            }
+            const cdfLabels = Array.from({length: 100}, (_, i) => i * maxRange / 100);
+            const cdfData = cdfLabels.map(x => 1 - Math.exp(-lambda * x));
             
             const cdfCtx = document.getElementById('cdfChart').getContext('2d');
             cdfChart = new Chart(cdfCtx, {
                 type: 'line',
                 data: {
-                    labels: cdfLabels,
+                    labels: cdfLabels.map(x => x.toFixed(2)),
                     datasets: [{
                         label: 'Función de Distribución Acumulativa (CDF)',
                         data: cdfData,
-                        borderColor: '#4CAF50',
-                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                        borderColor: '#2196F3',
+                        backgroundColor: 'rgba(33, 150, 243, 0.1)',
                         fill: true,
-                        tension: 0,
-                        pointBackgroundColor: cdfBackgroundColors,
-                        pointRadius: 5
+                        tension: 0.1
                     }]
                 },
                 options: {
@@ -602,71 +532,35 @@
                     }
                 }
             });
-            
-            // Gráfico de media
-            if (meanChart) {
-                meanChart.destroy();
-            }
-            
-            const meanCtx = document.getElementById('meanChart').getContext('2d');
-            meanChart = new Chart(meanCtx, {
-                type: 'line',
-                data: {
-                    labels: [],
-                    datasets: [{
-                        label: 'Media de la simulación',
-                        data: [],
-                        borderColor: '#2196F3',
-                        backgroundColor: 'rgba(33, 150, 243, 0.1)',
-                        fill: true,
-                        tension: 0.1
-                    }, {
-                        label: 'Media teórica',
-                        data: [],
-                        borderColor: '#4CAF50',
-                        backgroundColor: 'rgba(76, 175, 80, 0)',
-                        borderDash: [5, 5],
-                        borderWidth: 2,
-                        pointRadius: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            title: {
-                                display: true,
-                                text: 'Valor de la media'
-                            }
-                        },
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Número de simulaciones'
-                            }
-                        }
-                    }
-                }
-            });
         }
 
         // Actualizar la tabla de resultados
         function updateResultsTable() {
             resultsTableBody.innerHTML = '';
-            const rangeSize = maxValue - minValue + 1;
-            const theoreticalProb = (1 / rangeSize * 100).toFixed(2) + '%';
             
             let totalFreq = 0;
+            let maxFreq = Math.max(...histogram, 1);
             
-            for (let i = minValue; i <= maxValue; i++) {
+            // Generar histograma de texto
+            let textHistogramHTML = '';
+            
+            for (let i = 0; i < bins; i++) {
+                const binStart = i * binWidth;
+                const binEnd = (i + 1) * binWidth;
+                const freq = histogram[i] || 0;
+                totalFreq += freq;
+                
+                // Calcular probabilidad teórica para el intervalo
+                const theoreticalProb = Math.exp(-lambda * binStart) - Math.exp(-lambda * binEnd);
+                
+                // Fila de la tabla
                 const row = document.createElement('tr');
                 
-                const valueCell = document.createElement('td');
-                valueCell.textContent = i;
+                const binCell = document.createElement('td');
+                binCell.textContent = `${binStart.toFixed(2)}-${binEnd.toFixed(2)}`;
                 
                 const freqCell = document.createElement('td');
-                freqCell.textContent = results[i] || 0;
+                freqCell.textContent = freq;
                 freqCell.id = `freq-${i}`;
                 
                 const probCell = document.createElement('td');
@@ -674,16 +568,27 @@
                 probCell.id = `prob-${i}`;
                 
                 const theoreticalCell = document.createElement('td');
-                theoreticalCell.textContent = theoreticalProb;
+                theoreticalCell.textContent = (theoreticalProb * 100).toFixed(2) + '%';
                 
-                row.appendChild(valueCell);
+                row.appendChild(binCell);
                 row.appendChild(freqCell);
                 row.appendChild(probCell);
                 row.appendChild(theoreticalCell);
                 
                 resultsTableBody.appendChild(row);
-                totalFreq += results[i] || 0;
+                
+                // Histograma de texto
+                const barWidth = Math.max(1, Math.round((freq / maxFreq) * 50));
+                textHistogramHTML += `
+                    <div class="histogram-bin">
+                        <div class="bin-label">${binStart.toFixed(2)}-${binEnd.toFixed(2)}</div>
+                        <div class="bin-bar" style="width: ${barWidth}px">${freq}</div>
+                        <div class="bin-count">${(freq / totalSimulations * 100 || 0).toFixed(1)}%</div>
+                    </div>
+                `;
             }
+            
+            textHistogramElement.innerHTML = textHistogramHTML;
             
             // Fila de totales
             const totalRow = document.createElement('tr');
@@ -699,8 +604,8 @@
             const totalProbCell = document.createElement('td');
             totalProbCell.textContent = '100%';
             
-            const totalTheoreticalCell = document.createElement('td');
-            totalTheoreticalCell.textContent = '100%';
+           const totalTheoreticalCell = document.createElement('td');
+totalTheoreticalCell.textContent = (Math.min(1, (Math.exp(-lambda * 0) - Math.exp(-lambda * maxRange))) * 100).toFixed(2) + '%';
             
             totalRow.appendChild(totalLabelCell);
             totalRow.appendChild(totalFreqCell);
@@ -710,101 +615,58 @@
             resultsTableBody.appendChild(totalRow);
         }
 
-        // Simular un ensayo
+        // Simular un valor exponencial
         function simulate() {
-            const value = Math.floor(Math.random() * (maxValue - minValue + 1)) + minValue;
-            results[value]++;
+            // Método de transformada inversa
+            const u = Math.random();
+            const value = -Math.log(1 - u) / lambda;
+            allValues.push(value);
             totalSimulations++;
+            
+            // Determinar el intervalo del histograma
+            let binIndex = Math.floor(value / binWidth);
+            if (binIndex >= bins) binIndex = bins - 1;
+            if (binIndex >= 0) histogram[binIndex]++;
+            
             return value;
         }
 
         // Calcular la media de los resultados
         function calculateMean() {
-            let sum = 0;
-            for (let value in results) {
-                sum += parseInt(value) * results[value];
-            }
-            return totalSimulations > 0 ? sum / totalSimulations : 0;
+            if (allValues.length === 0) return 0;
+            const sum = allValues.reduce((a, b) => a + b, 0);
+            return sum / allValues.length;
         }
 
         // Calcular la varianza de los resultados
         function calculateVariance(mean) {
-            let sumSquaredDiff = 0;
-            for (let value in results) {
-                const diff = parseInt(value) - mean;
-                sumSquaredDiff += diff * diff * results[value];
-            }
-            return totalSimulations > 0 ? sumSquaredDiff / totalSimulations : 0;
+            if (allValues.length < 2) return 0;
+            const sumSquaredDiff = allValues.reduce((sum, x) => sum + Math.pow(x - mean, 2), 0);
+            return sumSquaredDiff / allValues.length;
         }
 
         // Actualizar la UI
-        function updateUI(result) {
+        function updateUI() {
             totalElement.textContent = totalSimulations;
             
-            // Actualizar datos del gráfico de frecuencia
-            const data = [];
-            for (let i = minValue; i <= maxValue; i++) {
-                data.push(results[i] || 0);
-            }
-            frequencyChart.data.datasets[0].data = data;
-            frequencyChart.update();
+            // Actualizar datos del gráfico de histograma
+            histogramChart.data.datasets[0].data = histogram;
+            histogramChart.update();
             
             // Actualizar tabla de resultados
-            const rangeSize = maxValue - minValue + 1;
-            const theoreticalProb = (1 / rangeSize * 100).toFixed(2) + '%';
+            updateResultsTable();
             
-            let totalFreq = 0;
-            
-            for (let i = minValue; i <= maxValue; i++) {
-                const freq = results[i] || 0;
-                totalFreq += freq;
-                
-                document.getElementById(`freq-${i}`).textContent = freq;
-                
-                const prob = totalSimulations > 0 ? (freq / totalSimulations * 100).toFixed(2) : 0;
-                document.getElementById(`prob-${i}`).textContent = prob + '%';
-            }
-            
-            document.getElementById('totalFreq').textContent = totalFreq;
-            
-            // Calcular y mostrar media y varianza
+            // Calcular y mostrar estadísticas
             const mean = calculateMean();
             const variance = calculateVariance(mean);
-            const theoreticalMean = (minValue + maxValue) / 2;
+            const stdDev = Math.sqrt(variance);
             
             meanValueElement.textContent = mean.toFixed(4);
-            meanValueElement2.textContent = mean.toFixed(4);
             varianceValueElement.textContent = variance.toFixed(4);
-            
-            // Calcular diferencia con media teórica
-            const difference = Math.abs(mean - theoreticalMean);
-            meanDifferenceElement.textContent = difference.toFixed(4);
-            
-            // Actualizar gráfico de media
-            meanHistory.push(mean);
-            
-            meanChart.data.labels = Array.from({length: meanHistory.length}, (_, i) => i + 1);
-            meanChart.data.datasets[0].data = meanHistory;
-            meanChart.data.datasets[1].data = Array(meanHistory.length).fill(theoreticalMean);
-            meanChart.update();
-            
-            if (result !== undefined) {
-                const cell = document.createElement('div');
-                cell.className = 'cell';
-                cell.style.backgroundColor = valueColors[result];
-                cell.textContent = result;
-                cell.title = `Valor: ${result}`;
-                gridContainer.appendChild(cell);
-                gridCells.push(cell);
-
-                if (gridCells.length > 1000) {
-                    gridContainer.removeChild(gridCells[0]);
-                    gridCells.shift();
-                }
-            }
+            stdDevValueElement.textContent = stdDev.toFixed(4);
         }
 
-        // Simular múltiples ensayos
+        // Simular múltiples valores
         function simulateMultiple(times, delay = 0) {
             if (animationId) {
                 cancelAnimationFrame(animationId);
@@ -816,8 +678,8 @@
 
             function runSimulation() {
                 if (count < times) {
-                    const result = simulate();
-                    updateUI(result);
+                    simulate();
+                    updateUI();
                     count++;
 
                     if (delay > 0) {
@@ -835,8 +697,8 @@
 
         // Event listeners
         document.getElementById('simulate1').addEventListener('click', () => {
-            const result = simulate();
-            updateUI(result);
+            simulate();
+            updateUI();
         });
 
         document.getElementById('simulate10').addEventListener('click', () => {
@@ -859,11 +721,15 @@
             simulationSpeed = parseInt(speedControl.value);
         });
 
-        minValueElement.addEventListener('change', () => {
+        lambdaValueElement.addEventListener('change', () => {
             initializeDistribution();
         });
 
-        maxValueElement.addEventListener('change', () => {
+        maxRangeElement.addEventListener('change', () => {
+            initializeDistribution();
+        });
+
+        binsElement.addEventListener('change', () => {
             initializeDistribution();
         });
 
