@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Esta muy oscuro!!!! </title>
+    <style>
+        body {
+            background-color: #000;
+            color: #333;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        img {
+            max-width: 500px;
+            border: 2px solid #222;
+            filter: grayscale(50%);
+        }
+        .hidden-hint {
+            color: #000; /* Texto negro sobre fondo negro */
+            margin-top: 20px;
+            cursor: default;
+            user-select: all;
+        }
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        input {
+            background: #111;
+            border: 1px solid #333;
+            color: #0f0;
+            padding: 10px;
+            margin-top: 10px;
+            text-align: center;
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+
+    <img src="IMG/Heroin_share.jpg" alt="The Fix">
+
+    <div class="login-container">
+        <input type="text" id="user" placeholder="USER">
+        <input type="password" id="access" placeholder="PASSWORD" onkeydown="if(event.key==='Enter') validate()">
+    </div>
+
+    <p class="hidden-hint">Revisa el código fuente para encontrar el protocolo de acceso.</p>
+
+    <!-- 
+        CREDENTIALS LOG:
+        ¿Que cancion estaba escuchando a las 3 de la mañana? oh ya recuerdo ...
+        User: Daniel
+        Pass: heroine
+    -->
+
+    <script>
+        function validate() {
+            const user = document.getElementById('user').value.toLowerCase();
+            const secret = document.getElementById('access').value.toLowerCase();
+            
+            // Verificación de Usuario: Daniel y Password: heroine
+            if (user === 'daniel' && secret === 'heroine') {
+                window.location.href = 'download.html';
+            } else {
+                alert("ACCESS DENIED");
+            }
+        }
+    </script>
+</body>
+</html>

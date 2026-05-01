@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Terminal - Download</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            padding: 50px;
+        }
+        .console-text {
+            border-left: 3px solid #0f0;
+            padding-left: 15px;
+            margin-bottom: 30px;
+        }
+        .download-btn {
+            background: transparent;
+            color: #0f0;
+            border: 1px solid #0f0;
+            padding: 15px 30px;
+            text-decoration: none;
+            display: inline-block;
+            transition: 0.3s;
+        }
+        .download-btn:hover {
+            background: #0f0;
+            color: #000;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="console-text">
+        <p>> Acceso concedido...</p>
+        <p>> Desencriptando paquete de datos del usuario: Daniel...</p>
+        <p>> ADVERTENCIA: Contenido emocional de alta prioridad detectado.</p>
+        <p>> Archivo listo para transferencia local.</p>
+    </div>
+
+    <!-- Asegúrate de que el nombre del archivo coincida con tu .txt -->
+    <a href="carta_fer.txt" download class="download-btn">
+        DESCARGAR: sentimientos.txt
+    </a>
+
+    <script>
+        console.log("Status 200: Te quiero, boba.");
+    </script>
+</body>
+</html>
